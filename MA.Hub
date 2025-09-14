@@ -1,0 +1,119 @@
+-- // الخدمات
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local player = Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local hrp = character:WaitForChild("HumanoidRootPart")
+local humanoid = character:WaitForChild("Humanoid")
+
+-- // واجهة MA HUB
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "MA_HUB"
+screenGui.ResetOnSpawn = false
+screenGui.Parent = player:WaitForChild("PlayerGui")
+
+local frame = Instance.new("Frame", screenGui)
+frame.Size = UDim2.new(0, 180, 0, 130)
+frame.Position = UDim2.new(0.05,0,0.2,0)
+frame.BackgroundColor3 = Color3.fromRGB(0,0,0)
+frame.BorderColor3 = Color3.fromRGB(255,255,255)
+frame.BorderSizePixel = 3
+frame.Active = true
+frame.Draggable = true
+
+local title = Instance.new("TextLabel", frame)
+title.Size = UDim2.new(1,0,0,25)
+title.BackgroundTransparency = 1
+title.Text = "MA HUB"
+title.TextColor3 = Color3.fromRGB(255,255,255)
+title.Font = Enum.Font.SourceSansBold
+title.TextSize = 20
+
+-- زر حفظ المكان
+local saveBtn = Instance.new("TextButton", frame)
+saveBtn.Size = UDim2.new(0.8,0,0,25)
+saveBtn.Position = UDim2.new(0.1,0,0.25,0)
+saveBtn.Text = "حفظ المكان"
+saveBtn.Font = Enum.Font.SourceSansBold
+saveBtn.TextSize = 16
+saveBtn.TextColor3 = Color3.fromRGB(255,255,255)
+saveBtn.BackgroundColor3 = Color3.fromRGB(30,30,30)
+
+-- زر VFly
+local vflyBtn = Instance.new("TextButton", frame)
+vflyBtn.Size = UDim2.new(0.8,0,0,25)
+vflyBtn.Position = UDim2.new(0.1,0,0.5,0)
+vflyBtn.Text = "VFly"
+vflyBtn.Font = Enum.Font.SourceSansBold
+vflyBtn.TextSize = 16
+vflyBtn.TextColor3 = Color3.fromRGB(255,255,255)
+vflyBtn.BackgroundColor3 = Color3.fromRGB(30,30,30)
+
+-- زر مضاد ضرب (Flip + Sit)
+local flipSitBtn = Instance.new("TextButton", frame)
+flipSitBtn.Size = UDim2.new(0.8,0,0,25)
+flipSitBtn.Position = UDim2.new(0.1,0,0.75,0)
+flipSitBtn.Text = "مضاد ضرب"
+flipSitBtn.Font = Enum.Font.SourceSansBold
+flipSitBtn.TextSize = 16
+flipSitBtn.TextColor3 = Color3.fromRGB(255,255,255)
+flipSitBtn.BackgroundColor3 = Color3.fromRGB(30,30,30)
+
+-- متغيرات
+local savedCFrame
+local vflyActive = false
+local flipSitActive = false
+
+-- حفظ المكان
+saveBtn.MouseButton1Click:Connect(function()
+    savedCFrame = hrp.CFrame
+    saveBtn.Text = "تم الحفظ ✅"
+    task.wait(1)
+    saveBtn.Text = "حفظ المكان"
+end)
+
+-- VFly
+local function vflyTo(targetCFrame)
+    if not hrp or not humanoid then return end
+    local speed = 17
+    vflyActive = true
+
+    while vflyActive and (hrp.Position - targetCFrame.Position).Magnitude > 1 do
+        local direction = (targetCFrame.Position - hrp.Position).Unit
+        hrp.CFrame = hrp.CFrame + direction * speed * task.wait(0.03)
+    end
+
+    hrp.CFrame = targetCFrame
+    vflyActive = false
+end
+
+vflyBtn.MouseButton1Click:Connect(function()
+    if savedCFrame then
+        task.spawn(function()
+            vflyTo(savedCFrame)
+        end)
+    end
+end)
+
+-- Flip + Sit (مضاد ضرب)
+flipSitBtn.MouseButton1Click:Connect(function()
+    if not humanoid or not hrp then return end
+    if not flipSitActive then
+        humanoid.Sit = true
+        hrp.CFrame = hrp.CFrame * CFrame.Angles(math.rad(180),0,0)
+        flipSitActive = true
+        flipSitBtn.Text = "إيقاف مضاد ضرب"
+    else
+        humanoid.Sit = false
+        hrp.CFrame = hrp.CFrame * CFrame.Angles(math.rad(-180),0,0)
+        flipSitActive = false
+        flipSitBtn.Text = "مضاد ضرب"
+    end
+end)
+
+-- تحديث الشخصية بعد Respawn
+player.CharacterAdded:Connect(function(char)
+    character = char
+    hrp = character:WaitForChild("HumanoidRootPart")
+    humanoid = character:WaitForChild("Humanoid")
+end)
