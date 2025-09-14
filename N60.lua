@@ -1,4 +1,5 @@
 -- // الخدمات
+
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local TeleportService = game:GetService("TeleportService")
@@ -180,11 +181,11 @@ cooldownLabel.Font = Enum.Font.SourceSansBold
 cooldownLabel.TextScaled = true
 cooldownLabel.Visible = false
 
-local hoverHeight = 11.5
+local hoverHeight = 11
 local hoverTime = 0.50
-local groundTime = 0.15
-local riseSpeed = 50
-local fallSpeed = 50
+local groundTime = 0.10
+local riseSpeed = 40
+local fallSpeed = 40
 local ascending = true
 local startY = hrp.Position.Y
 local targetY = startY + hoverHeight
@@ -288,3 +289,150 @@ player.CharacterAdded:Connect(function(char)
     humanoid = character:WaitForChild("Humanoid")
     hrp = character:WaitForChild("HumanoidRootPart")
 end)
+
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+local LocalPlayer = Players.LocalPlayer
+local backpack = LocalPlayer:WaitForChild("Backpack")
+local character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+
+-- تنظيف واجهة قديمة
+local existing = LocalPlayer:FindFirstChild("PlayerGui") and LocalPlayer.PlayerGui:FindFirstChild("N60HubGui")
+if existing then existing:Destroy() end
+
+-- إنشاء واجهة
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "N60HubGui"
+screenGui.ResetOnSpawn = false
+screenGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
+
+local main = Instance.new("Frame")
+main.Name = "Main"
+main.Size = UDim2.new(0, 180, 0, 80)
+main.Position = UDim2.new(0.5, -90, 0.35, -40) -- منتصف الشاشة فوق شوي
+main.BackgroundColor3 = Color3.fromRGB(0,0,0)
+main.BorderSizePixel = 0
+main.Parent = screenGui
+
+-- حواف حمراء
+local stroke = Instance.new("UIStroke")
+stroke.Parent = main
+stroke.Color = Color3.fromRGB(255,0,0)
+stroke.Thickness = 3
+
+-- عنوان
+local title = Instance.new("TextLabel")
+title.Parent = main
+title.Size = UDim2.new(1,-10,0,24)
+title.Position = UDim2.new(0,5,0,5)
+title.BackgroundTransparency = 1
+title.Text = "N60 Hub"
+title.Font = Enum.Font.GothamBold
+title.TextSize = 15
+title.TextColor3 = Color3.new(1,1,1)
+title.TextXAlignment = Enum.TextXAlignment.Left
+
+-- زر تفعيل
+local toggleBtn = Instance.new("TextButton")
+toggleBtn.Parent = main
+toggleBtn.Size = UDim2.new(0.9,0,0,30)
+toggleBtn.Position = UDim2.new(0.05,0,0,35)
+toggleBtn.BackgroundColor3 = Color3.fromRGB(28,28,28)
+toggleBtn.Text = "مضاد سرقه: OFF"
+toggleBtn.TextColor3 = Color3.fromRGB(255,255,255)
+
+-- قائمة الأدوات المراد الإمساك بها
+local toolNames = {
+	"coil","trap","bee","rage","hook","taser","cloak",
+	"bomb","head","wep","cloner","sentry","sword","laser","body"
+}
+
+-- دالة لمطابقة الأدوات
+local function isMatchingTool(name)
+	name = name:lower()
+	for _, t in ipairs(toolNames) do
+		if string.find(name, t) then
+			return true
+		end
+	end
+	return false
+end
+
+-- متغيرات التشغيل
+local running = false
+local frozen = false
+
+-- وظيفة التشغيل/إيقاف
+local function toggleFunction()
+	running = not running
+	local char = LocalPlayer.Character
+	local hum = char and char:FindFirstChild("Humanoid")
+	local hrp = char and char:FindFirstChild("HumanoidRootPart")
+	if not char or not hum or not hrp then return end
+
+	if running then
+		toggleBtn.Text = "Activate: ON"
+		toggleBtn.BackgroundColor3 = Color3.fromRGB(0,255,0)
+		
+		-- تفعيل Freeze
+		frozen = true
+		hum.PlatformStand = true
+		hum.WalkSpeed = 0
+		hum.JumpPower = 0
+		hrp.Anchored = true
+
+		-- الإمساك بالأدوات
+		task.spawn(function()
+			while running do
+				for _, tool in ipairs(backpack:GetChildren()) do
+					if tool:IsA("Tool") and isMatchingTool(tool.Name) then
+						tool.Parent = char
+						tool:Activate()
+						task.wait(0.01)
+						tool.Parent = backpack
+					end
+				end
+				task.wait(0.01)
+			end
+		end)
+	else
+		toggleBtn.Text = "مضاد سرقه: OFF"
+		toggleBtn.BackgroundColor3 = Color3.fromRGB(28,28,28)
+
+		-- إيقاف Freeze
+		frozen = false
+		hum.PlatformStand = false
+		hum.WalkSpeed = 16
+		hum.JumpPower = 50
+		hrp.Anchored = false
+	end
+end
+
+toggleBtn.MouseButton1Click:Connect(toggleFunction)
+
+-- واجهة قابلة للسحب على الجوال
+local dragging = false
+local dragStart = Vector2.new()
+local startPos = UDim2.new()
+
+main.InputBegan:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.Touch then
+		dragging = true
+		dragStart = input.Position
+		startPos = main.Position
+		input.Changed:Connect(function()
+			if input.UserInputState == Enum.UserInputState.End then
+				dragging = false
+			end
+		end)
+	end
+end)
+
+UserInputService.TouchMoved:Connect(function(touch)
+	if dragging then
+		local delta = touch.Position - dragStart
+		main.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+	end
+end)
+
+print("[N60 Hub] GUI جاهز + Freeze + Tool Grab")
