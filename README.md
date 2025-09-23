@@ -14,7 +14,7 @@ body {
   padding: 0;
 }
 .hidden { display: none; }
-#loaderScreen, #platformScreen, #followScreen, #addingScreen, #doneScreen {
+.screen {
   position: absolute;
   top: 0; left: 0; right: 0; bottom: 0;
   display: flex;
@@ -50,88 +50,88 @@ body {
 </head>
 <body>
 
-<!-- شاشة التحميل الأولية -->
-<div id="loaderScreen">
+<!-- شاشة التحميل -->
+<div id="loaderScreen" class="screen">
   <h1>منور الموقع</h1>
   <p>تحميل من 1-100</p>
   <div class="progress-bar"><div class="progress-fill" id="loaderProgress"></div></div>
 </div>
 
-<!-- اختيار المنصة -->
-<div id="platformScreen" class="hidden">
-  <button class="option-btn" id="tiktokBtn">تيك توك</button>
-  <button class="option-btn" id="instaBtn">إنستا</button>
-  <button class="option-btn" id="robloxBtn">روبلكس</button>
+<!-- شاشة اختيار المنصة -->
+<div id="platformScreen" class="screen hidden">
+  <h2>اختار النوع</h2>
+  <div>
+    <button class="option-btn" id="tiktokBtn">تيك توك</button>
+    <button class="option-btn" id="instaBtn">إنستا</button>
+    <button class="option-btn" id="robloxBtn">روبلكس</button>
+  </div>
 </div>
 
-<!-- اختيار عدد المتابعين -->
-<div id="followScreen" class="hidden">
-  <p>كم تبي عدد المتابعين؟</p>
-  <button class="option-btn">1000</button>
-  <button class="option-btn">2000</button>
-  <button class="option-btn">3000</button>
+<!-- شاشة اختيار العدد -->
+<div id="followScreen" class="screen hidden">
+  <h2>كم تبي عدد المتابعين؟</h2>
+  <div>
+    <button class="option-btn followBtn">1000</button>
+    <button class="option-btn followBtn">2000</button>
+    <button class="option-btn followBtn">3000</button>
+  </div>
 </div>
 
 <!-- شاشة الإضافة -->
-<div id="addingScreen" class="hidden">
-  <p>جار الإضافة...</p>
+<div id="addingScreen" class="screen hidden">
+  <h2>جار الإضافة...</h2>
   <p>تحميل من 1-100</p>
   <div class="progress-bar"><div class="progress-fill" id="addingProgress"></div></div>
 </div>
 
 <!-- شاشة النهاية -->
-<div id="doneScreen" class="hidden">
+<div id="doneScreen" class="screen hidden">
   <h1>ههههههه 🤣🤣</h1>
   <p>صدق الهطف تقولي تبي متابعين؟؟</p>
   <p>ضيفوني تيك 818bw</p>
 </div>
 
 <script>
-// شاشة التحميل
-let loaderScreen = document.getElementById('loaderScreen');
-let loaderFill = document.getElementById('loaderProgress');
-let platformScreen = document.getElementById('platformScreen');
+// شاشات
+const loaderScreen = document.getElementById('loaderScreen');
+const platformScreen = document.getElementById('platformScreen');
+const followScreen = document.getElementById('followScreen');
+const addingScreen = document.getElementById('addingScreen');
+const doneScreen = document.getElementById('doneScreen');
 
+// التحميل الأولي
 let loadValue = 0;
+let loaderFill = document.getElementById('loaderProgress');
 let loadInterval = setInterval(() => {
   loadValue++;
   loaderFill.style.width = loadValue + '%';
-  if(loadValue >= 100){
+  if (loadValue >= 100) {
     clearInterval(loadInterval);
     loaderScreen.classList.add('hidden');
     platformScreen.classList.remove('hidden');
   }
-}, 20); // تحميل سريع
+}, 20);
 
 // اختيار المنصة
-let followScreen = document.getElementById('followScreen');
-let tiktokBtn = document.getElementById('tiktokBtn');
-let instaBtn = document.getElementById('instaBtn');
-let robloxBtn = document.getElementById('robloxBtn');
-
-[tiktokBtn, instaBtn, robloxBtn].forEach(btn => {
+document.querySelectorAll('#tiktokBtn,#instaBtn,#robloxBtn').forEach(btn => {
   btn.addEventListener('click', () => {
     platformScreen.classList.add('hidden');
     followScreen.classList.remove('hidden');
   });
 });
 
-// اختيار عدد المتابعين
-let followBtns = followScreen.querySelectorAll('.option-btn');
-let addingScreen = document.getElementById('addingScreen');
-let addingProgress = document.getElementById('addingProgress');
-let doneScreen = document.getElementById('doneScreen');
-
-followBtns.forEach(btn => {
+// اختيار العدد
+document.querySelectorAll('.followBtn').forEach(btn => {
   btn.addEventListener('click', () => {
     followScreen.classList.add('hidden');
     addingScreen.classList.remove('hidden');
 
     let addValue = 0;
+    let addingFill = document.getElementById('addingProgress');
     let addInterval = setInterval(() => {
       addValue++;
-      addingProgress.style.width = addValue + '%';
-      if(addValue >= 100){
+      addingFill.style.width = addValue + '%';
+      if (addValue >= 100) {
         clearInterval(addInterval);
         addingScreen.classList.add('hidden');
         doneScreen.classList.remove('hidden');
