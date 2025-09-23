@@ -3,47 +3,48 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>موقع المتابعين </title>
+<title>موقع المتابعين الوهمي</title>
 <style>
-  body {
-    font-family: Arial, sans-serif;
-    text-align: center;
-    background: #f0f0f0;
-    margin: 0;
-    padding: 0;
-  }
-  #loaderScreen, #platformScreen, #followScreen, #addingScreen, #doneScreen {
-    position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-  }
-  .hidden { display: none; }
-  .progress-bar {
-    width: 300px;
-    height: 20px;
-    background: #ddd;
-    margin-top: 10px;
-    border-radius: 10px;
-    overflow: hidden;
-  }
-  .progress-fill {
-    height: 100%;
-    width: 0%;
-    background: #4caf50;
-    transition: width 0.2s;
-  }
-  .option-btn {
-    margin: 5px;
-    padding: 10px 20px;
-    border: 2px solid white;
-    background: #333;
-    color: white;
-    cursor: pointer;
-    border-radius: 10px;
-  }
+body {
+  font-family: Arial, sans-serif;
+  text-align: center;
+  background: black;
+  color: white;
+  margin: 0;
+  padding: 0;
+}
+#loaderScreen, #platformScreen, #followScreen, #addingScreen, #doneScreen {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.hidden { display: none; }
+.progress-bar {
+  width: 300px;
+  height: 20px;
+  background: #ddd;
+  margin-top: 10px;
+  border-radius: 10px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  width: 0%;
+  background: #4caf50;
+  transition: width 0.2s;
+}
+.option-btn {
+  margin: 5px;
+  padding: 10px 20px;
+  border: 2px solid white;
+  background: white;
+  color: black;
+  cursor: pointer;
+  border-radius: 10px;
+}
 </style>
 </head>
 <body>
@@ -64,7 +65,7 @@
 
 <!-- اختيار عدد المتابعين -->
 <div id="followScreen" class="hidden">
-  <p>كم تبي عدد ال Follow؟</p>
+  <p>كم تبي عدد المتابعين؟</p>
   <button class="option-btn">1000</button>
   <button class="option-btn">2000</button>
   <button class="option-btn">3000</button>
@@ -72,15 +73,16 @@
 
 <!-- شاشة الإضافة -->
 <div id="addingScreen" class="hidden">
-  <p>جار الإضافة..</p>
+  <p>جار الإضافة...</p>
   <p>تحميل من 1-100</p>
   <div class="progress-bar"><div class="progress-fill" id="addingProgress"></div></div>
 </div>
 
 <!-- شاشة النهاية -->
 <div id="doneScreen" class="hidden">
-  <h1>واهاهاها🤣🤣</h1>
+  <h1>ههههههه 🤣🤣</h1>
   <p>صدق الهطف تقولي تبي متابعين؟؟</p>
+  <p>ضيفوني تيك 818bw</p>
 </div>
 
 <script>
@@ -98,7 +100,7 @@ let loadInterval = setInterval(() => {
     loaderScreen.classList.add('hidden');
     platformScreen.classList.remove('hidden');
   }
-}, 20); // تحميل سريع قليلاً
+}, 20);
 
 // اختيار المنصة
 let followScreen = document.getElementById('followScreen');
@@ -128,12 +130,12 @@ followBtns.forEach(btn => {
     let addInterval = setInterval(() => {
       addValue++;
       addingProgress.style.width = addValue + '%';
-      if (addValue >= 100) {
+      if(addValue >= 100) {
         clearInterval(addInterval);
         addingScreen.classList.add('hidden');
         doneScreen.classList.remove('hidden');
       }
-    }, 50); // تحميل أبطأ شوي
+    }, 100); // كل نص ثانية يزود واحد
   });
 });
 </script>
