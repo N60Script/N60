@@ -44,7 +44,7 @@
   <p>جار فتحهم..</p>
   <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
   <p id="progressText">1%</p>
-  <p id="doneMessage">✅ تم فتحكم</p>
+  <p id="doneMessage">❌ فشل فتحكم. لانكم مفتوحين</p>
 
   <script>
     let progress = document.getElementById("progress");
