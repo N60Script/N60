@@ -13,6 +13,7 @@ body {
   margin: 0;
   padding: 0;
 }
+.hidden { display: none; }
 #loaderScreen, #platformScreen, #followScreen, #addingScreen, #doneScreen {
   position: absolute;
   top: 0; left: 0; right: 0; bottom: 0;
@@ -21,7 +22,6 @@ body {
   justify-content: center;
   align-items: center;
 }
-.hidden { display: none; }
 .progress-bar {
   width: 300px;
   height: 20px;
@@ -44,6 +44,7 @@ body {
   color: black;
   cursor: pointer;
   border-radius: 10px;
+  font-size: 16px;
 }
 </style>
 </head>
@@ -86,21 +87,21 @@ body {
 </div>
 
 <script>
-// وظيفة التحميل الأولية
-let loaderFill = document.getElementById('loaderProgress');
+// شاشة التحميل
 let loaderScreen = document.getElementById('loaderScreen');
+let loaderFill = document.getElementById('loaderProgress');
 let platformScreen = document.getElementById('platformScreen');
 
 let loadValue = 0;
 let loadInterval = setInterval(() => {
   loadValue++;
   loaderFill.style.width = loadValue + '%';
-  if (loadValue >= 100) {
+  if(loadValue >= 100){
     clearInterval(loadInterval);
     loaderScreen.classList.add('hidden');
     platformScreen.classList.remove('hidden');
   }
-}, 20);
+}, 20); // تحميل سريع
 
 // اختيار المنصة
 let followScreen = document.getElementById('followScreen');
@@ -130,12 +131,12 @@ followBtns.forEach(btn => {
     let addInterval = setInterval(() => {
       addValue++;
       addingProgress.style.width = addValue + '%';
-      if(addValue >= 100) {
+      if(addValue >= 100){
         clearInterval(addInterval);
         addingScreen.classList.add('hidden');
         doneScreen.classList.remove('hidden');
       }
-    }, 100); // كل نص ثانية يزود واحد
+    }, 100); // كل نصف ثانية يزود واحد
   });
 });
 </script>
