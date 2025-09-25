@@ -1,190 +1,29 @@
--- // خدمات اللعبة
+-- الخدمات
 local Players = game:GetService("Players")
-local RunService = game:GetService("RunService")
-local UserInputService = game:GetService("UserInputService")
-local SoundService = game:GetService("SoundService")
-
 local player = Players.LocalPlayer
-local character = player.Character or player.CharacterAdded:Wait()
-local hrp = character:WaitForChild("HumanoidRootPart")
-local humanoid = character:WaitForChild("Humanoid")
+local playerGui = player:WaitForChild("PlayerGui")
 
--- // تشغيل صوت عند الضغط على أي زر
-local function playClickSound()
-	local sound = Instance.new("Sound")
-	sound.SoundId = "rbxassetid://2865227271" -- صوت الدخول
-	sound.Parent = SoundService
-	sound:Play()
-	sound.Ended:Connect(function() sound:Destroy() end)
-end
+-- إنشاء الشاشة
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "RentWarningGui"
+screenGui.ResetOnSpawn = false
+screenGui.Parent = playerGui
 
--- // الواجهة
-local gui = Instance.new("ScreenGui")
-gui.Name = "WalkFlingUI"
-gui.ResetOnSpawn = false
-gui.Parent = player:WaitForChild("PlayerGui")
+-- الخلفية السوداء تغطي كل الشاشة
+local background = Instance.new("Frame")
+background.Size = UDim2.new(1,0,1,0)
+background.Position = UDim2.new(0,0,0,0)
+background.BackgroundColor3 = Color3.fromRGB(0,0,0)
+background.BackgroundTransparency = 0
+background.Parent = screenGui
 
-local mainFrame = Instance.new("Frame")
-mainFrame.Size = UDim2.new(0, 220, 0, 190)
-mainFrame.Position = UDim2.new(0.5, -110, 0.5, -95)
-mainFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-mainFrame.BorderSizePixel = 2
-mainFrame.BorderColor3 = Color3.fromRGB(204, 0, 0)
-mainFrame.Active = true
-mainFrame.Draggable = true
-mainFrame.Parent = gui
-
-local UICorner = Instance.new("UICorner")
-UICorner.CornerRadius = UDim.new(0, 20)
-UICorner.Parent = mainFrame
-
--- زر التصغير _
-local minimize = Instance.new("TextButton")
-minimize.Size = UDim2.new(0, 30, 0, 30)
-minimize.Position = UDim2.new(1, -35, 0, 5)
-minimize.Text = "_"
-minimize.TextColor3 = Color3.fromRGB(255, 255, 255)
-minimize.BackgroundColor3 = Color3.fromRGB(204, 0, 0)
-minimize.Parent = mainFrame
-
--- اسم N60 Hub يسار _
-local titleLabel = Instance.new("TextLabel")
-titleLabel.Size = UDim2.new(0.6, 0, 0, 30)
-titleLabel.Position = UDim2.new(0, 10, 0, 5)
-titleLabel.Text = "N60 Hub"
-titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-titleLabel.BackgroundTransparency = 1
-titleLabel.Font = Enum.Font.Fondamento
-titleLabel.TextSize = 20
-titleLabel.TextXAlignment = Enum.TextXAlignment.Left
-titleLabel.Parent = mainFrame
-
-local content = Instance.new("Frame")
-content.Size = UDim2.new(1, -10, 1, -40)
-content.Position = UDim2.new(0, 5, 0, 35)
-content.BackgroundTransparency = 1
-content.Parent = mainFrame
-
-local minimized = false
-minimize.MouseButton1Click:Connect(function()
-	minimized = not minimized
-	content.Visible = not minimized
-	mainFrame.Size = minimized and UDim2.new(0, 220, 0, 40) or UDim2.new(0, 220, 0, 190)
-end)
-
--- // متغيرات الوظائف
-local floatEnabled = false
-local jumpEnabled = false
-local frozen = false
-local holding = false
-local holdTarget = nil
-local floatLoop, godLoop
-
-local function setFreeze(state)
-	if not character or not humanoid or not hrp then return end
-	frozen = state
-	humanoid.PlatformStand = frozen
-	humanoid.WalkSpeed = frozen and 0 or 16
-	humanoid.JumpPower = frozen and 0 or 50
-	hrp.Anchored = frozen
-end
-
--- // دالة إنشاء زر مع التحكم في اللون عند التفعيل
-local function createToggleButton(name, y, callback, initialState)
-	local state = initialState or false
-	local btn = Instance.new("TextButton")
-	btn.Size = UDim2.new(0.8, 0, 0, 35)
-	btn.Position = UDim2.new(0.1, 0, 0, y)
-	btn.Text = name
-	btn.BackgroundColor3 = state and Color3.fromRGB(0,255,0) or Color3.fromRGB(204,0,0)
-	btn.TextColor3 = Color3.fromRGB(255, 255, 255)
-	btn.Font = Enum.Font.Fondamento
-	btn.TextSize = 18
-	btn.Parent = content
-	btn.MouseButton1Click:Connect(function()
-		state = not state
-		btn.BackgroundColor3 = state and Color3.fromRGB(0,255,0) or Color3.fromRGB(204,0,0)
-		playClickSound()
-		callback(state)
-	end)
-	return btn
-end
-
--- // زر Float + GodMode
-createToggleButton("فلاوت", 0, function(state)
-	floatEnabled = state
-	if floatEnabled then
-		floatLoop = RunService.Heartbeat:Connect(function()
-			if hrp then hrp.Velocity = Vector3.new(hrp.Velocity.X,0,hrp.Velocity.Z) end
-		end)
-		task.spawn(function()
-			while floatEnabled do
-				if hrp then hrp.CFrame = hrp.CFrame - Vector3.new(0,2,0) task.wait(0.12) end
-				task.wait(0.88)
-			end
-		end)
-		godLoop = RunService.Heartbeat:Connect(function()
-			if humanoid and humanoid.Health > 0 then
-				humanoid.Health = math.huge
-				humanoid.MaxHealth = math.huge
-			end
-		end)
-	else
-		if floatLoop then floatLoop:Disconnect() floatLoop = nil end
-		if godLoop then godLoop:Disconnect() godLoop = nil end
-		if humanoid then humanoid.Health = 100 humanoid.MaxHealth = 100 end
-	end
-end)
-
--- // زر Jump
-createToggleButton("نط", 50, function(state)
-	jumpEnabled = state
-end)
-
-humanoid.Jumping:Connect(function()
-	if jumpEnabled then
-		hrp.Velocity = Vector3.new(hrp.Velocity.X,80,hrp.Velocity.Z)
-	end
-end)
-
--- // زر Freeze اليدوي
-createToggleButton("Freeze", 100, function(state)
-	setFreeze(state)
-end)
-
--- // الضغط المطوّل لتجميد تلقائي
-UserInputService.InputBegan:Connect(function(input, gp)
-	if input.UserInputType == Enum.UserInputType.MouseButton1 then
-		local mouse = player:GetMouse()
-		local target = mouse.Target
-		if target then
-			holding = true
-			holdTarget = target
-			task.delay(0.6, function()
-				if holding and holdTarget == target then
-					setFreeze(true)
-					task.spawn(function()
-						while frozen and holdTarget and holdTarget.Parent do
-							task.wait(0.2)
-						end
-						setFreeze(false)
-					end)
-				end
-			end)
-		end
-	end
-end)
-
-UserInputService.InputEnded:Connect(function(input, gp)
-	if input.UserInputType == Enum.UserInputType.MouseButton1 then
-		holding = false
-		holdTarget = nil
-	end
-end)
-
--- تحديث الشخصية بعد الموت
-player.CharacterAdded:Connect(function(char)
-	character = char
-	hrp = character:WaitForChild("HumanoidRootPart")
-	humanoid = character:WaitForChild("Humanoid")
-end)
+-- النص في منتصف الشاشة
+local message = Instance.new("TextLabel")
+message.Size = UDim2.new(0.8,0,0.2,0) -- 80% عرض، 20% ارتفاع
+message.Position = UDim2.new(0.1,0,0.4,0) -- في منتصف الشاشة تقريبًا
+message.BackgroundTransparency = 1
+message.Text = "السكربت توقف بسبب عدم دفع الايجار"
+message.TextColor3 = Color3.fromRGB(255,0,0)
+message.TextScaled = true
+message.Font = Enum.Font.ArialBold
+message.Parent = background
