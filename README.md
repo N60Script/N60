@@ -169,7 +169,7 @@
         </div>
 
         <div id="progressText" class="progress-text">1 / 100</div>
-        <div class="small-muted">التحميل يزيد 5 كل ثانية...</div>
+        <div class="small-muted">صلي على النبي...</div>
       </div>
 
       <!-- Final Screen -->
