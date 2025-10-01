@@ -1,171 +1,211 @@
-<!DOCTYPE html>
-<html lang="ar">
+<!doctype html>
+<html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <title>N60Hub</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Gaming HUD</title>
   <style>
     body {
-      background-color: black;
-      color: white;
-      font-family: Arial, sans-serif;
-      text-align: center;
-      margin: 0;
-      padding: 0;
+      margin:0;
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:#000 url('https://i.ibb.co/t3z2Wrx/hud-bg.jpg') no-repeat center/cover;
+      font-family:"Tajawal",Arial,sans-serif;
+      color:#0f0;
     }
-    .hidden { display: none; }
-    .fade {
-      animation: fadeIn 1s ease-in-out;
+    .hud {
+      width:380px;
+      background:rgba(0,0,0,0.8);
+      border:2px solid #0f0;
+      border-radius:12px;
+      padding:20px;
+      box-shadow:0 0 25px #0f0;
+      text-align:center;
     }
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
+    .title {
+      font-size:22px;
+      font-weight:bold;
+      color:#0f0;
+      text-shadow:0 0 10px #0f0;
+      margin-bottom:20px;
+    }
+    .row {
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin:20px 0;
     }
     .btn {
-      background: green;
-      color: white;
-      padding: 10px 20px;
-      margin-top: 20px;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 18px;
+      width:42px;
+      height:42px;
+      border:none;
+      border-radius:8px;
+      font-size:22px;
+      font-weight:bold;
+      color:#fff;
+      background:#111;
+      cursor:pointer;
+      box-shadow:0 0 10px #0f0 inset;
     }
-    .btn:hover { opacity: 0.8; }
-    .code-box {
-      background: #111;
-      border: 1px solid #444;
-      padding: 15px;
-      margin: 20px auto;
-      width: 80%;
-      border-radius: 8px;
-      word-wrap: break-word;
+    .btn:active {
+      background:#0f0;
+      color:#000;
     }
-    .progress-bar {
-      width: 80%;
-      height: 20px;
-      background: #333;
-      margin: 10px auto;
-      border-radius: 10px;
-      overflow: hidden;
+    .numbox {
+      min-width:80px;
+      text-align:center;
+      font-size:20px;
+      font-weight:bold;
+      padding:10px;
+      background:#111;
+      color:#0f0;
+      border:2px solid #0f0;
+      border-radius:8px;
+      box-shadow:0 0 15px #0f0 inset;
     }
-    .progress-fill {
-      height: 100%;
-      width: 0%;
-      background: limegreen;
-      transition: width 0.5s ease;
+    .switch {
+      width:80px;
+      height:36px;
+      border-radius:20px;
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      padding:4px;
+      transition:.3s;
+      box-shadow:0 0 12px #f00 inset;
+    }
+    .dot {
+      width:28px;
+      height:28px;
+      border-radius:50%;
+      background:#fff;
+      transition:.3s;
+    }
+    .switch.off {
+      background:#300;
+      justify-content:flex-start;
+      box-shadow:0 0 15px #f00 inset;
+    }
+    .switch.on {
+      background:#030;
+      justify-content:flex-end;
+      box-shadow:0 0 15px #0f0 inset;
+    }
+    .switch.on .dot { background:#0f0; box-shadow:0 0 10px #0f0; }
+    .switch.off .dot { background:#f00; box-shadow:0 0 10px #f00; }
+    .actions {
+      margin-top:25px;
+      display:flex;
+      gap:12px;
+      justify-content:center;
+    }
+    .actions button {
+      padding:10px 16px;
+      border:none;
+      border-radius:6px;
+      font-weight:bold;
+      cursor:pointer;
+      background:#111;
+      color:#0f0;
+      border:2px solid #0f0;
+      box-shadow:0 0 10px #0f0 inset;
+      transition:.2s;
+    }
+    .actions button:active {
+      background:#0f0;
+      color:#000;
     }
   </style>
 </head>
 <body>
+  <div class="hud">
+    <div class="title">🎮 اختار الايم</div>
 
-  <!-- المرحلة الأولى -->
-  <div id="screen1" class="fade">
-    <h2>اضغط على Start</h2>
-    <button class="btn" onclick="startLoading()">Start</button>
-  </div>
-
-  <!-- التحميل الأول -->
-  <div id="loading1" class="hidden fade">
-    <h2>N60 Hub<span id="dots1">.</span></h2>
-    <div class="progress-bar"><div id="bar1" class="progress-fill"></div></div>
-    <p id="progress1">0%</p>
-  </div>
-
-  <!-- الشوط الثاني -->
-  <div id="secondRound" class="hidden fade">
-    <h2>الشوط الثاني</h2>
-    <button class="btn" onclick="startSecondLoading()">Start</button>
-  </div>
-
-  <!-- التحميل الثاني -->
-  <div id="loading2" class="hidden fade">
-    <h2>تحميل<span id="dots2">.</span></h2>
-    <div class="progress-bar"><div id="bar2" class="progress-fill"></div></div>
-    <p id="progress2">0%</p>
-  </div>
-
-  <!-- النتيجة النهائية -->
-  <div id="finalScreen" class="hidden fade">
-    <h2>المفتاح 👇</h2>
-    <div class="code-box" id="scriptCode">
-      Jandel3MkAlblwi818
+    <div class="row">
+      <span>Aim assist</span>
+      <div>
+        <button class="btn" id="dec">−</button>
+        <span class="numbox" id="aimValue">50</span>
+        <button class="btn" id="inc">+</button>
+      </div>
     </div>
-    <button class="btn" onclick="copyCode()">نسخ</button>
-  </div>
 
-  <!-- صوت -->
-  <audio id="doneSound" src="https://www.soundjay.com/buttons/beep-07.wav" preload="auto"></audio>
+    <div class="row">
+      <span>⭕️ كشف لاعبين</span>
+      <div class="switch off" id="toggle"><div class="dot"></div></div>
+    </div>
+
+    <div class="actions">
+      <button id="reset">إعادة </button>
+      <button id="save">حفظ</button>
+      <button id="load">تحميل</button>
+    </div>
+  </div>
 
   <script>
-    function animateDots(elementId) {
-      let dots = document.getElementById(elementId);
-      let count = 1;
-      return setInterval(() => {
-        dots.innerText = ".".repeat(count);
-        count = (count % 3) + 1;
-      }, 500);
+    const aimEl = document.getElementById('aimValue');
+    const incBtn = document.getElementById('inc');
+    const decBtn = document.getElementById('dec');
+    const toggle = document.getElementById('toggle');
+    const resetBtn = document.getElementById('reset');
+    const saveBtn = document.getElementById('save');
+    const loadBtn = document.getElementById('load');
+
+    const MIN_AIM = 10, MAX_AIM = 200;
+    let aim = Number(localStorage.getItem('aim_value') ?? 50);
+    let playersDetect = (localStorage.getItem('players_detect') === '1');
+
+    function renderAim(){
+      aim = Math.min(MAX_AIM, Math.max(MIN_AIM, Math.round(aim)));
+      aimEl.textContent = aim;
+      localStorage.setItem('aim_value', aim);
+    }
+    function renderToggle(){
+      if(playersDetect){
+        toggle.classList.add('on');
+        toggle.classList.remove('off');
+        localStorage.setItem('players_detect','1');
+      } else {
+        toggle.classList.add('off');
+        toggle.classList.remove('on');
+        localStorage.setItem('players_detect','0');
+      }
     }
 
-    function startLoading() {
-      document.getElementById("screen1").classList.add("hidden");
-      document.getElementById("loading1").classList.remove("hidden");
+    incBtn.onclick = ()=>{ aim++; renderAim(); }
+    decBtn.onclick = ()=>{ aim--; renderAim(); }
+    toggle.onclick = ()=>{ playersDetect=!playersDetect; renderToggle(); }
+    resetBtn.onclick = ()=>{ aim=50; playersDetect=false; renderAim(); renderToggle(); }
 
-      let progress = 0;
-      let bar = document.getElementById("bar1");
-      let dotsInterval = animateDots("dots1");
-
-      let interval = setInterval(() => {
-        progress += 5;
-        document.getElementById("progress1").innerText = progress + "%";
-        bar.style.width = progress + "%";
-
-        if (progress >= 100) {
-          clearInterval(interval);
-          clearInterval(dotsInterval);
-          document.getElementById("doneSound").play();
-          setTimeout(() => {
-            document.getElementById("loading1").classList.add("hidden");
-            document.getElementById("secondRound").classList.remove("hidden");
-          }, 1000);
+    saveBtn.onclick = ()=>{
+      const data = {aim, playersDetect};
+      const blob = new Blob([JSON.stringify(data)], {type:"application/json"});
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = "settings.json";
+      link.click();
+    }
+    loadBtn.onclick = ()=>{
+      const input = document.createElement("input");
+      input.type = "file"; input.accept=".json";
+      input.onchange = e=>{
+        const file = e.target.files[0];
+        if(!file) return;
+        const reader = new FileReader();
+        reader.onload = ev=>{
+          const data = JSON.parse(ev.target.result);
+          aim = data.aim ?? aim;
+          playersDetect = data.playersDetect ?? playersDetect;
+          renderAim(); renderToggle();
         }
-      }, 1000);
+        reader.readAsText(file);
+      }
+      input.click();
     }
 
-    function startSecondLoading() {
-      document.getElementById("secondRound").classList.add("hidden");
-      document.getElementById("loading2").classList.remove("hidden");
-
-      let progress = 0;
-      let bar = document.getElementById("bar2");
-      let dotsInterval = animateDots("dots2");
-
-      let interval = setInterval(() => {
-        progress += 5;
-        document.getElementById("progress2").innerText = progress + "%";
-        bar.style.width = progress + "%";
-
-        if (progress >= 100) {
-          clearInterval(interval);
-          clearInterval(dotsInterval);
-          document.getElementById("doneSound").play();
-          document.getElementById("loading2").innerHTML =
-            '<h2>اكتمل التحميل ✅</h2><button class="btn" onclick="showFinal()">Enter</button>';
-        }
-      }, 1000);
-    }
-
-    function showFinal() {
-      document.getElementById("loading2").classList.add("hidden");
-      document.getElementById("finalScreen").classList.remove("hidden");
-    }
-
-    function copyCode() {
-      let code = document.getElementById("scriptCode").innerText;
-      navigator.clipboard.writeText(code).then(() => {
-        alert("تم نسخ المفتاح ✅");
-      });
-    }
+    renderAim(); renderToggle();
   </script>
-
 </body>
 </html>
