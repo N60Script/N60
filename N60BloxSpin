@@ -1,0 +1,283 @@
+-- 🟥 N60 Hub: TP + AIM + ESP Names Only + God Mode + Ante(VFly) 🟥
+
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local player = Players.LocalPlayer
+local camera = workspace.CurrentCamera
+
+-- ===================== God Mode =====================
+local function applyGodMode(humanoid)
+	if humanoid then
+		humanoid.MaxHealth = math.huge
+		humanoid.Health = math.huge
+		pcall(function()
+			humanoid:SetStateEnabled(Enum.HumanoidStateType.Dead, false)
+			humanoid:SetStateEnabled(Enum.HumanoidStateType.Physics, false)
+		end)
+	end
+end
+
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoid = character:WaitForChild("Humanoid")
+applyGodMode(humanoid)
+player.CharacterAdded:Connect(function(char)
+	local hum = char:WaitForChild("Humanoid")
+	applyGodMode(hum)
+end)
+
+-- ===================== ESP Rainbow (Names Only) =====================
+local espLabels = {}
+RunService.RenderStepped:Connect(function()
+	for _, p in pairs(Players:GetPlayers()) do
+		if p ~= player and p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
+			if not espLabels[p] then
+				local billboard = Instance.new("BillboardGui")
+				billboard.Name = "ESP_Label"
+				billboard.Size = UDim2.new(0,100,0,50)
+				billboard.Adornee = p.Character.HumanoidRootPart
+				billboard.StudsOffset = Vector3.new(0,2,0)
+				billboard.AlwaysOnTop = true
+				billboard.Parent = player:WaitForChild("PlayerGui")
+
+				local textLabel = Instance.new("TextLabel")
+				textLabel.Size = UDim2.new(1,0,1,0)
+				textLabel.BackgroundTransparency = 1
+				textLabel.TextScaled = true
+				textLabel.Font = Enum.Font.SourceSansBold
+				textLabel.Text = p.Name
+				textLabel.TextColor3 = Color3.fromHSV(tick() % 5 / 5, 1, 1)
+				textLabel.Parent = billboard
+
+				espLabels[p] = textLabel
+			else
+				espLabels[p].TextColor3 = Color3.fromHSV(tick() % 5 / 5, 1, 1)
+			end
+		else
+			-- تنظيف لو اختفى اللاعب/الشخصية
+			if espLabels[p] and espLabels[p].Parent then
+				pcall(function() espLabels[p].Parent:Destroy() end)
+				espLabels[p] = nil
+			end
+		end
+	end
+end)
+
+-- ===================== دوال مساعدة =====================
+local function getHRP(ch) return ch and ch:FindFirstChild("HumanoidRootPart") end
+
+local function getNearestPlayer()
+	local hrp = getHRP(player.Character)
+	if not hrp then return end
+	local nearest, dist = nil, math.huge
+	for _, plr in pairs(Players:GetPlayers()) do
+		if plr ~= player and plr.Character and getHRP(plr.Character) and plr.Character:FindFirstChild("Humanoid") and plr.Character.Humanoid.Health > 0 then
+			local d = (hrp.Position - getHRP(plr.Character).Position).Magnitude
+			if d < dist then
+				dist = d
+				nearest = plr
+			end
+		end
+	end
+	return nearest
+end
+
+-- ===================== TP خلف ظهر اللاعب =====================
+local flySpeed = 41
+local flyActive = false
+local flyConn = nil
+
+local function startFlyFollow(targetPlayer)
+	if not targetPlayer or not targetPlayer.Character then return end
+	local hrp = getHRP(player.Character)
+	local targetHrp = getHRP(targetPlayer.Character)
+	if not hrp or not targetHrp then return end
+
+	if flyActive then
+		flyActive = false
+		if flyConn then flyConn:Disconnect() flyConn = nil end
+		hrp.Velocity = Vector3.zero
+		return
+	end
+
+	flyActive = true
+	flyConn = RunService.Heartbeat:Connect(function()
+		if not flyActive or not player.Character or not targetPlayer.Character then
+			flyActive = false
+			if flyConn then flyConn:Disconnect() flyConn = nil end
+			return
+		end
+
+		local myHRP = getHRP(player.Character)
+		local tgtHRP = getHRP(targetPlayer.Character)
+		if not myHRP or not tgtHRP then return end
+
+		local offset = -tgtHRP.CFrame.LookVector * 4 -- مسافة خلفية بسيطة (تعديل سابق)
+		local targetPos = tgtHRP.Position + offset
+		local dir = (targetPos - myHRP.Position)
+		if dir.Magnitude < 0.5 then
+			myHRP.Velocity = Vector3.new(0,0,0)
+		else
+			myHRP.Velocity = dir.Unit * flySpeed
+		end
+	end)
+end
+
+-- ===================== GUI =====================
+local aimbotActive = false
+
+local gui = Instance.new("ScreenGui")
+gui.Name = "N60HubGUI"
+gui.ResetOnSpawn = false
+gui.Parent = player:WaitForChild("PlayerGui")
+
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0,160,0,140)
+frame.Position = UDim2.new(0.4,0,0.4,0)
+frame.BackgroundColor3 = Color3.new(0,0,0)
+frame.BorderColor3 = Color3.new(1,0,0)
+frame.BorderSizePixel = 2
+frame.Active = true
+frame.Draggable = true
+frame.Parent = gui
+
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1,0,0,25)
+title.Text = "N60 Hub"
+title.TextColor3 = Color3.new(1,0,0)
+title.BackgroundTransparency = 1
+title.Font = Enum.Font.ArialBold
+title.TextSize = 18
+title.Parent = frame
+
+-- زر TP
+local tpBtn = Instance.new("TextButton")
+tpBtn.Size = UDim2.new(1,-20,0,25)
+tpBtn.Position = UDim2.new(0,10,0,35)
+tpBtn.Text = "TP"
+tpBtn.TextColor3 = Color3.new(1,1,1)
+tpBtn.BackgroundColor3 = Color3.new(0,0,0)
+tpBtn.BorderColor3 = Color3.new(1,0,0)
+tpBtn.Font = Enum.Font.ArialBold
+tpBtn.TextSize = 16
+tpBtn.Parent = frame
+tpBtn.MouseButton1Click:Connect(function()
+	local nearest = getNearestPlayer()
+	if nearest then startFlyFollow(nearest) end
+end)
+
+-- زر AIM
+local aimBtn = Instance.new("TextButton")
+aimBtn.Size = UDim2.new(1,-20,0,25)
+aimBtn.Position = UDim2.new(0,10,0,65)
+aimBtn.Text = "Aimbot"
+aimBtn.TextColor3 = Color3.new(1,1,1)
+aimBtn.BackgroundColor3 = Color3.new(0,0,0)
+aimBtn.BorderColor3 = Color3.new(1,0,0)
+aimBtn.Font = Enum.Font.ArialBold
+aimBtn.TextSize = 16
+aimBtn.Parent = frame
+aimBtn.MouseButton1Click:Connect(function()
+	aimbotActive = not aimbotActive
+	aimBtn.Text = aimbotActive and "Aimbot ✅" or "Aimbot ❌"
+end)
+
+-- تحريك الكاميرا عند تفعيل AIM بين الرقبة والصدر
+RunService.RenderStepped:Connect(function()
+	if aimbotActive then
+		local nearest = getNearestPlayer()
+		if nearest and nearest.Character and getHRP(nearest.Character) then
+			local torso = nearest.Character:FindFirstChild("UpperTorso") or nearest.Character:FindFirstChild("Torso")
+			local neck = nearest.Character:FindFirstChild("Neck")
+			local targetPos
+			if neck and torso then
+				targetPos = (torso.Position + neck.Position)/2
+			elseif torso then
+				targetPos = torso.Position
+			end
+			if targetPos then
+				camera.CFrame = CFrame.new(camera.CFrame.Position, targetPos)
+			end
+		end
+	end
+end)
+
+-- ===================== Ante (VFly متكرر) =====================
+local anteBtn = Instance.new("TextButton")
+anteBtn.Size = UDim2.new(1,-20,0,25)
+anteBtn.Position = UDim2.new(0,10,0,95)
+anteBtn.Text = "Ante"
+anteBtn.TextColor3 = Color3.new(1,1,1)
+anteBtn.BackgroundColor3 = Color3.new(0,0,0)
+anteBtn.BorderColor3 = Color3.new(1,0,0)
+anteBtn.Font = Enum.Font.ArialBold
+anteBtn.TextSize = 16
+anteBtn.Parent = frame
+
+local anteActive = false
+local anteConn = nil
+local anteSpeed = 90      -- سرعة VFly للـ Ante (سريعة كما طلبت)
+local anteStopDist = 0.8  -- مسافة الوصول لكل نقطة
+
+local function getRandomOffsets()
+	return {
+		Vector3.new(0,5,0),   -- فوق
+		Vector3.new(-5,0,0),  -- يسار
+		Vector3.new(5,0,0),   -- يمين
+		Vector3.new(math.random(-10,10),0,math.random(-10,10)) -- عشوائي
+	}
+end
+
+anteBtn.MouseButton1Click:Connect(function()
+	anteActive = not anteActive
+	anteBtn.Text = anteActive and "Ante ✅" or "Ante ❌"
+
+	-- stop
+	if not anteActive then
+		if anteConn then anteConn:Disconnect() anteConn = nil end
+		local hrp = getHRP(player.Character)
+		if hrp then hrp.Velocity = Vector3.zero end
+		return
+	end
+
+	-- start loop VFly
+	local hrp = getHRP(player.Character)
+	if not hrp then return end
+
+	local offsets = getRandomOffsets()
+	local idx = 1
+	local currentTarget = hrp.Position + offsets[idx]
+
+	anteConn = RunService.Heartbeat:Connect(function()
+		if not anteActive then
+			if anteConn then anteConn:Disconnect() anteConn = nil end
+			if hrp then hrp.Velocity = Vector3.zero end
+			return
+		end
+
+		-- تأكد HRP موجود (بعد Respawn)
+		if not hrp.Parent then
+			hrp = getHRP(player.Character)
+			if not hrp then return end
+		end
+
+		-- لو وصلنا للنقطة نحدد التالية (نحسب نقاط جديدة كل دورة لتكون عشوائية مستمرة)
+		local dir = (currentTarget - hrp.Position)
+		local dist = dir.Magnitude
+		if dist <= anteStopDist then
+			-- ننتقل للنقطة التالية
+			idx = idx + 1
+			if idx > #offsets then
+				-- نعيد توليد مصفوفة جديدة عشان العشوائية تتكرر
+				offsets = getRandomOffsets()
+				idx = 1
+			end
+			currentTarget = hrp.Position + offsets[idx]
+		else
+			-- نحرك بسرعة VFly نحو currentTarget (نترك Y كما في الهدف)
+			local moveDir = dir.Unit
+			-- إضافة ارتفاع طفيف لو الهدف أعلى لضمان طيران
+			local vel = moveDir * anteSpeed
+			hrp.Velocity = Vector3.new(vel.X, vel.Y, vel.Z)
+		end
+	end)
+end)
