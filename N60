@@ -1,211 +1,214 @@
 <!doctype html>
-<html lang="ar" dir="rtl">
+<html lang="ar">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Gaming HUD</title>
-  <style>
-    body {
-      margin:0;
-      min-height:100vh;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      background:#000 url('https://i.ibb.co/t3z2Wrx/hud-bg.jpg') no-repeat center/cover;
-      font-family:"Tajawal",Arial,sans-serif;
-      color:#0f0;
-    }
-    .hud {
-      width:380px;
-      background:rgba(0,0,0,0.8);
-      border:2px solid #0f0;
-      border-radius:12px;
-      padding:20px;
-      box-shadow:0 0 25px #0f0;
-      text-align:center;
-    }
-    .title {
-      font-size:22px;
-      font-weight:bold;
-      color:#0f0;
-      text-shadow:0 0 10px #0f0;
-      margin-bottom:20px;
-    }
-    .row {
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      margin:20px 0;
-    }
-    .btn {
-      width:42px;
-      height:42px;
-      border:none;
-      border-radius:8px;
-      font-size:22px;
-      font-weight:bold;
-      color:#fff;
-      background:#111;
-      cursor:pointer;
-      box-shadow:0 0 10px #0f0 inset;
-    }
-    .btn:active {
-      background:#0f0;
-      color:#000;
-    }
-    .numbox {
-      min-width:80px;
-      text-align:center;
-      font-size:20px;
-      font-weight:bold;
-      padding:10px;
-      background:#111;
-      color:#0f0;
-      border:2px solid #0f0;
-      border-radius:8px;
-      box-shadow:0 0 15px #0f0 inset;
-    }
-    .switch {
-      width:80px;
-      height:36px;
-      border-radius:20px;
-      cursor:pointer;
-      display:flex;
-      align-items:center;
-      padding:4px;
-      transition:.3s;
-      box-shadow:0 0 12px #f00 inset;
-    }
-    .dot {
-      width:28px;
-      height:28px;
-      border-radius:50%;
-      background:#fff;
-      transition:.3s;
-    }
-    .switch.off {
-      background:#300;
-      justify-content:flex-start;
-      box-shadow:0 0 15px #f00 inset;
-    }
-    .switch.on {
-      background:#030;
-      justify-content:flex-end;
-      box-shadow:0 0 15px #0f0 inset;
-    }
-    .switch.on .dot { background:#0f0; box-shadow:0 0 10px #0f0; }
-    .switch.off .dot { background:#f00; box-shadow:0 0 10px #f00; }
-    .actions {
-      margin-top:25px;
-      display:flex;
-      gap:12px;
-      justify-content:center;
-    }
-    .actions button {
-      padding:10px 16px;
-      border:none;
-      border-radius:6px;
-      font-weight:bold;
-      cursor:pointer;
-      background:#111;
-      color:#0f0;
-      border:2px solid #0f0;
-      box-shadow:0 0 10px #0f0 inset;
-      transition:.2s;
-    }
-    .actions button:active {
-      background:#0f0;
-      color:#000;
-    }
-  </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title> - Ps4 / Ps5</title>
+<style>
+  :root{
+    --green: #2ee28a; /* لون الحواف الخضراء */
+    --bg-light: #f3f4f6;
+    --card-bg: rgba(255,255,255,0.03);
+  }
+  html,body{
+    height:100%;
+    margin:0;
+    font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+    direction: rtl;
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+  }
+
+  body{
+    background: var(--bg-light);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    transition: background-color 450ms ease;
+    cursor: pointer; /* اضغط أي مكان */
+  }
+
+  /* الحاوية التي تظهر بعد الضغط */
+  .stage{
+    text-align:center;
+    width:90%;
+    max-width:900px;
+    padding:28px;
+    box-sizing:border-box;
+    display:flex;
+    gap:22px;
+    align-items:center;
+    justify-content:center;
+    visibility:hidden;
+    opacity:0;
+    transform: translateY(10px) scale(0.99);
+    transition: opacity 400ms ease, transform 400ms ease, visibility 0s linear 400ms;
+    pointer-events:none;
+  }
+
+  /* البطاقات */
+  .card{
+    flex:1 1 200px;
+    min-width:160px;
+    padding:36px 18px;
+    border-radius:14px;
+    border:4px solid transparent;
+    box-shadow: 0 6px 30px rgba(0,0,0,0.12);
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.00));
+    color:#fff;
+    font-size:36px;
+    font-weight:700;
+    letter-spacing:1px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    position:relative;
+    transition: transform 260ms ease, box-shadow 260ms ease;
+  }
+
+  .card::after{
+    /* إطار خارجي لامع أخضر */
+    content:"";
+    position:absolute;
+    inset: -6px;
+    border-radius:18px;
+    background: linear-gradient(90deg, rgba(46,226,138,0.08), rgba(46,226,138,0.02));
+    z-index:-1;
+  }
+
+  .card.border-green{
+    border-color: var(--green);
+    box-shadow: 0 6px 28px rgba(46,226,138,0.08), 0 2px 8px rgba(0,0,0,0.4);
+  }
+
+  .card:hover{
+    transform: translateY(-6px) scale(1.02);
+  }
+
+  /* نص توجيهي قبل الضغط */
+  .prompt{
+    text-align:center;
+    color:#0f172a;
+    font-size:20px;
+    line-height:1.3;
+  }
+  .sub{
+    margin-top:8px;
+    opacity:0.8;
+    font-size:14px;
+  }
+
+  /* الحالة الداكنة (بعد الضغط) */
+  body.dark{
+    background: #000;
+    cursor: default;
+  }
+  body.dark .stage{
+    visibility:visible;
+    opacity:1;
+    transform: translateY(0) scale(1);
+    pointer-events:auto;
+    transition-delay:0s;
+  }
+  /* اخفاء prompt بعد الضغط */
+  body.dark .prompt { 
+    opacity:0;
+    transform: translateY(-8px);
+    transition: opacity 220ms ease, transform 220ms ease;
+    height:0;
+    overflow:hidden;
+  }
+
+  /* تنسيق نصوص البطاقة عند شاشات صغيرة */
+  @media (max-width:520px){
+    .card{ padding:20px; font-size:28px; border-radius:12px; }
+    .stage{ gap:12px; flex-direction:column-reverse; }
+  }
+
+  /* تأثير توهج أخضر خفيف على الحواف */
+  .glow{
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    mix-blend-mode:screen;
+    opacity:0;
+    transition:opacity 400ms ease;
+  }
+  body.dark .glow{ opacity:0.7; }
+  .glow:before{
+    content:"";
+    position:absolute;
+    left:10%;
+    top:5%;
+    width:80%;
+    height:90%;
+    border-radius:20px;
+    box-shadow: 0 0 120px 30px rgba(46,226,138,0.06), inset 0 0 80px rgba(46,226,138,0.02);
+  }
+
+  /* تعليم بسيط: اضغط لإظهار */
+  .hint-bubble{
+    position:fixed;
+    left:20px;
+    bottom:18px;
+    background:rgba(15,23,42,0.95);
+    color:#fff;
+    padding:8px 12px;
+    border-radius:999px;
+    font-size:13px;
+    opacity:0.95;
+  }
+</style>
 </head>
-<body>
-  <div class="hud">
-    <div class="title">🎮 اختار الايم</div>
-
-    <div class="row">
-      <span>Aim assist</span>
-      <div>
-        <button class="btn" id="dec">−</button>
-        <span class="numbox" id="aimValue">50</span>
-        <button class="btn" id="inc">+</button>
-      </div>
-    </div>
-
-    <div class="row">
-      <span>⭕️ كشف لاعبين</span>
-      <div class="switch off" id="toggle"><div class="dot"></div></div>
-    </div>
-
-    <div class="actions">
-      <button id="reset">إعادة </button>
-      <button id="save">حفظ</button>
-      <button id="load">تحميل</button>
-    </div>
+<body aria-label="موقع تجريبي - اضغط لعرض">
+  <!-- محتوى قبل الضغط -->
+  <div class="prompt" id="prompt">
+    <div style="font-weight:800;font-size:28px">موقع تجريبي</div>
+    <div class="sub">اضغط في أي مكان لعرض واجهة Ps4 و Ps5</div>
   </div>
 
-  <script>
-    const aimEl = document.getElementById('aimValue');
-    const incBtn = document.getElementById('inc');
-    const decBtn = document.getElementById('dec');
-    const toggle = document.getElementById('toggle');
-    const resetBtn = document.getElementById('reset');
-    const saveBtn = document.getElementById('save');
-    const loadBtn = document.getElementById('load');
+  <!-- الواجهة التي تظهر عند الضغط -->
+  <div class="stage" id="stage" role="region" aria-hidden="true">
+    <div class="card border-green" id="card1">Ps4</div>
+    <div class="card border-green" id="card2">Ps5</div>
+  </div>
 
-    const MIN_AIM = 10, MAX_AIM = 200;
-    let aim = Number(localStorage.getItem('aim_value') ?? 50);
-    let playersDetect = (localStorage.getItem('players_detect') === '1');
+  <!-- توهج خلفي أخضر يظهر في الوضع الداكن -->
+  <div class="glow" aria-hidden="true"></div>
 
-    function renderAim(){
-      aim = Math.min(MAX_AIM, Math.max(MIN_AIM, Math.round(aim)));
-      aimEl.textContent = aim;
-      localStorage.setItem('aim_value', aim);
-    }
-    function renderToggle(){
-      if(playersDetect){
-        toggle.classList.add('on');
-        toggle.classList.remove('off');
-        localStorage.setItem('players_detect','1');
+  <!-- تلميح صغير -->
+  <div class="hint-bubble" id="hint">اضغط لإظهار / اضغط مرة أخرى للإخفاء</div>
+
+<script>
+  (function(){
+    const body = document.body;
+    const stage = document.getElementById('stage');
+    let dark = false;
+
+    // عند الضغط في أي مكان على الصفحة
+    function toggleDark(e){
+      // إذا ضغطت على رابط أو زر داخلي قد نريد تجاهل لكن هنا كل شيء يُضغط
+      dark = !dark;
+      if(dark){
+        body.classList.add('dark');
+        stage.setAttribute('aria-hidden','false');
       } else {
-        toggle.classList.add('off');
-        toggle.classList.remove('on');
-        localStorage.setItem('players_detect','0');
+        body.classList.remove('dark');
+        stage.setAttribute('aria-hidden','true');
       }
     }
 
-    incBtn.onclick = ()=>{ aim++; renderAim(); }
-    decBtn.onclick = ()=>{ aim--; renderAim(); }
-    toggle.onclick = ()=>{ playersDetect=!playersDetect; renderToggle(); }
-    resetBtn.onclick = ()=>{ aim=50; playersDetect=false; renderAim(); renderToggle(); }
+    // استمع لنقرة الماوس أو اللمس
+    document.addEventListener('click', toggleDark);
+    document.addEventListener('keyup', function(ev){
+      // مفتاح المسافة أو Enter أيضاً يبدل
+      if(ev.code === 'Space' || ev.code === 'Enter'){ toggleDark(); }
+    });
 
-    saveBtn.onclick = ()=>{
-      const data = {aim, playersDetect};
-      const blob = new Blob([JSON.stringify(data)], {type:"application/json"});
-      const link = document.createElement("a");
-      link.href = URL.createObjectURL(blob);
-      link.download = "settings.json";
-      link.click();
-    }
-    loadBtn.onclick = ()=>{
-      const input = document.createElement("input");
-      input.type = "file"; input.accept=".json";
-      input.onchange = e=>{
-        const file = e.target.files[0];
-        if(!file) return;
-        const reader = new FileReader();
-        reader.onload = ev=>{
-          const data = JSON.parse(ev.target.result);
-          aim = data.aim ?? aim;
-          playersDetect = data.playersDetect ?? playersDetect;
-          renderAim(); renderToggle();
-        }
-        reader.readAsText(file);
-      }
-      input.click();
-    }
-
-    renderAim(); renderToggle();
-  </script>
+    // منع تفعيل الخريطة عند النقر على البطاقات نفسها من تغيير الحالة فجأة
+    // (نترك التبديل لكن نمنع تداخل النقرات عن طريق التأخيرات إن رغبت)
+    // إضافة: لو تبي تغيير السلوك (زر خاص بدل أي مكان) أخبرني وأنا أعدّله.
+  })();
+</script>
 </body>
 </html>
