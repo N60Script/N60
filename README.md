@@ -3,209 +3,324 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Gaming HUD</title>
+  <title>محاكاة ثروة إيلون ماسك — تفاعلي</title>
   <style>
-    body {
+    :root{
+      --bg:#0f1724;
+      --card:#0b1220;
+      --accent:#16a34a;
+      --muted:#9ca3af;
+      --btn:#111827;
+    }
+    *{box-sizing:border-box;font-family: "Segoe UI", Tahoma, Arial, sans-serif}
+    body{
       margin:0;
+      background:linear-gradient(180deg,#071026 0%, #071829 100%);
+      color:#e6eef6;
       min-height:100vh;
       display:flex;
       align-items:center;
       justify-content:center;
-      background:#000 url('https://i.ibb.co/t3z2Wrx/hud-bg.jpg') no-repeat center/cover;
-      font-family:"Tajawal",Arial,sans-serif;
-      color:#0f0;
+      padding:24px;
     }
-    .hud {
-      width:380px;
-      background:rgba(0,0,0,0.8);
-      border:2px solid #0f0;
+    .wrap{
+      width:980px;
+      max-width:98%;
+      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
       border-radius:12px;
       padding:20px;
-      box-shadow:0 0 25px #0f0;
-      text-align:center;
+      box-shadow: 0 6px 30px rgba(2,6,23,0.7);
+      display:grid;
+      grid-template-columns: 1fr 420px;
+      gap:18px;
+      align-items:start;
     }
-    .title {
-      font-size:22px;
-      font-weight:bold;
-      color:#0f0;
-      text-shadow:0 0 10px #0f0;
-      margin-bottom:20px;
+
+    /* لوحة الثروة */
+    .wealth-card{
+      background:linear-gradient(180deg, rgba(22,163,74,0.06), rgba(22,163,74,0.02));
+      border:1px solid rgba(22,163,74,0.12);
+      padding:20px;
+      border-radius:10px;
     }
-    .row {
+    .title{
       display:flex;
       justify-content:space-between;
       align-items:center;
-      margin:20px 0;
+      gap:12px;
     }
-    .btn {
-      width:42px;
-      height:42px;
-      border:none;
+    .title h1{margin:0;font-size:20px;letter-spacing:0.5px}
+    .amount{
+      margin-top:14px;
+      font-size:34px;
+      font-weight:700;
+      color:var(--accent);
+      letter-spacing:0.6px;
+    }
+    .subamount{color:var(--muted); margin-top:6px; font-size:13px}
+
+    .controls{margin-top:14px; display:flex; gap:8px; flex-wrap:wrap}
+    .btn{
+      background:var(--btn);
+      color:#e6eef6;
+      border:1px solid rgba(255,255,255,0.03);
+      padding:8px 12px;
       border-radius:8px;
-      font-size:22px;
-      font-weight:bold;
-      color:#fff;
-      background:#111;
       cursor:pointer;
-      box-shadow:0 0 10px #0f0 inset;
+      font-weight:600;
+      box-shadow: 0 4px 14px rgba(2,6,23,0.6);
     }
-    .btn:active {
-      background:#0f0;
-      color:#000;
+    .btn:active{transform:translateY(1px)}
+    .btn.warn{background:#b91c1c}
+    .note{margin-top:10px;color:var(--muted);font-size:13px}
+
+    /* قائمة العناصر */
+    .items{
+      background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.00));
+      border-radius:10px;
+      padding:14px;
+      border:1px solid rgba(255,255,255,0.03);
     }
-    .numbox {
-      min-width:80px;
-      text-align:center;
-      font-size:20px;
-      font-weight:bold;
-      padding:10px;
-      background:#111;
-      color:#0f0;
-      border:2px solid #0f0;
+    .items h3{margin:0 0 10px 0; font-size:16px}
+    .grid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:10px;
+    }
+    .item{
+      background:#071426;
+      border:1px solid rgba(255,255,255,0.03);
+      padding:12px;
       border-radius:8px;
-      box-shadow:0 0 15px #0f0 inset;
-    }
-    .switch {
-      width:80px;
-      height:36px;
-      border-radius:20px;
-      cursor:pointer;
       display:flex;
       align-items:center;
-      padding:4px;
-      transition:.3s;
-      box-shadow:0 0 12px #f00 inset;
-    }
-    .dot {
-      width:28px;
-      height:28px;
-      border-radius:50%;
-      background:#fff;
-      transition:.3s;
-    }
-    .switch.off {
-      background:#300;
-      justify-content:flex-start;
-      box-shadow:0 0 15px #f00 inset;
-    }
-    .switch.on {
-      background:#030;
-      justify-content:flex-end;
-      box-shadow:0 0 15px #0f0 inset;
-    }
-    .switch.on .dot { background:#0f0; box-shadow:0 0 10px #0f0; }
-    .switch.off .dot { background:#f00; box-shadow:0 0 10px #f00; }
-    .actions {
-      margin-top:25px;
-      display:flex;
+      justify-content:space-between;
       gap:12px;
-      justify-content:center;
     }
-    .actions button {
-      padding:10px 16px;
-      border:none;
-      border-radius:6px;
-      font-weight:bold;
+    .item .left{display:flex;flex-direction:column;gap:4px}
+    .item .name{font-weight:700}
+    .item .price{font-size:13px;color:var(--muted)}
+    .item button{
+      background:#0b1320;
+      border:1px solid rgba(255,255,255,0.04);
+      color:#dbeafe;
+      padding:8px 10px;
+      border-radius:8px;
       cursor:pointer;
-      background:#111;
-      color:#0f0;
-      border:2px solid #0f0;
-      box-shadow:0 0 10px #0f0 inset;
-      transition:.2s;
+      font-weight:700;
     }
-    .actions button:active {
-      background:#0f0;
-      color:#000;
+
+    .log{
+      margin-top:14px;
+      max-height:170px;
+      overflow:auto;
+      border-radius:8px;
+      padding:10px;
+      background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.00));
+      font-size:13px;
+      border:1px dashed rgba(255,255,255,0.02);
+      color:var(--muted);
+    }
+
+    /* responsive */
+    @media (max-width:880px){
+      .wrap{grid-template-columns:1fr; padding:16px}
+      .items{order:2}
     }
   </style>
 </head>
 <body>
-  <div class="hud">
-    <div class="title">🎮 اختار الايم</div>
+  <div class="wrap" role="application">
+    <div class="wealth-card" aria-live="polite">
+      <div class="title">
+        <h1>ثروة إيلون ماسك</h1>
+        <div style="text-align:left">
+          <div id="percent" style="font-size:13px;color:var(--muted)">—</div>
+        </div>
+      </div>
 
-    <div class="row">
-      <span>Aim assist</span>
-      <div>
-        <button class="btn" id="dec">−</button>
-        <span class="numbox" id="aimValue">50</span>
-        <button class="btn" id="inc">+</button>
+      <div class="amount" id="wealthDisplay">480,000,000,000 $</div>
+      <div class="subamount" id="wealthSAR">≈ 1,800,000,000,000 ر.س</div>
+
+      <div class="controls">
+        <button class="btn" id="resetBtn">إعادة إلى البداية</button>
+        <button class="btn" id="undoBtn">تراجع خطوة</button>
+        <button class="btn" id="doubleClickHelp">اضغط الزر مرتين للخصم المتكرر</button>
+      </div>
+
+      <div class="note">
+        البدء: <strong>480 مليار $</strong>. السعر المفترض للتحويل: <strong>1$ = 3.75 ر.س</strong>.
+      </div>
+
+      <div class="log" id="log">
+        سجل العمليات سيظهر هنا...
       </div>
     </div>
 
-    <div class="row">
-      <span>⭕️ كشف لاعبين</span>
-      <div class="switch off" id="toggle"><div class="dot"></div></div>
-    </div>
-
-    <div class="actions">
-      <button id="reset">إعادة </button>
-      <button id="save">حفظ</button>
-      <button id="load">تحميل</button>
+    <div class="items">
+      <h3>الأغراض (اضغط لتخصم من الثروة)</h3>
+      <div class="grid" id="itemsGrid">
+        <!-- عناصر ستُنشىء بواسطة الجافاسكربت -->
+      </div>
     </div>
   </div>
 
   <script>
-    const aimEl = document.getElementById('aimValue');
-    const incBtn = document.getElementById('inc');
-    const decBtn = document.getElementById('dec');
-    const toggle = document.getElementById('toggle');
-    const resetBtn = document.getElementById('reset');
-    const saveBtn = document.getElementById('save');
-    const loadBtn = document.getElementById('load');
+    // ======================================
+    // بيانات البداية (قابلة للتعديل)
+    // ======================================
+    // ثروة إيلون ماسك بالـدولار (ابتداءً 480 مليار)
+    const START_WEALTH_USD = 480_000_000_000;
 
-    const MIN_AIM = 10, MAX_AIM = 200;
-    let aim = Number(localStorage.getItem('aim_value') ?? 50);
-    let playersDetect = (localStorage.getItem('players_detect') === '1');
+    // سعر الصرف المستخدم هنا (كما استخدمناه في المحادثة السابقة)
+    const USD_TO_SAR = 3.75;
 
-    function renderAim(){
-      aim = Math.min(MAX_AIM, Math.max(MIN_AIM, Math.round(aim)));
-      aimEl.textContent = aim;
-      localStorage.setItem('aim_value', aim);
+    // نعرّف العناصر بالاسم كما طلبت. كل سعر بالـدولار ما عدا ما ذكرت "ريال".
+    const rawItems = [
+      {name: "ايفون", label: "ايفون — 7,000 $", priceUSD: 7000},
+      {name: "طيزاخوات مهند", label: "طيز اخوات مهند — 5 ر.س", priceSAR: 5},
+      {name: "سيارة عادية", label: "سيارة عاديه — 35,000 $", priceUSD: 35000},
+      {name: "مدرسة", label: "مدرسة — 50,000 $", priceUSD: 50000},
+      {name: "لامبورجيني", label: "لامبورجيني — 3,000,000 $", priceUSD: 3_000_000},
+      {name: "باخرة", label: "باخره — 5,000,000 $", priceUSD: 5_000_000},
+      {name: "جزيرة", label: "جزيرة — 10,000,000 $", priceUSD: 10_000_000},
+      {name: "قصر", label: "قصر — 15,000,000 $", priceUSD: 15_000_000},
+      {name: "دولة", label: "دولة — 50,000,000 $", priceUSD: 50_000_000},
+    ];
+
+    // تحويل أي سعر بالريال إلى دولار لو احتجنا للخصم
+    function sarToUsd(sar){ return sar / USD_TO_SAR; }
+
+    // ننشئ مصفوفة العناصر النهائية مع السعر بالـدولار
+    const items = rawItems.map(it=>{
+      const priceUSD = it.priceUSD ?? sarToUsd(it.priceSAR);
+      return {...it, priceUSD};
+    });
+
+    // ======================================
+    // حالة التطبيق
+    // ======================================
+    let wealthUSD = START_WEALTH_USD;
+    const history = []; // لتخزين العمليات للتراجع undo
+
+    // عناصر DOM
+    const itemsGrid = document.getElementById('itemsGrid');
+    const wealthDisplay = document.getElementById('wealthDisplay');
+    const wealthSAR = document.getElementById('wealthSAR');
+    const logEl = document.getElementById('log');
+    const resetBtn = document.getElementById('resetBtn');
+    const undoBtn = document.getElementById('undoBtn');
+    const percentEl = document.getElementById('percent');
+
+    // تنسيق الأعداد بزر الافتراضي
+    function formatNumber(n){
+      if (Math.abs(n) >= 1_000_000_000){
+        // عرض بـصيغة قصيرة أيضاً إذا احتجنا
+        return new Intl.NumberFormat('en-US').format(Math.round(n));
+      }
+      return new Intl.NumberFormat('en-US').format(n);
     }
-    function renderToggle(){
-      if(playersDetect){
-        toggle.classList.add('on');
-        toggle.classList.remove('off');
-        localStorage.setItem('players_detect','1');
+
+    function formatReadableUSD(n){
+      // يظهر العدد كـ 480,000,000,000 $
+      const sign = n < 0 ? "-" : "";
+      return sign + formatNumber(Math.abs(Math.round(n))) + " $";
+    }
+
+    function updateDisplays(){
+      wealthDisplay.textContent = formatReadableUSD(wealthUSD);
+      const inSAR = wealthUSD * USD_TO_SAR;
+      wealthSAR.textContent = "≈ " + new Intl.NumberFormat('en-US').format(Math.round(inSAR)) + " ر.س";
+      // نسبة ما تبقى مقابل البداية
+      const pct = (wealthUSD / START_WEALTH_USD) * 100;
+      percentEl.textContent = Math.round(pct * 100)/100 + "% من البداية";
+    }
+
+    function log(msg){
+      const time = new Date().toLocaleTimeString('ar-EG');
+      logEl.insertAdjacentHTML('afterbegin', `<div>• [${time}] ${msg}</div>`);
+    }
+
+    // إنشاء واجهة الأزرار
+    items.forEach((it, idx)=>{
+      const card = document.createElement('div');
+      card.className = 'item';
+      card.innerHTML = `
+        <div class="left">
+          <div class="name">${it.name}</div>
+          <div class="price">${it.label}</div>
+        </div>
+        <div>
+          <button data-idx="${idx}">اشترِ</button>
+        </div>
+      `;
+      itemsGrid.appendChild(card);
+    });
+
+    // حدث الضغط على زر الشراء (خصم المبلغ مرة واحدة)
+    itemsGrid.addEventListener('click', (e)=>{
+      const btn = e.target.closest('button');
+      if (!btn) return;
+      const idx = Number(btn.dataset.idx);
+      const item = items[idx];
+      if (!item) return;
+      // خصم
+      applyPurchase(item.priceUSD, item.label);
+    });
+
+    // تنفيذ عملية الشراء: يخصم ويخزن في التاريخ
+    function applyPurchase(amountUSD, label){
+      const prev = wealthUSD;
+      wealthUSD = wealthUSD - amountUSD;
+      history.push({amountUSD, label});
+      updateDisplays();
+      const amtFormatted = new Intl.NumberFormat('en-US').format(Math.round(amountUSD));
+      log(`خصم ${amtFormatted} $ — (${label}). المتبقي: ${formatReadableUSD(wealthUSD)}`);
+    }
+
+    // زر إعادة التعيين
+    resetBtn.addEventListener('click', ()=>{
+      wealthUSD = START_WEALTH_USD;
+      history.length = 0;
+      updateDisplays();
+      log('إعادة الثروة للبداية (480 مليار $).');
+      // مسح السجل الظاهر
+      logEl.innerHTML = 'سجل العمليات سيظهر هنا...';
+    });
+
+    // زر التراجع خطوة (undo)
+    undoBtn.addEventListener('click', ()=>{
+      if (history.length === 0){
+        log('لا يوجد عمليات للتراجع.');
+        return;
+      }
+      const last = history.pop();
+      wealthUSD = wealthUSD + last.amountUSD;
+      updateDisplays();
+      const amtFormatted = new Intl.NumberFormat('en-US').format(Math.round(last.amountUSD));
+      log(`تراجع: استُعيد ${amtFormatted} $ من (${last.label}). المتبقي: ${formatReadableUSD(wealthUSD)}`);
+    });
+
+    // خاصية: اضغط مرتين بسرعة للخصم المتكرر (double-click)
+    let lastClickTime = 0;
+    document.getElementById('doubleClickHelp').addEventListener('click', ()=>{
+      const now = Date.now();
+      if (now - lastClickTime < 500){
+        // تنفيذ خصم متكرر: نخصم آخر عنصر تم الضغط عليه في السجل ثلاث مرّات إضافية إن وُجد
+        if (history.length === 0){ log('لا توجد عملية سابقة لتكرارها.'); return; }
+        const last = history[history.length - 1];
+        applyPurchase(last.amountUSD, last.label + ' (تكرار)');
+        applyPurchase(last.amountUSD, last.label + ' (تكرار)');
+        log('تم تكرار آخر عملية مرتين إضافيتين.');
       } else {
-        toggle.classList.add('off');
-        toggle.classList.remove('on');
-        localStorage.setItem('players_detect','0');
+        log('اضغط مرة ثانية بسرعة لتكرار آخر عملية مرتين.');
       }
-    }
+      lastClickTime = now;
+    });
 
-    incBtn.onclick = ()=>{ aim++; renderAim(); }
-    decBtn.onclick = ()=>{ aim--; renderAim(); }
-    toggle.onclick = ()=>{ playersDetect=!playersDetect; renderToggle(); }
-    resetBtn.onclick = ()=>{ aim=50; playersDetect=false; renderAim(); renderToggle(); }
-
-    saveBtn.onclick = ()=>{
-      const data = {aim, playersDetect};
-      const blob = new Blob([JSON.stringify(data)], {type:"application/json"});
-      const link = document.createElement("a");
-      link.href = URL.createObjectURL(blob);
-      link.download = "settings.json";
-      link.click();
-    }
-    loadBtn.onclick = ()=>{
-      const input = document.createElement("input");
-      input.type = "file"; input.accept=".json";
-      input.onchange = e=>{
-        const file = e.target.files[0];
-        if(!file) return;
-        const reader = new FileReader();
-        reader.onload = ev=>{
-          const data = JSON.parse(ev.target.result);
-          aim = data.aim ?? aim;
-          playersDetect = data.playersDetect ?? playersDetect;
-          renderAim(); renderToggle();
-        }
-        reader.readAsText(file);
-      }
-      input.click();
-    }
-
-    renderAim(); renderToggle();
+    // تهيئة العرض
+    updateDisplays();
+    logEl.innerHTML = 'جاهز — اضغط على أي غرض لخصم سعره من ثروة إيلون ماسك.';
   </script>
 </body>
 </html>
