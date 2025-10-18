@@ -204,7 +204,7 @@
 
   <script>
     // ثابت المفتاح
-    const CORRECT_KEY = 'N60Hub818';
+    const CORRECT_KEY = 'Al-blwi818';
 
     // عناصر DOM
     const keyScreen = document.getElementById('key-screen');
