@@ -3,324 +3,387 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>محاكاة ثروة إيلون ماسك — تفاعلي</title>
+  <title>N60 Hub - واجهة التحكم</title>
   <style>
     :root{
       --bg:#0f1724;
       --card:#0b1220;
-      --accent:#16a34a;
-      --muted:#9ca3af;
-      --btn:#111827;
+      --accent:#38bdf8;
+      --success:#16a34a;
+      --danger:#ef4444;
+      --muted:#94a3b8;
+      font-family: "Segoe UI", Tahoma, Arial, system-ui;
     }
-    *{box-sizing:border-box;font-family: "Segoe UI", Tahoma, Arial, sans-serif}
+    *{box-sizing:border-box}
     body{
       margin:0;
-      background:linear-gradient(180deg,#071026 0%, #071829 100%);
-      color:#e6eef6;
       min-height:100vh;
       display:flex;
       align-items:center;
       justify-content:center;
-      padding:24px;
+      background:linear-gradient(180deg,#071022 0%,#081526 100%);
+      color:#e6eef8;
+      padding:20px;
     }
-    .wrap{
-      width:980px;
-      max-width:98%;
+    .container{
+      width:100%;
+      max-width:420px;
       background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border:1px solid rgba(255,255,255,0.04);
       border-radius:12px;
       padding:20px;
-      box-shadow: 0 6px 30px rgba(2,6,23,0.7);
-      display:grid;
-      grid-template-columns: 1fr 420px;
-      gap:18px;
-      align-items:start;
+      box-shadow:0 8px 30px rgba(2,6,23,0.7);
     }
 
-    /* لوحة الثروة */
-    .wealth-card{
-      background:linear-gradient(180deg, rgba(22,163,74,0.06), rgba(22,163,74,0.02));
-      border:1px solid rgba(22,163,74,0.12);
-      padding:20px;
-      border-radius:10px;
-    }
-    .title{
+    h1{font-size:18px;margin:0 0 12px;text-align:center;color:var(--accent)}
+    .center{display:flex;align-items:center;justify-content:center}
+    .key-box{
       display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:12px;
+      gap:8px;
+      margin:12px 0 18px;
     }
-    .title h1{margin:0;font-size:20px;letter-spacing:0.5px}
-    .amount{
-      margin-top:14px;
-      font-size:34px;
-      font-weight:700;
-      color:var(--accent);
-      letter-spacing:0.6px;
-    }
-    .subamount{color:var(--muted); margin-top:6px; font-size:13px}
-
-    .controls{margin-top:14px; display:flex; gap:8px; flex-wrap:wrap}
-    .btn{
-      background:var(--btn);
-      color:#e6eef6;
-      border:1px solid rgba(255,255,255,0.03);
-      padding:8px 12px;
+    input[type="text"]{
+      flex:1;
+      padding:12px 14px;
       border-radius:8px;
-      cursor:pointer;
+      border:1px solid rgba(255,255,255,0.06);
+      background:rgba(255,255,255,0.02);
+      color:inherit;
+      outline:none;
+      font-size:15px;
+    }
+    button.btn{
+      padding:10px 12px;
+      border-radius:8px;
+      border:none;
+      background:var(--accent);
+      color:#032028;
       font-weight:600;
-      box-shadow: 0 4px 14px rgba(2,6,23,0.6);
+      cursor:pointer;
     }
-    .btn:active{transform:translateY(1px)}
-    .btn.warn{background:#b91c1c}
-    .note{margin-top:10px;color:var(--muted);font-size:13px}
-
-    /* قائمة العناصر */
-    .items{
+    .hidden{display:none}
+    .selector{
+      display:flex;
+      gap:12px;
+      margin-top:8px;
+      justify-content:center;
+    }
+    .card{
       background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.00));
-      border-radius:10px;
+      border:1px solid rgba(255,255,255,0.03);
       padding:14px;
-      border:1px solid rgba(255,255,255,0.03);
+      border-radius:10px;
+      margin-top:12px;
     }
-    .items h3{margin:0 0 10px 0; font-size:16px}
-    .grid{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap:10px;
-    }
-    .item{
-      background:#071426;
-      border:1px solid rgba(255,255,255,0.03);
-      padding:12px;
-      border-radius:8px;
+    .option{
       display:flex;
       align-items:center;
       justify-content:space-between;
-      gap:12px;
+      padding:10px;
+      border-radius:8px;
+      margin-bottom:8px;
+      border:1px solid rgba(255,255,255,0.02);
+      background:rgba(255,255,255,0.01);
     }
-    .item .left{display:flex;flex-direction:column;gap:4px}
-    .item .name{font-weight:700}
-    .item .price{font-size:13px;color:var(--muted)}
-    .item button{
-      background:#0b1320;
-      border:1px solid rgba(255,255,255,0.04);
-      color:#dbeafe;
+    .toggle{
+      min-width:84px;
+      text-align:center;
       padding:8px 10px;
       border-radius:8px;
       cursor:pointer;
+      user-select:none;
       font-weight:700;
+      color:white;
     }
-
-    .log{
-      margin-top:14px;
-      max-height:170px;
-      overflow:auto;
-      border-radius:8px;
-      padding:10px;
-      background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.00));
-      font-size:13px;
-      border:1px dashed rgba(255,255,255,0.02);
-      color:var(--muted);
+    .toggle.off{background:var(--danger)}
+    .toggle.on{background:var(--success)}
+    .num-control{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
     }
-
-    /* responsive */
-    @media (max-width:880px){
-      .wrap{grid-template-columns:1fr; padding:16px}
-      .items{order:2}
+    .num-control button{
+      width:30px;height:30px;border-radius:6px;border:none;background:rgba(255,255,255,0.03);color:inherit;font-weight:700;cursor:pointer;
     }
+    .num-display{
+      min-width:46px;text-align:center;font-weight:700;
+    }
+    .activate-row{display:flex;gap:10px;align-items:center;justify-content:center;margin-top:12px}
+    .small-muted{color:var(--muted);font-size:13px;text-align:center;margin-top:8px}
+    .status-line{font-size:13px;margin-top:8px;text-align:center}
+    footer{margin-top:12px;font-size:12px;color:var(--muted);text-align:center}
+    @media (max-width:420px){.container{padding:14px}}
   </style>
 </head>
 <body>
-  <div class="wrap" role="application">
-    <div class="wealth-card" aria-live="polite">
-      <div class="title">
-        <h1>ثروة إيلون ماسك</h1>
-        <div style="text-align:left">
-          <div id="percent" style="font-size:13px;color:var(--muted)">—</div>
+  <div class="container" role="main" aria-live="polite">
+    <h1>N60 Hub - واجهة الاختبار</h1>
+
+    <!-- شاشة المفتاح -->
+    <div id="key-screen" class="card">
+      <div style="font-weight:700;margin-bottom:8px">Textbox key</div>
+      <div class="key-box">
+        <input id="key-input" type="text" placeholder="اكتب المفتاح هنا..." aria-label="مفتاح" />
+        <button id="key-check" class="btn">تحقق</button>
+      </div>
+      <div id="key-msg" class="small-muted">اكتب المفتاح الصحيح لعرض الخيارات.</div>
+    </div>
+
+    <!-- اختيار PS4 / PS5 -->
+    <div id="console-screen" class="card hidden">
+      <div style="font-weight:700;margin-bottom:8px">اختر الجهاز</div>
+      <div class="selector">
+        <button id="ps4-btn" class="btn" style="background:#0ea5a4;color:#031619">PS4</button>
+        <button id="ps5-btn" class="btn" style="background:#7c3aed;color:#fff">PS5</button>
+      </div>
+      <div class="status-line" id="selected-console" style="display:none;margin-top:12px"></div>
+    </div>
+
+    <!-- واجهة الخيارات -->
+    <div id="options-screen" class="card hidden">
+      <div style="font-weight:800;margin-bottom:10px" id="console-title">خيارات</div>
+
+      <!-- Aim Bot -->
+      <div class="option">
+        <div>
+          <div style="font-weight:700">Aim Bot</div>
+          <div style="font-size:13px;color:var(--muted)">ضبط مستوى الـ Aim</div>
+        </div>
+        <div>
+          <div style="display:flex;align-items:center;gap:10px">
+            <div class="num-control">
+              <button class="decrease" data-target="aim">-</button>
+              <div class="num-display" id="aim-value">50</div>
+              <button class="increase" data-target="aim">+</button>
+            </div>
+            <div id="aim-toggle" class="toggle off" role="button" tabindex="0" aria-pressed="false">طافي</div>
+          </div>
         </div>
       </div>
 
-      <div class="amount" id="wealthDisplay">480,000,000,000 $</div>
-      <div class="subamount" id="wealthSAR">≈ 1,800,000,000,000 ر.س</div>
-
-      <div class="controls">
-        <button class="btn" id="resetBtn">إعادة إلى البداية</button>
-        <button class="btn" id="undoBtn">تراجع خطوة</button>
-        <button class="btn" id="doubleClickHelp">اضغط الزر مرتين للخصم المتكرر</button>
+      <!-- Aim Lock -->
+      <div class="option">
+        <div>
+          <div style="font-weight:700">Aim lock</div>
+          <div style="font-size:13px;color:var(--muted)">قفل الهدف</div>
+        </div>
+        <div>
+          <div id="aimlock-toggle" class="toggle off" role="button" tabindex="0" aria-pressed="false">طافي</div>
+        </div>
       </div>
 
-      <div class="note">
-        البدء: <strong>480 مليار $</strong>. السعر المفترض للتحويل: <strong>1$ = 3.75 ر.س</strong>.
+      <!-- Auto Farm -->
+      <div class="option">
+        <div>
+          <div style="font-weight:700">Auto farm</div>
+          <div style="font-size:13px;color:var(--muted)">زراعة تلقائية / جمع</div>
+        </div>
+        <div>
+          <div style="display:flex;align-items:center;gap:10px">
+            <div class="num-control">
+              <button class="decrease" data-target="farm">-</button>
+              <div class="num-display" id="farm-value">50</div>
+              <button class="increase" data-target="farm">+</button>
+            </div>
+            <div id="farm-toggle" class="toggle off" role="button" tabindex="0" aria-pressed="false">طافي</div>
+          </div>
+        </div>
       </div>
 
-      <div class="log" id="log">
-        سجل العمليات سيظهر هنا...
+      <div class="activate-row">
+        <button id="activate-btn" class="btn" style="background:var(--accent)">تفعيل</button>
+        <button id="back-btn" class="btn" style="background:rgba(255,255,255,0.04);color:#cfe9f7">العودة</button>
       </div>
+
+      <div id="action-msg" class="small-muted">اضغط تفعيل لمحاكاة تفعيل الخيارات على الجهاز المحدد.</div>
     </div>
 
-    <div class="items">
-      <h3>الأغراض (اضغط لتخصم من الثروة)</h3>
-      <div class="grid" id="itemsGrid">
-        <!-- عناصر ستُنشىء بواسطة الجافاسكربت -->
-      </div>
-    </div>
+    <div id="final-msg" class="hidden small-muted"></div>
+    <footer>صفحة  — محاكاة  </footer>
   </div>
 
   <script>
-    // ======================================
-    // بيانات البداية (قابلة للتعديل)
-    // ======================================
-    // ثروة إيلون ماسك بالـدولار (ابتداءً 480 مليار)
-    const START_WEALTH_USD = 480_000_000_000;
-
-    // سعر الصرف المستخدم هنا (كما استخدمناه في المحادثة السابقة)
-    const USD_TO_SAR = 3.75;
-
-    // نعرّف العناصر بالاسم كما طلبت. كل سعر بالـدولار ما عدا ما ذكرت "ريال".
-    const rawItems = [
-      {name: "ايفون", label: "ايفون — 7,000 $", priceUSD: 7000},
-      {name: "طيزاخوات مهند", label: "طيز اخوات مهند — 5 ر.س", priceSAR: 5},
-      {name: "سيارة عادية", label: "سيارة عاديه — 35,000 $", priceUSD: 35000},
-      {name: "مدرسة", label: "مدرسة — 50,000 $", priceUSD: 50000},
-      {name: "لامبورجيني", label: "لامبورجيني — 3,000,000 $", priceUSD: 3_000_000},
-      {name: "باخرة", label: "باخره — 5,000,000 $", priceUSD: 5_000_000},
-      {name: "جزيرة", label: "جزيرة — 10,000,000 $", priceUSD: 10_000_000},
-      {name: "قصر", label: "قصر — 15,000,000 $", priceUSD: 15_000_000},
-      {name: "دولة", label: "دولة — 50,000,000 $", priceUSD: 50_000_000},
-    ];
-
-    // تحويل أي سعر بالريال إلى دولار لو احتجنا للخصم
-    function sarToUsd(sar){ return sar / USD_TO_SAR; }
-
-    // ننشئ مصفوفة العناصر النهائية مع السعر بالـدولار
-    const items = rawItems.map(it=>{
-      const priceUSD = it.priceUSD ?? sarToUsd(it.priceSAR);
-      return {...it, priceUSD};
-    });
-
-    // ======================================
-    // حالة التطبيق
-    // ======================================
-    let wealthUSD = START_WEALTH_USD;
-    const history = []; // لتخزين العمليات للتراجع undo
+    // ثابت المفتاح
+    const CORRECT_KEY = 'N60Hub818';
 
     // عناصر DOM
-    const itemsGrid = document.getElementById('itemsGrid');
-    const wealthDisplay = document.getElementById('wealthDisplay');
-    const wealthSAR = document.getElementById('wealthSAR');
-    const logEl = document.getElementById('log');
-    const resetBtn = document.getElementById('resetBtn');
-    const undoBtn = document.getElementById('undoBtn');
-    const percentEl = document.getElementById('percent');
+    const keyScreen = document.getElementById('key-screen');
+    const consoleScreen = document.getElementById('console-screen');
+    const optionsScreen = document.getElementById('options-screen');
+    const keyInput = document.getElementById('key-input');
+    const keyCheck = document.getElementById('key-check');
+    const keyMsg = document.getElementById('key-msg');
+    const ps4Btn = document.getElementById('ps4-btn');
+    const ps5Btn = document.getElementById('ps5-btn');
+    const selectedConsole = document.getElementById('selected-console');
+    const consoleTitle = document.getElementById('console-title');
 
-    // تنسيق الأعداد بزر الافتراضي
-    function formatNumber(n){
-      if (Math.abs(n) >= 1_000_000_000){
-        // عرض بـصيغة قصيرة أيضاً إذا احتجنا
-        return new Intl.NumberFormat('en-US').format(Math.round(n));
+    // controls
+    const aimValueEl = document.getElementById('aim-value');
+    const farmValueEl = document.getElementById('farm-value');
+    const aimToggle = document.getElementById('aim-toggle');
+    const aimlockToggle = document.getElementById('aimlock-toggle');
+    const farmToggle = document.getElementById('farm-toggle');
+    const activateBtn = document.getElementById('activate-btn');
+    const backBtn = document.getElementById('back-btn');
+    const actionMsg = document.getElementById('action-msg');
+
+    // حالة 
+    let state = {
+      unlocked: false,
+      console: null, // 'PS4' or 'PS5'
+      aim: {value:50, on:false},
+      aimlock: {on:false},
+      farm: {value:50, on:false},
+    };
+
+    // حفظ/استرجاع (اختياري) من localStorage
+    function saveState(){ localStorage.setItem('n60_state', JSON.stringify(state)); }
+    function loadState(){
+      try{
+        const s = JSON.parse(localStorage.getItem('n60_state') || 'null');
+        if(s){ state = {...state, ...s}; }
+      }catch(e){}
+    }
+    loadState();
+
+    // init UI from state (if unlocked before)
+    if(state.unlocked){
+      keyScreen.classList.add('hidden');
+      consoleScreen.classList.remove('hidden');
+      selectedConsole.style.display = 'none';
+    }
+
+    // مفيد: فوكس على الحقل
+    keyInput.focus();
+
+    // التحقق من المفتاح
+    function handleKeyCheck(){
+      const v = keyInput.value.trim();
+      if(v === CORRECT_KEY){
+        keyMsg.textContent = 'المفتاح صحيح — جارِ العرض...';
+        keyScreen.classList.add('hidden');
+        consoleScreen.classList.remove('hidden');
+        state.unlocked = true;
+        saveState();
+      } else {
+        keyMsg.textContent = 'المفتاح خاطئ. جرّب مرة ثانية.';
+        keyInput.classList.add('shake');
+        setTimeout(()=> keyInput.classList.remove('shake'), 400);
       }
-      return new Intl.NumberFormat('en-US').format(n);
     }
+    keyCheck.addEventListener('click', handleKeyCheck);
+    keyInput.addEventListener('keydown', (e)=>{ if(e.key === 'Enter') handleKeyCheck(); });
 
-    function formatReadableUSD(n){
-      // يظهر العدد كـ 480,000,000,000 $
-      const sign = n < 0 ? "-" : "";
-      return sign + formatNumber(Math.abs(Math.round(n))) + " $";
+    // اختيار جهاز
+    function chooseConsole(c){
+      state.console = c;
+      consoleTitle.textContent = `خيارات — ${c}`;
+      selectedConsole.style.display = 'block';
+      selectedConsole.textContent = `الجهاز المحدد: ${c}`;
+      consoleScreen.classList.add('hidden');
+      optionsScreen.classList.remove('hidden');
+      applyAllToggles();
+      saveState();
     }
+    ps4Btn.addEventListener('click', ()=>chooseConsole('PS4'));
+    ps5Btn.addEventListener('click', ()=>chooseConsole('PS5'));
 
-    function updateDisplays(){
-      wealthDisplay.textContent = formatReadableUSD(wealthUSD);
-      const inSAR = wealthUSD * USD_TO_SAR;
-      wealthSAR.textContent = "≈ " + new Intl.NumberFormat('en-US').format(Math.round(inSAR)) + " ر.س";
-      // نسبة ما تبقى مقابل البداية
-      const pct = (wealthUSD / START_WEALTH_USD) * 100;
-      percentEl.textContent = Math.round(pct * 100)/100 + "% من البداية";
-    }
-
-    function log(msg){
-      const time = new Date().toLocaleTimeString('ar-EG');
-      logEl.insertAdjacentHTML('afterbegin', `<div>• [${time}] ${msg}</div>`);
-    }
-
-    // إنشاء واجهة الأزرار
-    items.forEach((it, idx)=>{
-      const card = document.createElement('div');
-      card.className = 'item';
-      card.innerHTML = `
-        <div class="left">
-          <div class="name">${it.name}</div>
-          <div class="price">${it.label}</div>
-        </div>
-        <div>
-          <button data-idx="${idx}">اشترِ</button>
-        </div>
-      `;
-      itemsGrid.appendChild(card);
+    // تغير الأرقام
+    document.querySelectorAll('.increase').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const t = btn.dataset.target;
+        if(t === 'aim'){ state.aim.value = Math.min(999, state.aim.value + 1); aimValueEl.textContent = state.aim.value; }
+        if(t === 'farm'){ state.farm.value = Math.min(999, state.farm.value + 1); farmValueEl.textContent = state.farm.value; }
+        saveState();
+      });
+    });
+    document.querySelectorAll('.decrease').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const t = btn.dataset.target;
+        if(t === 'aim'){ state.aim.value = Math.max(0, state.aim.value - 1); aimValueEl.textContent = state.aim.value; }
+        if(t === 'farm'){ state.farm.value = Math.max(0, state.farm.value - 1); farmValueEl.textContent = state.farm.value; }
+        saveState();
+      });
     });
 
-    // حدث الضغط على زر الشراء (خصم المبلغ مرة واحدة)
-    itemsGrid.addEventListener('click', (e)=>{
-      const btn = e.target.closest('button');
-      if (!btn) return;
-      const idx = Number(btn.dataset.idx);
-      const item = items[idx];
-      if (!item) return;
-      // خصم
-      applyPurchase(item.priceUSD, item.label);
-    });
-
-    // تنفيذ عملية الشراء: يخصم ويخزن في التاريخ
-    function applyPurchase(amountUSD, label){
-      const prev = wealthUSD;
-      wealthUSD = wealthUSD - amountUSD;
-      history.push({amountUSD, label});
-      updateDisplays();
-      const amtFormatted = new Intl.NumberFormat('en-US').format(Math.round(amountUSD));
-      log(`خصم ${amtFormatted} $ — (${label}). المتبقي: ${formatReadableUSD(wealthUSD)}`);
+    // تبديل ال toggles
+    function toggleItem(key){
+      if(key === 'aim'){ state.aim.on = !state.aim.on; }
+      if(key === 'aimlock'){ state.aimlock.on = !state.aimlock.on; }
+      if(key === 'farm'){ state.farm.on = !state.farm.on; }
+      applyAllToggles();
+      saveState();
+    }
+    function applyAllToggles(){
+      aimValueEl.textContent = state.aim.value;
+      farmValueEl.textContent = state.farm.value;
+      setToggleUI(aimToggle, state.aim.on);
+      setToggleUI(aimlockToggle, state.aimlock.on);
+      setToggleUI(farmToggle, state.farm.on);
+    }
+    function setToggleUI(el, isOn){
+      el.classList.toggle('on', isOn);
+      el.classList.toggle('off', !isOn);
+      el.textContent = isOn ? 'شغال' : 'طافي';
+      el.setAttribute('aria-pressed', String(!!isOn));
     }
 
-    // زر إعادة التعيين
-    resetBtn.addEventListener('click', ()=>{
-      wealthUSD = START_WEALTH_USD;
-      history.length = 0;
-      updateDisplays();
-      log('إعادة الثروة للبداية (480 مليار $).');
-      // مسح السجل الظاهر
-      logEl.innerHTML = 'سجل العمليات سيظهر هنا...';
+    aimToggle.addEventListener('click', ()=>toggleItem('aim'));
+    aimlockToggle.addEventListener('click', ()=>toggleItem('aimlock'));
+    farmToggle.addEventListener('click', ()=>toggleItem('farm'));
+
+    // اختصارات لوحة المفاتيح لعمليات التبديل (تجربة)
+    [aimToggle, aimlockToggle, farmToggle].forEach(el=>{
+      el.addEventListener('keydown', (e)=>{ if(e.key === 'Enter' || e.key === ' ') el.click(); });
     });
 
-    // زر التراجع خطوة (undo)
-    undoBtn.addEventListener('click', ()=>{
-      if (history.length === 0){
-        log('لا يوجد عمليات للتراجع.');
+    // زر العودة
+    backBtn.addEventListener('click', ()=>{
+      optionsScreen.classList.add('hidden');
+      consoleScreen.classList.remove('hidden');
+      selectedConsole.style.display = 'none';
+      saveState();
+    });
+
+    // زر التفعيل — ملاحظة: محاكاة
+    activateBtn.addEventListener('click', ()=>{
+      if(!state.console){
+        actionMsg.textContent = 'لم تختَر جهازًا بعد.';
         return;
       }
-      const last = history.pop();
-      wealthUSD = wealthUSD + last.amountUSD;
-      updateDisplays();
-      const amtFormatted = new Intl.NumberFormat('en-US').format(Math.round(last.amountUSD));
-      log(`تراجع: استُعيد ${amtFormatted} $ من (${last.label}). المتبقي: ${formatReadableUSD(wealthUSD)}`);
+      // لا يمكن لنا الوصول فعليًا لأجهزة PS4/PS5 من صفحة ويب عادية.
+      // سنعرض محاكاة وتلخيص الحالة.
+      const summary = {
+        console: state.console,
+        aim: {value: state.aim.value, on: state.aim.on},
+        aimlock: {on: state.aimlock.on},
+        farm: {value: state.farm.value, on: state.farm.on},
+        time: new Date().toLocaleString()
+      };
+      actionMsg.textContent = 'محاكاة: تم إرسال الإعدادات إلى الجهاز. راجع النتيجة أدناه.';
+      // عرض نافذة حوار صغيرة توضح التفاصيل:
+      setTimeout(()=> {
+        alert('محاكاة تفعيل على ' + summary.console + '\n\n' +
+              'Aim Bot: ' + (summary.aim.on ? 'شغال' : 'طافي') + ' | قيمة: ' + summary.aim.value + '\n' +
+              'Aim lock: ' + (summary.aimlock.on ? 'شغال' : 'طافي') + '\n' +
+              'Auto farm: ' + (summary.farm.on ? 'شغال' : 'طافي') + ' | قيمة: ' + summary.farm.value + '\n\n' +
+              ': هذه محاكاة — لربط فعلي مع PS4/PS5 يلزم جهاز وسيط أو API خاصّ.');
+      }, 120);
     });
 
-    // خاصية: اضغط مرتين بسرعة للخصم المتكرر (double-click)
-    let lastClickTime = 0;
-    document.getElementById('doubleClickHelp').addEventListener('click', ()=>{
-      const now = Date.now();
-      if (now - lastClickTime < 500){
-        // تنفيذ خصم متكرر: نخصم آخر عنصر تم الضغط عليه في السجل ثلاث مرّات إضافية إن وُجد
-        if (history.length === 0){ log('لا توجد عملية سابقة لتكرارها.'); return; }
-        const last = history[history.length - 1];
-        applyPurchase(last.amountUSD, last.label + ' (تكرار)');
-        applyPurchase(last.amountUSD, last.label + ' (تكرار)');
-        log('تم تكرار آخر عملية مرتين إضافيتين.');
-      } else {
-        log('اضغط مرة ثانية بسرعة لتكرار آخر عملية مرتين.');
-      }
-      lastClickTime = now;
-    });
+    // أزرار البداية: استرجاع القيم الأولية للعرض
+    applyAllToggles();
 
-    // تهيئة العرض
-    updateDisplays();
-    logEl.innerHTML = 'جاهز — اضغط على أي غرض لخصم سعره من ثروة إيلون ماسك.';
+    // لمسة صغيرة: أنيميشن خطأ
+    (function addShakeStyle(){
+      const s = document.createElement('style');
+      s.innerHTML = `
+        @keyframes shakeX{0%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}100%{transform:translateX(0)}}
+        .shake{animation:shakeX .35s}
+      `;
+      document.head.appendChild(s);
+    })();
   </script>
 </body>
 </html>
