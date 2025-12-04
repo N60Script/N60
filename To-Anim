@@ -1,21 +1,38 @@
-local function LoadTrack()
-    if CurrentTrack then
-        CurrentTrack:Stop(Settings["Fade Out"])
-    end
-    local anim = Instance.new("Animation")
-    anim.AnimationId = "rbxassetid://"..FIXED_ANIMATION_ID
-    local animator = humanoid:FindFirstChildOfClass("Animator") or Instance.new("Animator", humanoid)
-    local newTrack = animator:LoadAnimation(anim)
-    newTrack.Priority = Enum.AnimationPriority.Action4
-    local weight = Settings["Weight"]
-    if weight == 0 then weight = 0.001 end
-    newTrack:Play(Settings["Fade In"], weight, Settings["Speed"])
-    CurrentTrack = newTrack
-end
+return function(humanoid, Settings, FIXED_ANIMATION_ID)
+    
+    local CurrentTrack
 
-local function StopTrack()
-    if CurrentTrack then
-        CurrentTrack:Stop(Settings["Fade Out"])
-        CurrentTrack = nil
+    local function LoadTrack()
+        if CurrentTrack then
+            CurrentTrack:Stop(Settings["Fade Out"])
+        end
+
+        local anim = Instance.new("Animation")
+        anim.AnimationId = "rbxassetid://"..FIXED_ANIMATION_ID
+        
+        local animator = humanoid:FindFirstChildOfClass("Animator") 
+            or Instance.new("Animator", humanoid)
+        
+        local newTrack = animator:LoadAnimation(anim)
+        newTrack.Priority = Enum.AnimationPriority.Action4
+
+        local weight = Settings["Weight"]
+        if weight == 0 then weight = 0.001 end
+
+        newTrack:Play(Settings["Fade In"], weight, Settings["Speed"])
+
+        CurrentTrack = newTrack
     end
+
+    local function StopTrack()
+        if CurrentTrack then
+            CurrentTrack:Stop(Settings["Fade Out"])
+            CurrentTrack = nil
+        end
+    end
+
+    return {
+        LoadTrack = LoadTrack,
+        StopTrack = StopTrack
+    }
 end
