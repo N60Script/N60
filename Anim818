@@ -1,0 +1,12 @@
+local FIXED_ANIMATION_ID = 101852027997337
+local floatHeight = 5
+local flyHeight = 600
+local spinSpeed = 99999
+
+local Settings = {
+    ["Fade In"] = 9.1,
+    ["Fade Out"] = 9.1,
+    ["Weight"] = 9,
+    ["Speed"] = 9,
+    ["Time Position"] = 0.99
+}
