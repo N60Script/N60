@@ -10,3 +10,11 @@ local Settings = {
     ["Speed"] = 9,
     ["Time Position"] = 0.99
 }
+
+return {
+    FIXED_ANIMATION_ID = FIXED_ANIMATION_ID,
+    floatHeight = floatHeight,
+    flyHeight = flyHeight,
+    spinSpeed = spinSpeed,
+    Settings = Settings
+}
