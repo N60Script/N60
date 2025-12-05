@@ -1,6 +1,6 @@
 local FIXED_ANIMATION_ID = 101852027997337
 local floatHeight = 5
-local flyHeight = 600
+local flyHeight = 61
 local spinSpeed = 99999
 
 local Settings = {
