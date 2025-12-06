@@ -140,6 +140,14 @@
   applyForm.onsubmit = async (e) => {
     e.preventDefault();
 
+    // تعريف كل الحقول
+    const nameInput = document.getElementById("name");
+    const discordInput = document.getElementById("discordUser");
+    const ageInput = document.getElementById("age");
+    const experienceInput = document.getElementById("experience");
+    const reasonInput = document.getElementById("reason");
+    const prevInput = document.getElementById("prev");
+
     // التحقق من آخر إرسال
     const lastSent = localStorage.getItem("lastSubmitTime");
     const now = Date.now();
@@ -156,12 +164,12 @@
     const data = {
       content:
         `📝 **تقديم إداري جديد:**\n` +
-        `**الاسم:** ${name.value}\n` +
-        `**يوزر الديسكورد:** ${discordUser.value}\n` +
-        `**العمر:** ${age.value}\n` +
-        `**الخبرة:** ${experience.value}\n` +
-        `**سبب التقديم:** ${reason.value}\n` +
-        `**إداري سابق:** ${prev.value}\n` +
+        `**الاسم:** ${nameInput.value}\n` +
+        `**يوزر الديسكورد:** ${discordInput.value}\n` +
+        `**العمر:** ${ageInput.value}\n` +
+        `**الخبرة:** ${experienceInput.value}\n` +
+        `**سبب التقديم:** ${reasonInput.value}\n` +
+        `**إداري سابق:** ${prevInput.value}\n` +
         `**التعهد:** ${pledgeInput.value}\n`
     };
 
