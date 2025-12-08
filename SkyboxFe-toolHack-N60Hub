@@ -1,0 +1,266 @@
+--==================================================
+--                BY N60 (ANIM MERGED)
+--==================================================
+
+local Players = game:GetService("Players")
+local CoreGui = game:GetService("CoreGui")
+local RunService = game:GetService("RunService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local player = Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoid = character:WaitForChild("Humanoid")
+local rootPart = character:WaitForChild("HumanoidRootPart")
+
+local CurrentTrack
+local isActive = false
+local floatPart
+local spinConnection
+local originalWalkSpeed = humanoid.WalkSpeed
+local originalJumpPower = humanoid.JumpPower
+
+--==================================================
+-- تحميل Anim818
+--==================================================
+local AnimData = loadstring(game:HttpGet("https://raw.githubusercontent.com/N60Script/N60/refs/heads/main/Anim818"))()
+
+--==================================================
+-- تحميل To-Anim
+--==================================================
+local ToAnimFactory = loadstring(game:HttpGet("https://raw.githubusercontent.com/N60Script/N60/refs/heads/main/To-Anim"))()
+local AnimFunctions = ToAnimFactory(humanoid, AnimData.Settings, AnimData.FIXED_ANIMATION_ID)
+
+local LoadTrack = AnimFunctions.LoadTrack
+local StopTrack = AnimFunctions.StopTrack
+
+-- تشغيل الأنيميشن
+local function ForcePlayAnimation()
+    if CurrentTrack then
+        CurrentTrack:Stop()
+    end
+    local anim = Instance.new("Animation")
+    anim.AnimationId = "rbxassetid://" .. tostring(AnimData.FIXED_ANIMATION_ID)
+    CurrentTrack = humanoid:LoadAnimation(anim)
+    CurrentTrack.Looped = true
+    CurrentTrack:Play()
+end
+
+local floatHeight = AnimData.floatHeight
+local flyHeight = AnimData.flyHeight
+local spinSpeed = AnimData.spinSpeed
+
+--==================================================
+-- رسائل السيرفر
+--==================================================
+local ev
+pcall(function()
+    ev = ReplicatedStorage:FindFirstChild("Events") and ReplicatedStorage.Events:FindFirstChild("SendMessage")
+end)
+
+local function safeSend(msg)
+    if ev then
+        pcall(function()
+            ev:FireServer(msg)
+        end)
+    end
+end
+
+local function sendTitles()
+    safeSend(";char me Tavion20150")
+    task.wait(1)
+    safeSend(";titlebk me N60 Hub")
+end
+
+task.spawn(sendTitles)
+
+player.CharacterAdded:Connect(function()
+    task.delay(0.5, sendTitles)
+end)
+
+--==================================================
+-- إعداد الشخصية بعد الموت
+--==================================================
+local function setupCharacter(char)
+    character = char
+    humanoid = char:WaitForChild("Humanoid")
+    rootPart = char:WaitForChild("HumanoidRootPart")
+
+    originalWalkSpeed = humanoid.WalkSpeed
+    originalJumpPower = humanoid.JumpPower
+
+    if isActive then
+        task.wait(0.5)
+
+        floatPart = Instance.new("Part")
+        floatPart.Size = Vector3.new(10,1,10)
+        floatPart.Anchored = true
+        floatPart.CanCollide = true
+        floatPart.Transparency = 0.5
+        floatPart.Material = Enum.Material.Neon
+        floatPart.Color = Color3.fromRGB(0, 170, 255)
+        floatPart.CFrame = rootPart.CFrame + Vector3.new(0, flyHeight, 0)
+        floatPart.Parent = workspace
+
+        rootPart.CFrame = floatPart.CFrame + Vector3.new(0, floatHeight, 0)
+
+        humanoid.WalkSpeed = 0
+        humanoid.JumpPower = 0
+
+        ForcePlayAnimation()
+
+        spinConnection = RunService.Heartbeat:Connect(function(dt)
+            rootPart.CFrame =
+                CFrame.new(
+                    rootPart.Position.X,
+                    floatPart.Position.Y + floatHeight,
+                    rootPart.Position.Z
+                ) * CFrame.Angles(0, math.rad(spinSpeed * dt), 0)
+        end)
+    end
+end
+
+player.CharacterAdded:Connect(setupCharacter)
+setupCharacter(character)
+
+--==================================================
+-- GUI
+--==================================================
+local gui = Instance.new("ScreenGui")
+gui.Name = "MiniN60Gui"
+gui.ResetOnSpawn = false
+gui.Parent = CoreGui
+
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 150, 0, 135)
+frame.Position = UDim2.new(1, -160, 0, 25) -- يمين فوق
+frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+frame.Active = true
+frame.Draggable = true
+frame.Parent = gui
+Instance.new("UICorner", frame)
+
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, 0, 0, 30)
+title.BackgroundTransparency = 1
+title.Text = "N60 Hack"
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.Font = Enum.Font.GothamBold
+title.TextSize = 16
+title.Parent = frame
+
+--==================================================
+-- مستطيل الاسم + زر النسخ
+--==================================================
+local nameFrame = Instance.new("Frame")
+nameFrame.Size = UDim2.new(0, 120, 0, 25)
+nameFrame.Position = UDim2.new(0, 15, 0, 30)
+nameFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+nameFrame.Parent = frame
+Instance.new("UICorner", nameFrame)
+
+local nameLabel = Instance.new("TextLabel")
+nameLabel.Size = UDim2.new(1, -28, 1, 0)
+nameLabel.Position = UDim2.new(0, 5, 0, 0)
+nameLabel.BackgroundTransparency = 1
+nameLabel.Text = "Tavion20150"
+nameLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+nameLabel.Font = Enum.Font.Gotham
+nameLabel.TextSize = 12
+nameLabel.TextXAlignment = Enum.TextXAlignment.Left
+nameLabel.Parent = nameFrame
+
+local copyBtn = Instance.new("TextButton")
+copyBtn.Size = UDim2.new(0, 25, 1, 0)
+copyBtn.Position = UDim2.new(1, -25, 0, 0)
+copyBtn.BackgroundColor3 = Color3.fromRGB(0, 120, 255)
+copyBtn.Text = "📋"
+copyBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+copyBtn.TextSize = 12
+copyBtn.Font = Enum.Font.GothamBold
+copyBtn.Parent = nameFrame
+Instance.new("UICorner", copyBtn)
+
+copyBtn.MouseButton1Click:Connect(function()
+    setclipboard("Tavion20150")
+end)
+
+--==================================================
+-- زر التخريب
+--==================================================
+local button = Instance.new("TextButton")
+button.Size = UDim2.new(0.8, 0, 0, 30)
+button.Position = UDim2.new(0.1, 0, 0, 65)
+button.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+button.TextColor3 = Color3.fromRGB(255, 255, 255)
+button.Font = Enum.Font.GothamBold
+button.TextSize = 14
+button.Text = "تخريب"
+button.Parent = frame
+Instance.new("UICorner", button)
+
+-- رسالة أسفل الزر
+local label = Instance.new("TextLabel")
+label.Size = UDim2.new(1, 0, 0, 20)
+label.Position = UDim2.new(0, 0, 0, 100)
+label.BackgroundTransparency = 1
+label.Text = "رابط سيرفري: https://dsc.gg/N60"
+label.TextColor3 = Color3.fromRGB(255, 255, 255)
+label.Font = Enum.Font.Gotham
+label.TextSize = 12
+label.TextWrapped = true
+label.Parent = frame
+
+--==================================================
+-- وظيفة الزر
+--==================================================
+button.MouseButton1Click:Connect(function()
+    if not isActive then
+        isActive = true
+        button.Text = "إيقاف"
+
+        ForcePlayAnimation()
+
+        floatPart = Instance.new("Part")
+        floatPart.Size = Vector3.new(10,1,10)
+        floatPart.Anchored = true
+        floatPart.CanCollide = true
+        floatPart.Transparency = 0.5
+        floatPart.Material = Enum.Material.Neon
+        floatPart.Color = Color3.fromRGB(0, 170, 255)
+        floatPart.CFrame = rootPart.CFrame + Vector3.new(0, flyHeight, 0)
+        floatPart.Parent = workspace
+
+        rootPart.CFrame = floatPart.CFrame + Vector3.new(0, floatHeight, 0)
+
+        humanoid.WalkSpeed = 0
+        humanoid.JumpPower = 0
+
+        spinConnection = RunService.Heartbeat:Connect(function(dt)
+            rootPart.CFrame =
+                CFrame.new(
+                    rootPart.Position.X,
+                    floatPart.Position.Y + floatHeight,
+                    rootPart.Position.Z
+                ) * CFrame.Angles(0, math.rad(spinSpeed * dt), 0)
+        end)
+
+    else
+        isActive = false
+        button.Text = "تخريب"
+
+        StopTrack()
+        if CurrentTrack then CurrentTrack:Stop() end
+
+        if floatPart then
+            rootPart.CFrame = rootPart.CFrame - Vector3.new(0, 60, 0)
+            floatPart:Destroy()
+        end
+
+        humanoid.WalkSpeed = originalWalkSpeed
+        humanoid.JumpPower = originalJumpPower
+
+        if spinConnection then
+            spinConnection:Disconnect()
+        end
+    end
+end)
