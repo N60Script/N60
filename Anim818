@@ -4,11 +4,11 @@ local flyHeight = 310
 local spinSpeed = 0
 
 local Settings = {
-    ["Fade In"] = 1,
-    ["Fade Out"] = 0.1,
+    ["Fade In"] = 0.10,
+    ["Fade Out"] = 0.10,
     ["Weight"] = 1,
-    ["Speed"] = 5,
-    ["Time Position"] = 1
+    ["Speed"] = 1,
+    ["Time Position"] = 0.99
 }
 
 return {
