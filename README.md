@@ -75,12 +75,12 @@
             <!-- Empty State -->
             <div class="empty-state" id="emptyState" style="display: block;">
                 <div class="empty-icon">🔍</div>
-                <p>ااكتشف السكربتات</p>
+                <p>ابدأ البحث لاكتشاف السكربتات</p>
             </div>
 
             <!-- No Results -->
             <div class="no-results" id="noResults" style="display: none;">
-                <p>لم يتم العثور على البحث</p>
+                <p>لم يتم العثور على نتائج</p>
             </div>
 
             <!-- Pagination -->
@@ -116,7 +116,7 @@
     <!-- Footer -->
     <footer>
         <div class="footer-text">
-            <p>جميع الحقوق محفوظة لسيرفر الديسكورد gg/N60 , by  N60</p>
+            <p>جميع الحقوق محفوظة لسيرفر الديسكورد gg/N60 , by dryfd</p>
         </div>
     </footer>
 
