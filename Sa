@@ -12,7 +12,7 @@ local freezeConn
 local isFrozen = false
 local currentPrompt = nil
 local promptWatchConn1, promptWatchConn2
-local currentWalkSpeed = 16 -- سرعة افتراضية
+local currentWalkSpeed = 15 -- سرعة افتراضية
 
 local function setupCharacter(char)
     character = char
@@ -137,8 +137,8 @@ UnspeedButton.Parent = ScreenGui
 
 UnspeedButton.MouseButton1Click:Connect(function()
     if humanoid then
-        humanoid.WalkSpeed = 16 -- سرعة طبيعية
-        currentWalkSpeed = 16
+        humanoid.WalkSpeed = 15 -- سرعة طبيعية
+        currentWalkSpeed = 15
         UnspeedButton.Visible = false
     end
 end)
