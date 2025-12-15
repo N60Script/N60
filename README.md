@@ -9,7 +9,13 @@
         background-color: black;
         color: white;
         text-align: center;
-        margin-top: 100px;
+        margin: 0;
+        overflow: hidden;
+    }
+    #container {
+        position: relative;
+        width: 100%;
+        height: 100vh;
     }
     #yesBtn, #noBtn {
         font-size: 24px;
@@ -20,36 +26,56 @@
         border-radius: 10px;
         background-color: orange;
         color: black;
+        position: relative;
+        z-index: 2;
     }
     #scaryImage {
         display: none;
-        width: 80%;
-        max-width: 600px;
-        margin-top: 50px;
+        width: 100%;
+        height: 100vh;
+        object-fit: cover;
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 3;
+    }
+    #message {
+        position: relative;
+        z-index: 2;
+        margin-top: 100px;
+        font-size: 32px;
     }
 </style>
 </head>
 <body>
 
-<h1>¿Quieres celebrar Halloween conmigo?</h1>
-<button id="yesBtn">Sí</button>
-<button id="noBtn">No</button>
+<div id="container">
+    <div id="message">¿Quieres celebrar Halloween conmigo?</div>
+    <button id="yesBtn">Sí</button>
+    <button id="noBtn">No</button>
 
-<img id="scaryImage" src="https://i.postimg.cc/4n6S62SR/halloween-scary.jpg" alt="Scary">
-
-<audio id="screamAudio" src="https://jonathanbassedas.github.io/halloween/scream.mp3"></audio>
+    <img id="scaryImage" src="https://i.postimg.cc/4n6S62SR/halloween-scary.jpg" alt="Scary">
+    <audio id="screamAudio" src="Record (online-voice-recorder.com).mp3"></audio>
+</div>
 
 <script>
     const scream = document.getElementById("screamAudio");
     const image = document.getElementById("scaryImage");
+    const container = document.getElementById("container");
+
+    function triggerScare() {
+        // إزالة كل عناصر الصفحة داخل container
+        container.innerHTML = "";
+        // إضافة الصورة بملء الشاشة
+        container.appendChild(image);
+        image.style.display = "block";
+        scream.play();
+    }
 
     // زر Sí
-    document.getElementById("yesBtn").addEventListener("click", () => {
-        image.style.display = "block"; // إظهار الصورة
-        scream.play(); // تشغيل الصوت
-    });
+    document.getElementById("yesBtn").addEventListener("click", triggerScare);
 
-    // زر No يتحرك بعيدًا عند محاولة الضغط
+    // زر No يتحرك بعيدًا عن المؤشر
     const noBtn = document.getElementById("noBtn");
     noBtn.addEventListener("mouseenter", () => {
         const x = Math.random() * (window.innerWidth - noBtn.offsetWidth);
@@ -58,10 +84,7 @@
         noBtn.style.left = x + "px";
         noBtn.style.top = y + "px";
     });
-    noBtn.addEventListener("click", () => {
-        image.style.display = "block"; // يظهر الصورة إذا ضغطت
-        scream.play(); // تشغيل الصوت
-    });
+    noBtn.addEventListener("click", triggerScare);
 </script>
 
 </body>
