@@ -4,6 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>تقديم إداري</title>
+
   <style>
     body{
       margin:0;
@@ -12,7 +13,7 @@
       align-items:center;
       justify-content:center;
       background:#0b6eff;
-      font-family: sans-serif;
+      font-family:sans-serif;
       padding:20px;
     }
     .container{
@@ -76,34 +77,38 @@
 </head>
 <body>
 
-  <div class="container">
-    <button id="openApply" class="big-btn">تقديم اداري</button>
+<div class="container">
+  <button id="openApply" class="big-btn">تقديم إداري</button>
 
-    <form id="applyForm">
-      <label>اسمك</label>
-      <input id="name" type="text" placeholder="اكتب اسمك">
+  <form id="applyForm">
 
-      <label>عمرك</label>
-      <input id="age" type="text" placeholder="اكتب عمرك">
+    <label>اسمك</label>
+    <input id="name" type="text" placeholder="اكتب اسمك">
 
-      <label>هل عندك خبرة؟</label>
-      <textarea id="experience" placeholder="اكتب أي شي"></textarea>
+    <label>يوزرك ديسكورد</label>
+    <input id="discord" type="text" placeholder="مثال: user#1234">
 
-      <label>ماهو السبب في تقديم؟</label>
-      <textarea id="reason" placeholder="اكتب سببك"></textarea>
+    <label>عمرك</label>
+    <input id="age" type="text" placeholder="اكتب عمرك">
 
-      <label>هل كنت إداري سابق؟</label>
-      <textarea id="prev" placeholder="اكتب أي شي"></textarea>
+    <label>هل عندك خبرة؟</label>
+    <textarea id="experience" placeholder="اكتب أي شي"></textarea>
 
-      <label>تتعهد بالله أن تكون إداري ملتزم</label>
-      <input id="pledge" type="text" placeholder="اضغط زر والله">
-      <button type="button" class="pledge-btn" id="pledgeBtn">والله</button>
+    <label>ماهو السبب في تقديم؟</label>
+    <textarea id="reason" placeholder="اكتب سببك"></textarea>
 
-      <button class="submit-btn" type="submit">إرسال</button>
+    <label>هل كنت إداري سابق؟</label>
+    <textarea id="prev" placeholder="اكتب أي شي"></textarea>
 
-      <div class="success" id="successMsg">تم إرسال التقديم!</div>
-    </form>
-  </div>
+    <label>تتعهد بالله أن تكون إداري ملتزم</label>
+    <input id="pledge" type="text" placeholder="اضغط زر والله">
+    <button type="button" class="pledge-btn" id="pledgeBtn">والله</button>
+
+    <button class="submit-btn" type="submit">إرسال</button>
+
+    <div class="success" id="successMsg">تم إرسال التقديم!</div>
+  </form>
+</div>
 
 <script>
   const openApply = document.getElementById("openApply");
@@ -112,49 +117,55 @@
   const pledgeInput = document.getElementById("pledge");
   const successMsg = document.getElementById("successMsg");
 
-  // زر تقديم
+  const nameInput = document.getElementById("name");
+  const discordInput = document.getElementById("discord");
+  const ageInput = document.getElementById("age");
+  const experienceInput = document.getElementById("experience");
+  const reasonInput = document.getElementById("reason");
+  const prevInput = document.getElementById("prev");
+
   openApply.onclick = () => {
     openApply.style.display = "none";
     applyForm.style.display = "block";
   };
 
-  // زر والله
   pledgeBtn.onclick = () => {
-    pledgeInput.value = pledgeInput.value ? pledgeInput.value + " والله" : "والله";
+    pledgeInput.value = pledgeInput.value
+      ? pledgeInput.value + " والله"
+      : "والله";
   };
 
-  // الويب هوك (حقّك أنت)
   const WEBHOOK = "https://discord.com/api/webhooks/1446852544679772160/YPNrwHSW9Zb3RUEPk1atTNGJqUMY8_qcyw4CS1vrfxTnK3WGi2LAyN1LjZ_7cwePxUlo";
 
-  // إرسال
   applyForm.onsubmit = async (e) => {
     e.preventDefault();
 
     const data = {
       content:
-        `📝 **تقديم إداري جديد:**\n` +
-        `**الاسم:** ${name.value}\n` +
-        `**العمر:** ${age.value}\n` +
-        `**الخبرة:** ${experience.value}\n` +
-        `**سبب التقديم:** ${reason.value}\n` +
-        `**إداري سابق:** ${prev.value}\n` +
-        `**التعهد:** ${pledgeInput.value}\n`
+        `📝 **تقديم إداري جديد**\n\n` +
+        `👤 **الاسم:** ${nameInput.value || "غير مكتوب"}\n` +
+        `💬 **يوزر ديسكورد:** ${discordInput.value || "غير مكتوب"}\n` +
+        `🎂 **العمر:** ${ageInput.value || "غير مكتوب"}\n` +
+        `💼 **الخبرة:** ${experienceInput.value || "غير مكتوب"}\n` +
+        `📌 **سبب التقديم:** ${reasonInput.value || "غير مكتوب"}\n` +
+        `🛡 **إداري سابق:** ${prevInput.value || "غير مكتوب"}\n` +
+        `📜 **التعهد:** ${pledgeInput.value || "غير متعهد"}`
     };
 
-    await fetch(WEBHOOK, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data)
+    await fetch(WEBHOOK,{
+      method:"POST",
+      headers:{ "Content-Type":"application/json" },
+      body:JSON.stringify(data)
     });
 
-    successMsg.style.display = "block";
+    successMsg.style.display="block";
     applyForm.reset();
 
-    setTimeout(() => {
-      successMsg.style.display = "none";
-      applyForm.style.display = "none";
-      openApply.style.display = "block";
-    }, 2000);
+    setTimeout(()=>{
+      successMsg.style.display="none";
+      applyForm.style.display="none";
+      openApply.style.display="block";
+    },2000);
   };
 </script>
 
