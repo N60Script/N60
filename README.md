@@ -43,7 +43,9 @@
       margin-top:5px;
       border:1px solid #ccc;
       border-radius:6px;
+      font-family:inherit;
     }
+    textarea{ resize:vertical; }
     .pledge-btn{
       margin-top:5px;
       padding:8px 12px;
@@ -124,19 +126,30 @@
   const reasonInput = document.getElementById("reason");
   const prevInput = document.getElementById("prev");
 
+  // فتح النموذج
   openApply.onclick = () => {
     openApply.style.display = "none";
     applyForm.style.display = "block";
   };
 
+  // زر التعهد
   pledgeBtn.onclick = () => {
     pledgeInput.value = pledgeInput.value
       ? pledgeInput.value + " والله"
       : "والله";
   };
 
+  // منع الإرسال بزر Enter
+  applyForm.addEventListener("keydown", function (e) {
+    if (e.key === "Enter" && e.target.tagName !== "TEXTAREA") {
+      e.preventDefault();
+    }
+  });
+
+  // الويب هوك
   const WEBHOOK = "https://discord.com/api/webhooks/1446852544679772160/YPNrwHSW9Zb3RUEPk1atTNGJqUMY8_qcyw4CS1vrfxTnK3WGi2LAyN1LjZ_7cwePxUlo";
 
+  // إرسال التقديم
   applyForm.onsubmit = async (e) => {
     e.preventDefault();
 
