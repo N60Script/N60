@@ -2,7 +2,7 @@
 <html lang="ar">
 <head>
 <meta charset="UTF-8">
-<title>N60 Script Obfuscator</title>
+<title>N60 Script Encoder</title>
 <style>
     body{
         margin:0;
@@ -10,123 +10,122 @@
         color:#fff;
         font-family:Arial, sans-serif;
         display:flex;
-        justify-content:center;
-        align-items:center;
-        min-height:100vh;
+        height:100vh;
+        overflow:hidden;
     }
 
+    /* صورة جانبية */
+    .side{
+        width:35%;
+        background:url("https://i.postimg.cc/62LR5nTY/image.png") no-repeat center center;
+        background-size:contain;
+    }
+
+    /* المحتوى */
     .container{
-        width:360px;
-        background:#0b0b0b;
-        border-radius:10px;
-        padding:15px;
-        box-shadow:0 0 20px #000;
+        width:65%;
+        padding:20px;
+        box-sizing:border-box;
+        display:flex;
+        flex-direction:column;
+        gap:12px;
     }
 
-    .logo{
-        width:100%;
-        height:auto;
-        display:block;
-        margin-bottom:15px;
-    }
-
-    .box{
-        background:#111;
-        border:1px solid #222;
-        border-radius:8px;
-        padding:10px;
-        margin-bottom:10px;
-    }
-
-    .title{
-        font-size:14px;
-        margin-bottom:5px;
-        color:#ccc;
+    h2{
+        margin:0;
+        text-align:center;
     }
 
     textarea{
         width:100%;
-        height:120px;
-        background:#000;
+        background:#111;
         color:#0f0;
-        border:none;
+        border:1px solid #333;
         resize:none;
-        padding:8px;
-        outline:none;
+        padding:10px;
+        box-sizing:border-box;
         font-family:monospace;
-        font-size:12px;
-        border-radius:5px;
+        font-size:13px;
     }
 
-    .click{
-        text-align:center;
+    #input{
+        height:160px;
+    }
+
+    #output{
+        height:220px;
+    }
+
+    .hint{
         color:#aaa;
         font-size:13px;
+        text-align:center;
         cursor:pointer;
-        margin-top:5px;
     }
 
     .row{
         display:flex;
-        justify-content:space-between;
         align-items:center;
+        justify-content:space-between;
+        margin-top:5px;
     }
 
-    .copy{
-        background:#1a1a1a;
+    .row span{
+        color:#aaa;
+        font-size:14px;
+    }
+
+    button{
+        background:#111;
         color:#fff;
-        border:none;
-        padding:5px 12px;
-        border-radius:5px;
+        border:1px solid #444;
+        padding:6px 14px;
         cursor:pointer;
     }
 
-    .copy:hover{
-        background:#333;
+    button:hover{
+        background:#222;
     }
 </style>
 </head>
 <body>
 
+<div class="side"></div>
+
 <div class="container">
+    <h2>N60 Script Encoder</h2>
 
-    <!-- الصورة -->
-    <img src="https://i.postimg.cc/62LR5nTY/image.png" class="logo">
+    <textarea id="input" placeholder="حط سكربتك هنا"></textarea>
+    <div class="hint">اضغط هنا لكتابة السكربت</div>
 
-    <!-- إدخال السكربت -->
-    <div class="box">
-        <div class="title">حط سكربتك هنا</div>
-        <div class="click" onclick="input.focus()">اضغط هنا لكتابة السكربت</div>
-        <textarea id="input"></textarea>
+    <div class="row">
+        <span>كود التشفير</span>
+        <button onclick="copyCode()">نسخ</button>
     </div>
 
-    <!-- الإخراج -->
-    <div class="box">
-        <div class="row">
-            <div class="title">كود التشفير</div>
-            <button class="copy" onclick="copyCode()">نسخ</button>
-        </div>
-        <textarea id="output" readonly></textarea>
-    </div>
-
+    <textarea id="output" readonly></textarea>
 </div>
 
 <script>
-const header = "-- ================= https://n60script.github.io/N60/ =================\n";
+const HEADER = "-- ================= https://n60script.github.io/N60/ =================\n";
 
-function obfuscate(code){
-    // تشويش بسيط
-    return code
-        .replace(/\s+/g," ")
-        .replace(/local/g,"l")
-        .replace(/function/g,"f")
-        .replace(/end/g,"e");
+function base64Encode(text){
+    return btoa(unescape(encodeURIComponent(text)));
 }
 
-document.getElementById("input").addEventListener("input",function(){
+document.getElementById("input").addEventListener("input", function(){
     const raw = this.value;
-    const obf = obfuscate(raw);
-    document.getElementById("output").value = header + obf;
+    if(raw.trim() === ""){
+        document.getElementById("output").value = "";
+        return;
+    }
+
+    const encoded = base64Encode(raw);
+
+    const finalCode =
+HEADER + 'loadstring(game:HttpGet("data:text/plain;base64,' + encoded + '"))()';
+
+    document.getElementById("output").value = finalCode;
 });
 
 function copyCode(){
