@@ -1,4 +1,4 @@
-<!N60 Hub>
+<!DOCTYPE html>
 <html lang="ar">
 <head>
 <meta charset="UTF-8">
