@@ -8,7 +8,7 @@ body{
     margin:0;
     background:#000;
     color:#fff;
-    font-family:Arial, sans-serif;
+    font-family:Arial,sans-serif;
     display:flex;
     justify-content:center;
     align-items:center;
@@ -19,12 +19,8 @@ body{
     background:#0b0b0b;
     border-radius:10px;
     padding:15px;
-    box-shadow:0 0 25px #000;
 }
-.logo{
-    width:100%;
-    margin-bottom:15px;
-}
+.logo{width:100%;margin-bottom:15px;}
 .box{
     background:#111;
     border:1px solid #222;
@@ -32,11 +28,7 @@ body{
     padding:10px;
     margin-bottom:10px;
 }
-.title{
-    font-size:14px;
-    margin-bottom:5px;
-    color:#ccc;
-}
+.title{font-size:14px;color:#ccc;margin-bottom:5px;}
 textarea{
     width:100%;
     height:120px;
@@ -45,23 +37,12 @@ textarea{
     border:none;
     resize:none;
     padding:8px;
-    outline:none;
     font-family:monospace;
     font-size:12px;
     border-radius:5px;
 }
-.click{
-    text-align:center;
-    color:#aaa;
-    font-size:13px;
-    cursor:pointer;
-    margin-bottom:5px;
-}
-.row{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-}
+.click{text-align:center;color:#aaa;font-size:13px;cursor:pointer;}
+.row{display:flex;justify-content:space-between;align-items:center;}
 .copy{
     background:#1a1a1a;
     color:#fff;
@@ -96,24 +77,6 @@ textarea{
 </div>
 
 <script>
-const HEADER = `-- ================= https://n60script.github.io/N60/ =================
-do
-local _k=${Math.floor(Math.random()*200)+20}
-local _d=function(s)
-local o=""
-for i=1,#s do
-o=o..string.char(bit32.bxor(string.byte(s,i),_k))
-end
-return o
-end
-local _l=_d([[
-`;
-
-const FOOTER = `
-]])
-loadstring(_l)()
-end`;
-
 function xorEncode(str,key){
     let out="";
     for(let i=0;i<str.length;i++){
@@ -122,36 +85,51 @@ function xorEncode(str,key){
     return out;
 }
 
-function encode(str){
-    const key=Math.floor(Math.random()*200)+20;
-    const x=xorEncode(str,key);
-    return {
-        key,
-        data:btoa(unescape(encodeURIComponent(x)))
-    };
-}
-
 input.addEventListener("input",()=>{
     if(!input.value.trim()){
         output.value="";
         return;
     }
-    const e=encode(input.value);
-    output.value =
+
+    const key = Math.floor(Math.random()*200)+20;
+    const xored = xorEncode(input.value,key);
+    const encoded = btoa(unescape(encodeURIComponent(xored)));
+
+output.value =
 `-- ================= https://n60script.github.io/N60/ =================
 do
-local _k=${e.key}
-local _d=function(s)
-local o=""
-for i=1,#s do
-o=o..string.char(bit32.bxor(string.byte(s,i),_k))
+local b='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
+local function b64dec(data)
+    data = string.gsub(data,'[^'..b..'=]','')
+    return (data:gsub('.', function(x)
+        if (x == '=') then return '' end
+        local r,f='',(b:find(x)-1)
+        for i=6,1,-1 do
+            r=r..(f%2^i - f%2^(i-1) > 0 and '1' or '0')
+        end
+        return r
+    end):gsub('%d%d%d?%d?%d?%d?%d?%d?', function(x)
+        if (#x ~= 8) then return '' end
+        local c=0
+        for i=1,8 do
+            c=c + (x:sub(i,i)=='1' and 2^(8-i) or 0)
+        end
+        return string.char(c)
+    end))
 end
-return o
+
+local k=${key}
+local function d(s)
+    local o=""
+    for i=1,#s do
+        o=o..string.char(bit32.bxor(string.byte(s,i),k))
+    end
+    return o
 end
-local _l=_d([[
-${e.data}
-]])
-loadstring(_l)()
+
+loadstring(d(b64dec([[
+${encoded}
+]])))()
 end`;
 });
 
