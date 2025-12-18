@@ -1,185 +1,139 @@
-<!doctype html>
-<html lang="ar" dir="rtl">
+<!DOCTYPE html>
+<html lang="ar">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>تقديم إداري</title>
-
-  <style>
+<meta charset="UTF-8">
+<title>N60 Script Obfuscator</title>
+<style>
     body{
-      margin:0;
-      min-height:100vh;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      background:#0b6eff;
-      font-family:sans-serif;
-      padding:20px;
+        margin:0;
+        background:#000;
+        color:#fff;
+        font-family:Arial, sans-serif;
+        display:flex;
+        justify-content:center;
+        align-items:center;
+        min-height:100vh;
     }
+
     .container{
-      width:100%;
-      max-width:500px;
-      background:white;
-      padding:20px;
-      border-radius:10px;
-      box-shadow:0 5px 20px rgba(0,0,0,0.2);
+        width:360px;
+        background:#0b0b0b;
+        border-radius:10px;
+        padding:15px;
+        box-shadow:0 0 20px #000;
     }
-    .big-btn{
-      background:#0b6eff;
-      color:white;
-      padding:12px;
-      border:none;
-      width:100%;
-      border-radius:8px;
-      font-size:20px;
-      cursor:pointer;
-      margin-bottom:15px;
+
+    .logo{
+        width:100%;
+        height:auto;
+        display:block;
+        margin-bottom:15px;
     }
-    form{ display:none; }
-    label{ font-weight:bold; margin-top:10px; display:block; }
-    input, textarea{
-      width:100%;
-      padding:10px;
-      margin-top:5px;
-      border:1px solid #ccc;
-      border-radius:6px;
-      font-family:inherit;
+
+    .box{
+        background:#111;
+        border:1px solid #222;
+        border-radius:8px;
+        padding:10px;
+        margin-bottom:10px;
     }
-    textarea{ resize:vertical; }
-    .pledge-btn{
-      margin-top:5px;
-      padding:8px 12px;
-      background:#0b6eff;
-      color:white;
-      border:none;
-      border-radius:6px;
-      cursor:pointer;
+
+    .title{
+        font-size:14px;
+        margin-bottom:5px;
+        color:#ccc;
     }
-    .submit-btn{
-      background:#0757d6;
-      color:white;
-      padding:12px;
-      border:none;
-      width:100%;
-      border-radius:8px;
-      margin-top:18px;
-      cursor:pointer;
-      font-size:18px;
+
+    textarea{
+        width:100%;
+        height:120px;
+        background:#000;
+        color:#0f0;
+        border:none;
+        resize:none;
+        padding:8px;
+        outline:none;
+        font-family:monospace;
+        font-size:12px;
+        border-radius:5px;
     }
-    .success{
-      display:none;
-      margin-top:15px;
-      padding:10px;
-      background:#d1fae5;
-      color:#065f46;
-      border-radius:6px;
-      font-weight:bold;
+
+    .click{
+        text-align:center;
+        color:#aaa;
+        font-size:13px;
+        cursor:pointer;
+        margin-top:5px;
     }
-  </style>
+
+    .row{
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+    }
+
+    .copy{
+        background:#1a1a1a;
+        color:#fff;
+        border:none;
+        padding:5px 12px;
+        border-radius:5px;
+        cursor:pointer;
+    }
+
+    .copy:hover{
+        background:#333;
+    }
+</style>
 </head>
 <body>
 
 <div class="container">
-  <button id="openApply" class="big-btn">تقديم إداري</button>
 
-  <form id="applyForm">
+    <!-- الصورة -->
+    <img src="https://i.postimg.cc/62LR5nTY/image.png" class="logo">
 
-    <label>اسمك</label>
-    <input id="name" type="text" placeholder="اكتب اسمك">
+    <!-- إدخال السكربت -->
+    <div class="box">
+        <div class="title">حط سكربتك هنا</div>
+        <div class="click" onclick="input.focus()">اضغط هنا لكتابة السكربت</div>
+        <textarea id="input"></textarea>
+    </div>
 
-    <label>يوزرك ديسكورد</label>
-    <input id="discord" type="text" placeholder="مثال: user#1234">
+    <!-- الإخراج -->
+    <div class="box">
+        <div class="row">
+            <div class="title">كود التشفير</div>
+            <button class="copy" onclick="copyCode()">نسخ</button>
+        </div>
+        <textarea id="output" readonly></textarea>
+    </div>
 
-    <label>عمرك</label>
-    <input id="age" type="text" placeholder="اكتب عمرك">
-
-    <label>هل عندك خبرة؟</label>
-    <textarea id="experience" placeholder="اكتب أي شي"></textarea>
-
-    <label>ماهو السبب في تقديم؟</label>
-    <textarea id="reason" placeholder="اكتب سببك"></textarea>
-
-    <label>هل كنت إداري سابق؟</label>
-    <textarea id="prev" placeholder="اكتب أي شي"></textarea>
-
-    <label>تتعهد بالله أن تكون إداري ملتزم</label>
-    <input id="pledge" type="text" placeholder="اضغط زر والله">
-    <button type="button" class="pledge-btn" id="pledgeBtn">والله</button>
-
-    <button class="submit-btn" type="submit">إرسال</button>
-
-    <div class="success" id="successMsg">تم إرسال التقديم!</div>
-  </form>
 </div>
 
 <script>
-  const openApply = document.getElementById("openApply");
-  const applyForm = document.getElementById("applyForm");
-  const pledgeBtn = document.getElementById("pledgeBtn");
-  const pledgeInput = document.getElementById("pledge");
-  const successMsg = document.getElementById("successMsg");
+const header = "-- ================= https://n60script.github.io/N60/ =================\n";
 
-  const nameInput = document.getElementById("name");
-  const discordInput = document.getElementById("discord");
-  const ageInput = document.getElementById("age");
-  const experienceInput = document.getElementById("experience");
-  const reasonInput = document.getElementById("reason");
-  const prevInput = document.getElementById("prev");
+function obfuscate(code){
+    // تشويش بسيط
+    return code
+        .replace(/\s+/g," ")
+        .replace(/local/g,"l")
+        .replace(/function/g,"f")
+        .replace(/end/g,"e");
+}
 
-  // فتح النموذج
-  openApply.onclick = () => {
-    openApply.style.display = "none";
-    applyForm.style.display = "block";
-  };
+document.getElementById("input").addEventListener("input",function(){
+    const raw = this.value;
+    const obf = obfuscate(raw);
+    document.getElementById("output").value = header + obf;
+});
 
-  // زر التعهد
-  pledgeBtn.onclick = () => {
-    pledgeInput.value = pledgeInput.value
-      ? pledgeInput.value + " والله"
-      : "والله";
-  };
-
-  // منع الإرسال بزر Enter
-  applyForm.addEventListener("keydown", function (e) {
-    if (e.key === "Enter" && e.target.tagName !== "TEXTAREA") {
-      e.preventDefault();
-    }
-  });
-
-  // الويب هوك
-  const WEBHOOK = "https://discord.com/api/webhooks/1446852544679772160/YPNrwHSW9Zb3RUEPk1atTNGJqUMY8_qcyw4CS1vrfxTnK3WGi2LAyN1LjZ_7cwePxUlo";
-
-  // إرسال التقديم
-  applyForm.onsubmit = async (e) => {
-    e.preventDefault();
-
-    const data = {
-      content:
-        `📝 **تقديم إداري جديد**\n\n` +
-        `👤 **الاسم:** ${nameInput.value || "غير مكتوب"}\n` +
-        `💬 **يوزر ديسكورد:** ${discordInput.value || "غير مكتوب"}\n` +
-        `🎂 **العمر:** ${ageInput.value || "غير مكتوب"}\n` +
-        `💼 **الخبرة:** ${experienceInput.value || "غير مكتوب"}\n` +
-        `📌 **سبب التقديم:** ${reasonInput.value || "غير مكتوب"}\n` +
-        `🛡 **إداري سابق:** ${prevInput.value || "غير مكتوب"}\n` +
-        `📜 **التعهد:** ${pledgeInput.value || "غير متعهد"}`
-    };
-
-    await fetch(WEBHOOK,{
-      method:"POST",
-      headers:{ "Content-Type":"application/json" },
-      body:JSON.stringify(data)
-    });
-
-    successMsg.style.display="block";
-    applyForm.reset();
-
-    setTimeout(()=>{
-      successMsg.style.display="none";
-      applyForm.style.display="none";
-      openApply.style.display="block";
-    },2000);
-  };
+function copyCode(){
+    const out = document.getElementById("output");
+    out.select();
+    document.execCommand("copy");
+}
 </script>
 
 </body>
