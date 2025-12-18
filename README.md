@@ -2,128 +2,122 @@
 <html lang="ar">
 <head>
 <meta charset="UTF-8">
-<title>N60 Script Encoder</title>
+<title>N60 Script Obfuscator</title>
 <style>
-    body{
-        margin:0;
-        background:#000;
-        color:#fff;
-        font-family:Arial, sans-serif;
-        display:flex;
-        height:100vh;
-        overflow:hidden;
-    }
-
-    /* صورة جانبية */
-    .side{
-        width:35%;
-        background:url("https://i.postimg.cc/62LR5nTY/image.png") no-repeat center center;
-        background-size:contain;
-    }
-
-    /* المحتوى */
-    .container{
-        width:65%;
-        padding:20px;
-        box-sizing:border-box;
-        display:flex;
-        flex-direction:column;
-        gap:12px;
-    }
-
-    h2{
-        margin:0;
-        text-align:center;
-    }
-
-    textarea{
-        width:100%;
-        background:#111;
-        color:#0f0;
-        border:1px solid #333;
-        resize:none;
-        padding:10px;
-        box-sizing:border-box;
-        font-family:monospace;
-        font-size:13px;
-    }
-
-    #input{
-        height:160px;
-    }
-
-    #output{
-        height:220px;
-    }
-
-    .hint{
-        color:#aaa;
-        font-size:13px;
-        text-align:center;
-        cursor:pointer;
-    }
-
-    .row{
-        display:flex;
-        align-items:center;
-        justify-content:space-between;
-        margin-top:5px;
-    }
-
-    .row span{
-        color:#aaa;
-        font-size:14px;
-    }
-
-    button{
-        background:#111;
-        color:#fff;
-        border:1px solid #444;
-        padding:6px 14px;
-        cursor:pointer;
-    }
-
-    button:hover{
-        background:#222;
-    }
+body{
+    margin:0;
+    background:#000;
+    color:#fff;
+    font-family:Arial, sans-serif;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    min-height:100vh;
+}
+.container{
+    width:360px;
+    background:#0b0b0b;
+    border-radius:10px;
+    padding:15px;
+    box-shadow:0 0 20px #000;
+}
+.logo{
+    width:100%;
+    display:block;
+    margin-bottom:15px;
+}
+.box{
+    background:#111;
+    border:1px solid #222;
+    border-radius:8px;
+    padding:10px;
+    margin-bottom:10px;
+}
+.title{
+    font-size:14px;
+    margin-bottom:5px;
+    color:#ccc;
+}
+textarea{
+    width:100%;
+    height:120px;
+    background:#000;
+    color:#0f0;
+    border:none;
+    resize:none;
+    padding:8px;
+    outline:none;
+    font-family:monospace;
+    font-size:12px;
+    border-radius:5px;
+}
+.click{
+    text-align:center;
+    color:#aaa;
+    font-size:13px;
+    cursor:pointer;
+    margin-bottom:5px;
+}
+.row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+.copy{
+    background:#1a1a1a;
+    color:#fff;
+    border:none;
+    padding:5px 12px;
+    border-radius:5px;
+    cursor:pointer;
+}
+.copy:hover{ background:#333; }
 </style>
 </head>
+
 <body>
-
-<div class="side"></div>
-
 <div class="container">
-    <h2>N60 Script Encoder</h2>
 
-    <textarea id="input" placeholder="حط سكربتك هنا"></textarea>
-    <div class="hint">اضغط هنا لكتابة السكربت</div>
+<img src="https://i.postimg.cc/62LR5nTY/image.png" class="logo">
 
+<div class="box">
+    <div class="title">حط سكربتك هنا</div>
+    <div class="click" onclick="input.focus()">اضغط هنا لكتابة السكربت</div>
+    <textarea id="input"></textarea>
+</div>
+
+<div class="box">
     <div class="row">
-        <span>كود التشفير</span>
-        <button onclick="copyCode()">نسخ</button>
+        <div class="title">كود التشفير</div>
+        <button class="copy" onclick="copyCode()">نسخ</button>
     </div>
-
     <textarea id="output" readonly></textarea>
 </div>
 
-<script>
-const HEADER = "-- ================= https://n60script.github.io/N60/ =================\n";
+</div>
 
-function base64Encode(text){
-    return btoa(unescape(encodeURIComponent(text)));
+<script>
+const header =
+"-- ================= https://n60script.github.io/N60/ =================\n";
+
+function toBase64(str){
+    return btoa(unescape(encodeURIComponent(str)));
 }
 
 document.getElementById("input").addEventListener("input", function(){
     const raw = this.value;
-    if(raw.trim() === ""){
+    if(!raw.trim()){
         document.getElementById("output").value = "";
         return;
     }
 
-    const encoded = base64Encode(raw);
+    const encoded = toBase64(raw);
 
     const finalCode =
-HEADER + 'loadstring(game:HttpGet("data:text/plain;base64,' + encoded + '"))()';
+        header +
+        'loadstring(game:HttpGet("data:text/plain;base64,' +
+        encoded +
+        '"))()';
 
     document.getElementById("output").value = finalCode;
 });
