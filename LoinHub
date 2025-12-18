@@ -1,0 +1,128 @@
+local a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z=
+game:GetService("Players"),
+game:GetService("RunService"),
+game:GetService("TweenService"),
+game:GetService("UserInputService"),
+nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil
+
+e=a.LocalPlayer
+f=e:WaitForChild("PlayerGui")
+
+g=Instance.new("ScreenGui")
+g.Name="LoinHub"
+g.ResetOnSpawn=false
+g.Parent=f
+
+h=Instance.new("Frame")
+h.Size=UDim2.new(0,170,0,200)
+h.Position=UDim2.new(.5,-85,.4,0)
+h.BackgroundColor3=Color3.fromRGB(25,25,25)
+h.BorderSizePixel=0
+h.Active=true
+h.Draggable=true
+h.Parent=g
+
+i=Instance.new("TextLabel")
+i.Size=UDim2.new(1,0,0,30)
+i.Text="Loin Hub"
+i.TextColor3=Color3.new(1,1,1)
+i.BackgroundColor3=Color3.fromRGB(35,35,35)
+i.BorderSizePixel=0
+i.Font=Enum.Font.SourceSansBold
+i.TextSize=18
+i.Parent=h
+
+local function A(B,C)
+    local D=Instance.new("TextButton")
+    D.Size=UDim2.new(1,-20,0,30)
+    D.Position=UDim2.new(0,10,0,C)
+    D.Text=B
+    D.BackgroundColor3=Color3.fromRGB(170,0,0)
+    D.TextColor3=Color3.new(1,1,1)
+    D.BorderSizePixel=0
+    D.Font=Enum.Font.SourceSans
+    D.TextSize=14
+    D.Parent=h
+    return D
+end
+
+j=A("حفظ بيسك",40)
+k=A("انتقال لبيسك",75)
+l=A("كشف لاعبين",110)
+m=A("دبل جانب",145)
+
+n=nil
+o=false
+p=false
+q=true
+
+local function B(C)
+    r=C
+    s=r:WaitForChild("Humanoid")
+    t=r:WaitForChild("HumanoidRootPart")
+
+    s.MaxHealth=math.huge
+    s.Health=s.MaxHealth
+
+    s:GetPropertyChangedSignal("Health"):Connect(function()
+        if q then s.Health=s.MaxHealth end
+    end)
+
+    s.Jumping:Connect(function(D)
+        if D and p then
+            t.Velocity=Vector3.new(t.Velocity.X,80,t.Velocity.Z)
+            task.wait(.05)
+            t.Velocity=Vector3.new(t.Velocity.X,80,t.Velocity.Z)
+        end
+    end)
+end
+
+if e.Character then B(e.Character) end
+e.CharacterAdded:Connect(B)
+
+j.MouseButton1Click:Connect(function()
+    if t then
+        n=t.CFrame
+        j.Text="تم الحفظ ✔"
+        task.delay(1,function() j.Text="حفظ بيسك" end)
+    end
+end)
+
+k.MouseButton1Click:Connect(function()
+    if not (t and n) then return end
+    local D=(t.Position-n.Position).Magnitude
+    local E=D/25
+    local F=c:Create(
+        t,
+        TweenInfo.new(E,Enum.EasingStyle.Linear),
+        {CFrame=n}
+    )
+    F:Play()
+end)
+
+local G=4.1
+local H=BrickColor.new("Lime green")
+
+b.RenderStepped:Connect(function()
+    if not o then return end
+    for _,I in ipairs(a:GetPlayers()) do
+        if I~=e and I.Character and I.Character:FindFirstChild("HumanoidRootPart") then
+            local J=I.Character.HumanoidRootPart
+            J.Size=Vector3.new(G,G,G)
+            J.Transparency=0
+            J.BrickColor=H
+            J.Material=Enum.Material.Neon
+            J.CanCollide=false
+        end
+    end
+end)
+
+l.MouseButton1Click:Connect(function()
+    o=not o
+    l.BackgroundColor3=o and Color3.fromRGB(0,170,0) or Color3.fromRGB(170,0,0)
+end)
+
+m.MouseButton1Click:Connect(function()
+    p=not p
+    m.BackgroundColor3=p and Color3.fromRGB(0,170,0) or Color3.fromRGB(170,0,0)
+end)
