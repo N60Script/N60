@@ -8,7 +8,7 @@ body{
     margin:0;
     background:#000;
     color:#fff;
-    font-family:Arial, sans-serif;
+    font-family:Arial,sans-serif;
     display:flex;
     justify-content:center;
     align-items:center;
@@ -19,13 +19,8 @@ body{
     background:#0b0b0b;
     border-radius:10px;
     padding:15px;
-    box-shadow:0 0 20px #000;
 }
-.logo{
-    width:100%;
-    display:block;
-    margin-bottom:15px;
-}
+.logo{width:100%;margin-bottom:15px;}
 .box{
     background:#111;
     border:1px solid #222;
@@ -33,28 +28,20 @@ body{
     padding:10px;
     margin-bottom:10px;
 }
-.title{
-    font-size:14px;
-    margin-bottom:5px;
-    color:#ccc;
-}
+.title{color:#ccc;font-size:14px;}
 textarea{
     width:100%;
     height:120px;
     background:#000;
     color:#0f0;
     border:none;
-    resize:none;
     padding:8px;
-    outline:none;
+    resize:none;
     font-family:monospace;
-    font-size:12px;
-    border-radius:5px;
 }
 .click{
     text-align:center;
     color:#aaa;
-    font-size:13px;
     cursor:pointer;
     margin-bottom:5px;
 }
@@ -68,10 +55,8 @@ textarea{
     color:#fff;
     border:none;
     padding:5px 12px;
-    border-radius:5px;
     cursor:pointer;
 }
-.copy:hover{ background:#333; }
 </style>
 </head>
 
@@ -105,26 +90,25 @@ function toBase64(str){
 }
 
 document.getElementById("input").addEventListener("input", function(){
-    const raw = this.value;
-    if(!raw.trim()){
-        document.getElementById("output").value = "";
+    const raw = this.value.trim();
+    if(!raw){
+        output.value="";
         return;
     }
 
-    const encoded = toBase64(raw);
+    const b64 = toBase64(raw);
 
     const finalCode =
-        header +
-        'loadstring(game:HttpGet("data:text/plain;base64,' +
-        encoded +
-        '"))()';
+header +
+"loadstring((syn and syn.crypt or crypt).base64.decode([[\\n" +
+b64 +
+"\\n]]))()";
 
-    document.getElementById("output").value = finalCode;
+    output.value = finalCode;
 });
 
 function copyCode(){
-    const out = document.getElementById("output");
-    out.select();
+    output.select();
     document.execCommand("copy");
 }
 </script>
