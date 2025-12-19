@@ -1,0 +1,102 @@
+-- LocalScript (StarterPlayerScripts)
+
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+
+local player = Players.LocalPlayer
+
+-- الإعدادات
+local WALK_SPEED = 27
+local VFLY_SPEED = 27
+local VFLY_ENABLED = true
+local GOD_HEALTH = 1e9 -- دم ضخم
+
+local vflyConn
+local speedConn
+local godConn
+
+-- أدوات
+local function getCharacter()
+    return player.Character or player.CharacterAdded:Wait()
+end
+
+local function getHumanoid(char)
+    return char:WaitForChild("Humanoid")
+end
+
+local function getHRP(char)
+    return char:WaitForChild("HumanoidRootPart")
+end
+
+-- ================== GOD MODE ==================
+local function enableGodMode(hum)
+    if godConn then godConn:Disconnect() end
+
+    hum.MaxHealth = GOD_HEALTH
+    hum.Health = GOD_HEALTH
+    hum:SetStateEnabled(Enum.HumanoidStateType.Dead, false)
+    hum.BreakJointsOnDeath = false
+
+    godConn = RunService.Heartbeat:Connect(function()
+        if hum and hum.Health > 0 then
+            if hum.Health < GOD_HEALTH then
+                hum.Health = GOD_HEALTH
+            end
+        end
+    end)
+end
+
+-- ================== VFly ==================
+local function startVFly()
+    if vflyConn then vflyConn:Disconnect() end
+
+    vflyConn = RunService.RenderStepped:Connect(function()
+        if not VFLY_ENABLED then return end
+
+        local char = player.Character
+        if not char then return end
+
+        local hum = char:FindFirstChildOfClass("Humanoid")
+        local hrp = char:FindFirstChild("HumanoidRootPart")
+        if not hum or not hrp or hum.Health <= 0 then return end
+
+        local dir = hum.MoveDirection
+        if dir.Magnitude > 0 then
+            hrp.Velocity = Vector3.new(
+                dir.X * VFLY_SPEED,
+                hrp.Velocity.Y,
+                dir.Z * VFLY_SPEED
+            )
+        end
+    end)
+end
+
+-- ================== تثبيت السرعة ==================
+local function lockWalkSpeed(hum)
+    if speedConn then speedConn:Disconnect() end
+
+    speedConn = RunService.Heartbeat:Connect(function()
+        if hum and hum.Health > 0 and hum.WalkSpeed ~= WALK_SPEED then
+            hum.WalkSpeed = WALK_SPEED
+        end
+    end)
+end
+
+-- ================== تفعيل الكل ==================
+local function applyFeatures(char)
+    local hum = getHumanoid(char)
+
+    hum.WalkSpeed = WALK_SPEED
+    enableGodMode(hum)
+    lockWalkSpeed(hum)
+    startVFly()
+end
+
+-- أول تشغيل
+applyFeatures(getCharacter())
+
+-- بعد الموت / الريسباون
+player.CharacterAdded:Connect(function(char)
+    task.wait(0.3)
+    applyFeatures(char)
+end)
