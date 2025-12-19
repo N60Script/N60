@@ -3,7 +3,7 @@ const client = new Client({
     intents: [
         GatewayIntentBits.Guilds,
         GatewayIntentBits.GuildMessages,
-        GatewayIntentBits.MessageContent // ضروري لقراءة الرسائل
+        GatewayIntentBits.MessageContent // ضروري لقراءة الرسائل وحذفها
     ]
 });
 
@@ -49,24 +49,25 @@ client.on("interactionCreate", async interaction => {
 
     if (interaction.commandName === "say") {
         const text = interaction.options.getString("text");
-
-        // إرسال الكلام
         await interaction.reply({ content: text, ephemeral: false });
     }
 });
 
-// مراقبة أي رسالة تحتوي كلمات معينة
+// مراقبة رسائل "حذف <رقم>"
 client.on("messageCreate", async (message) => {
     if (message.author.bot) return; // تجاهل رسائل البوت نفسه
 
-    const triggers = ["/delta", "/krnl"];
+    // التحقق من أن الرسالة تبدأ بكلمة "حذف"
+    if (message.content.startsWith("حذف")) {
+        const parts = message.content.split(" ");
+        const count = parseInt(parts[1]); // الرقم اللي كتبته بعد "حذف"
 
-    for (let trigger of triggers) {
-        if (message.content.includes(trigger)) {
-            await message.channel.send(
-                `اول شي اكتب ${trigger} على حسب الهاك بعدها حط فيه رابط المفتاح وارجع حط المفتاح في قوقل تلقاه اشتغل`
-            );
-            break; // يكفي مرة واحدة لكل رسالة
+        if (!isNaN(count) && count > 0) {
+            // استرجاع الرسائل الأخيرة
+            const messages = await message.channel.messages.fetch({ limit: count + 1 }); 
+            // +1 عشان يشمل رسالة "حذف" نفسها
+            await message.channel.bulkDelete(messages)
+                .catch(err => console.log("لا يمكن حذف الرسائل:", err));
         }
     }
 });
