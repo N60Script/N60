@@ -107,26 +107,12 @@ client.on("messageCreate", async message => {
 
     // ======= شراء_نقاط =======
     else if (command === "شراء_نقاط") {
-        const amount = parseInt(args[1]);
-        if (isNaN(amount)) return;
-
-        const myPoints = points.get(message.author.id) || 0;
-        if (myPoints < amount) return message.reply("ليس لديك نقاط كافية للشراء");
-
-        points.set(message.author.id, myPoints - amount);
-        message.reply(`تم شراء نقاط بنجاح ${message.author}`);
+        message.reply("لشراء نقاط يجب أن تفتح تكت\nأو إذا كنت فاتح تكت قم بانتظار الأونر");
     }
 
     // ======= شراء_حساب =======
     else if (command === "شراء_حساب") {
-        const amount = parseInt(args[1]);
-        if (isNaN(amount)) return;
-
-        const myPoints = points.get(message.author.id) || 0;
-        if (myPoints < amount) return message.reply("ليس لديك نقاط كافية للشراء");
-
-        points.set(message.author.id, myPoints - amount);
-        message.reply(`تم شراء الحساب بنجاح ${message.author}`);
+        message.reply("لشراء الحساب يجب أن تفتح تكت\nأو إذا كنت فاتح تكت قم بانتظار الأونر");
     }
 });
 
