@@ -1,0 +1,24 @@
+-- Services
+local Players = game:GetService("Players")
+local VirtualInputManager = pcall(function()
+	return game:GetService("VirtualInputManager")
+end) and game:GetService("VirtualInputManager") or nil
+
+local player = Players.LocalPlayer
+
+-- Function to press E key
+local function pressE(holdTime)
+	if VirtualInputManager then
+		VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.E, false, game)
+		task.wait(holdTime)
+		VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.E, false, game)
+	end
+end
+
+-- تنفيذ تلقائي عند تشغيل السكربت
+task.spawn(function()
+	for i = 1,10 do
+		pressE(2.5) -- يضغط E لمدة 2.5 ثانية
+		task.wait(1) -- كل 0.3 ثانية
+	end
+end)
