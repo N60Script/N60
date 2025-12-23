@@ -36,66 +36,99 @@ client.once("ready", () => {
 });
 
 client.on("interactionCreate", async interaction => {
-    if (interaction.isCommand()) {
-        if (interaction.commandName === "add") {
-            const row = new ActionRowBuilder().addComponents(
-                new StringSelectMenuBuilder()
-                    .setCustomId("purchase_select")
-                    .setPlaceholder("اختر خيار الشراء")
-                    .addOptions([
-                        { label: "شراء_نقاط", value: "buy_points" },
-                        { label: "شراء_حسابات", value: "buy_account" }
-                    ])
-            );
+    // أمر /add
+    if (interaction.isCommand() && interaction.commandName === "add") {
+        const row = new ActionRowBuilder().addComponents(
+            new StringSelectMenuBuilder()
+                .setCustomId("purchase_select")
+                .setPlaceholder("اختر خيار الشراء")
+                .addOptions([
+                    { label: "شراء_نقاط", value: "buy_points" },
+                    { label: "شراء_حسابات", value: "buy_account" }
+                ])
+        );
 
-            // هنا تظهر القائمة للجميع
-            await interaction.reply({ content: "اختر ما تريد شراءه:", components: [row], ephemeral: false });
-        }
+        await interaction.reply({ content: "اختر ما تريد شراءه:", components: [row], ephemeral: false });
     }
 
-    else if (interaction.isStringSelectMenu()) {
-        if (interaction.customId === "purchase_select") {
-            const choice = interaction.values[0];
-            const userId = interaction.user.id;
-            const guild = interaction.guild;
+    // التعامل مع قائمة الاختيار
+    else if (interaction.isStringSelectMenu() && interaction.customId === "purchase_select") {
+        const choice = interaction.values[0];
+        const userId = interaction.user.id;
+        const guild = interaction.guild;
 
-            if (choice === "buy_account") {
-                const userPoints = points.get(userId) || 0;
+        if (choice === "buy_account") {
+            const userPoints = points.get(userId) || 0;
 
-                if (userPoints < PRICE_ACCOUNT) {
-                    return interaction.reply({ content: "رصيدك غير كافي", ephemeral: true });
-                }
-
-                points.set(userId, userPoints - PRICE_ACCOUNT);
-                interaction.reply({ content: "تم شراء الحساب بنجاح ✅", ephemeral: true });
+            if (userPoints < PRICE_ACCOUNT) {
+                return interaction.reply({ content: "رصيدك غير كافي", ephemeral: true });
             }
 
-            else if (choice === "buy_points") {
-                guild.channels.create({
-                    name: `Tickets نقاط`,
-                    type: 0, // text channel
-                    permissionOverwrites: [
-                        {
-                            id: guild.roles.everyone.id,
-                            deny: [PermissionsBitField.Flags.ViewChannel],
-                        },
-                        {
-                            id: userId,
-                            allow: [PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.SendMessages],
-                        },
-                        {
-                            id: guild.roles.cache.find(r => r.name === RANK_ROLE)?.id || "0",
-                            allow: [PermissionsBitField.Flags.ViewChannel],
-                        }
-                    ],
-                }).then(channel => {
-                    interaction.reply({ content: `تم فتح تكت شراء نقاط ${channel}`, ephemeral: true });
-                }).catch(err => {
-                    interaction.reply({ content: `حدث خطأ عند إنشاء الروم`, ephemeral: true });
-                    console.error(err);
-                });
-            }
+            points.set(userId, userPoints - PRICE_ACCOUNT);
+            interaction.reply({ content: "تم شراء الحساب بنجاح ✅", ephemeral: true });
         }
+
+        else if (choice === "buy_points") {
+            guild.channels.create({
+                name: `Tickets نقاط`,
+                type: 0, // text channel
+                permissionOverwrites: [
+                    { id: guild.roles.everyone.id, deny: [PermissionsBitField.Flags.ViewChannel] },
+                    { id: userId, allow: [PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.SendMessages] },
+                    { id: guild.roles.cache.find(r => r.name === RANK_ROLE)?.id || "0", allow: [PermissionsBitField.Flags.ViewChannel] }
+                ],
+            }).then(channel => {
+                interaction.reply({ content: `تم فتح تكت شراء نقاط ${channel}`, ephemeral: true });
+            }).catch(err => {
+                interaction.reply({ content: `حدث خطأ عند إنشاء الروم`, ephemeral: true });
+                console.error(err);
+            });
+        }
+    }
+});
+
+// نظام النقاط في الشات
+client.on("messageCreate", async message => {
+    if (message.author.bot) return;
+    const args = message.content.split(" ");
+    const command = args[0];
+
+    // نقاط
+    if (command === "نقاط") {
+        const userPoints = points.get(message.author.id) || 0;
+        message.reply(`لديك ${userPoints} نقاط`);
+    }
+
+    // اعطاء
+    else if (command === "اعطاء") {
+        if (!message.member.roles.cache.some(r => r.name === RANK_ROLE)) {
+            return message.reply("ليس لديك الرتبة اللازمة لإعطاء نقاط!");
+        }
+
+        const mentionedUser = message.mentions.users.first();
+        const amount = parseInt(args[2]);
+        if (!mentionedUser || isNaN(amount)) return;
+
+        const currentPoints = points.get(mentionedUser.id) || 0;
+        points.set(mentionedUser.id, currentPoints + amount);
+
+        message.channel.send(`${mentionedUser} تم إعطاؤه ${amount} نقاط`);
+    }
+
+    // تحويل
+    else if (command === "تحويل") {
+        const mentionedUser = message.mentions.users.first();
+        const amount = parseInt(args[2]);
+        if (!mentionedUser || isNaN(amount)) return;
+
+        const myPoints = points.get(message.author.id) || 0;
+        if (myPoints < amount) return message.reply("ليس لديك رصيد كافي للتحويل");
+
+        points.set(message.author.id, myPoints - amount);
+        const targetPoints = points.get(mentionedUser.id) || 0;
+        points.set(mentionedUser.id, targetPoints + amount);
+
+        message.channel.send(`${message.author} تم تحويل ${amount} نقاط إلى ${mentionedUser}`);
     }
 });
 
