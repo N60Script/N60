@@ -112,7 +112,15 @@ client.on("messageCreate", async message => {
 
     // ======= شراء_حساب =======
     else if (command === "شراء_حساب") {
-        message.reply("لشراء الحساب يجب أن تفتح تكت\nأو إذا كنت فاتح تكت قم بانتظار الأونر");
+        const PRICE = 30; // سعر شراء الحساب
+        const myPoints = points.get(message.author.id) || 0;
+
+        if (myPoints < PRICE) {
+            return message.reply("رصيدك غير كافي");
+        }
+
+        points.set(message.author.id, myPoints - PRICE);
+        message.reply(`تم شراء الحساب بنجاح ${message.author}`);
     }
 });
 
