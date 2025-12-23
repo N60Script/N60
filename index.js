@@ -11,6 +11,7 @@ const client = new Client({
 const CLIENT_ID = "1446924508043804742";
 const points = new Map(); // خريطة النقاط
 const PRICE_ACCOUNT = 30;
+const RANK_ROLE = "نقاط";
 
 // تسجيل أمر /add
 const commands = [
@@ -42,39 +43,34 @@ client.on("interactionCreate", async interaction => {
                     .setCustomId("purchase_select")
                     .setPlaceholder("اختر خيار الشراء")
                     .addOptions([
-                        {
-                            label: "شراء_نقاط",
-                            value: "buy_points"
-                        },
-                        {
-                            label: "شراء_حسابات",
-                            value: "buy_account"
-                        }
+                        { label: "شراء_نقاط", value: "buy_points" },
+                        { label: "شراء_حسابات", value: "buy_account" }
                     ])
             );
 
-            await interaction.reply({ content: "اختر ما تريد شراءه:", components: [row], ephemeral: true });
+            // هنا تظهر القائمة للجميع
+            await interaction.reply({ content: "اختر ما تريد شراءه:", components: [row], ephemeral: false });
         }
     }
 
-    // التعامل مع Select Menu
     else if (interaction.isStringSelectMenu()) {
         if (interaction.customId === "purchase_select") {
             const choice = interaction.values[0];
             const userId = interaction.user.id;
+            const guild = interaction.guild;
 
             if (choice === "buy_account") {
                 const userPoints = points.get(userId) || 0;
+
                 if (userPoints < PRICE_ACCOUNT) {
-                    return interaction.update({ content: "رصيدك غير كافي", components: [], ephemeral: true });
+                    return interaction.reply({ content: "رصيدك غير كافي", ephemeral: true });
                 }
+
                 points.set(userId, userPoints - PRICE_ACCOUNT);
-                interaction.update({ content: "تم شراء الحساب بنجاح ✅", components: [], ephemeral: true });
+                interaction.reply({ content: "تم شراء الحساب بنجاح ✅", ephemeral: true });
             }
 
             else if (choice === "buy_points") {
-                const guild = interaction.guild;
-
                 guild.channels.create({
                     name: `Tickets نقاط`,
                     type: 0, // text channel
@@ -87,11 +83,15 @@ client.on("interactionCreate", async interaction => {
                             id: userId,
                             allow: [PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.SendMessages],
                         },
+                        {
+                            id: guild.roles.cache.find(r => r.name === RANK_ROLE)?.id || "0",
+                            allow: [PermissionsBitField.Flags.ViewChannel],
+                        }
                     ],
                 }).then(channel => {
-                    interaction.update({ content: `تم إنشاء روم خاص لشراء النقاط: ${channel}`, components: [], ephemeral: true });
+                    interaction.reply({ content: `تم فتح تكت شراء نقاط ${channel}`, ephemeral: true });
                 }).catch(err => {
-                    interaction.update({ content: `حدث خطأ عند إنشاء الروم`, components: [], ephemeral: true });
+                    interaction.reply({ content: `حدث خطأ عند إنشاء الروم`, ephemeral: true });
                     console.error(err);
                 });
             }
