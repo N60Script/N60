@@ -9,15 +9,14 @@ const client = new Client({
     ]
 });
 
-// معرف السيرفر ومعرف البوت
-const GUILD_ID = "1453051119768047760";
+// معرف البوت
 const CLIENT_ID = "1446924508043804742";
 
 // خريطة لتخزين النقاط مؤقتًا
 const points = new Map();
 const RANK_ROLE = "نقاط"; // اسم الرتبة اللازمة لإعطاء نقاط
 
-// تسجيل أمر /say
+// تسجيل أمر /say عالمي
 const commands = [
     new SlashCommandBuilder()
         .setName("say")
@@ -33,9 +32,9 @@ const rest = new REST({ version: '10' }).setToken(process.env.TOKEN);
 
 (async () => {
     try {
-        console.log("⏳ تسجيل الأوامر...");
+        console.log("⏳ تسجيل الأوامر عالمياً...");
         await rest.put(
-            Routes.applicationGuildCommands(CLIENT_ID, GUILD_ID),
+            Routes.applicationCommands(CLIENT_ID),
             { body: commands }
         );
         console.log("✅ تم تسجيل الأوامر");
@@ -59,7 +58,7 @@ client.on("interactionCreate", async interaction => {
     }
 });
 
-// مراقبة الرسائل لنظام النقاط
+// مراقبة الرسائل لنظام النقاط في أي سيرفر
 client.on("messageCreate", async message => {
     if (message.author.bot) return;
 
