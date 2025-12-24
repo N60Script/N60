@@ -17,8 +17,8 @@ end
 
 -- تنفيذ تلقائي عند تشغيل السكربت
 task.spawn(function()
-	for i = 1,3 do
+	for i = 1,4 do
 		pressE(2.6) -- يضغط E لمدة 2.5 ثانية
-		task.wait(1) -- كل 0.3 ثانية
+		task.wait(2.7) -- كل 0.3 ثانية
 	end
 end)
