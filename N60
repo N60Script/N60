@@ -6,7 +6,8 @@ local player = Players.LocalPlayer
 local placeId = game.PlaceId
 
 local function kickUnsupported()
-    player:Kick("هذا الماب غير مدعوم رابط الديس:\nhttps://dsc.gg/n60")
+    task.wait(1)
+    player:Kick("هذا الماب غير مدعوم\nرابط الديس:\nhttps://dsc.gg/n60")
 end
 
 if placeId == 140021823063190 then
@@ -28,6 +29,10 @@ elseif placeId == 99976690872554 then
 elseif placeId == 10449761463 then
     -- Battle Ground
     loadstring(game:HttpGet("https://raw.githubusercontent.com/N60Script/N60/main/Battle-ground-N60-Hub818"))()
+
+elseif placeId == 96342491571673 then
+    -- BestScript N60 Hub
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/N60Script/N60/refs/heads/main/BestScriptN60Hub"))()
 
 else
     kickUnsupported()
