@@ -4,55 +4,70 @@
 <meta charset="UTF-8">
 <title>N60 Script Panel</title>
 <style>
-body {
+html, body {
   margin: 0;
-  font-family: Arial, sans-serif;
+  padding: 0;
+  height: 100%;
+  font-family: monospace;
   background: #0b0b0b;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
   color: #fff;
 }
 
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .panel {
-  width: 90%;
-  max-width: 1000px;
+  width: 95%;
+  height: 95%;
   background: #111;
-  padding: 30px;
+  padding: 20px;
   border-radius: 10px;
   box-shadow: 0 0 20px #000;
+  display: flex;
+  flex-direction: column;
 }
 
 h1 {
   text-align: center;
+  font-size: 36px;
   margin-bottom: 20px;
-  font-size: 28px;
 }
 
-input, textarea, button {
+input {
   width: 100%;
-  margin-top: 15px;
   padding: 15px;
+  font-size: 18px;
+  margin-bottom: 15px;
   border-radius: 8px;
   border: 1px solid #333;
   background: #000;
   color: #fff;
-  font-size: 16px;
 }
 
 textarea {
-  min-height: 400px;
+  flex: 1;
+  padding: 15px;
+  font-size: 16px;
+  border-radius: 8px;
+  border: 1px solid #333;
+  background: #000;
+  color: #fff;
   resize: none;
-  font-family: monospace;
+  margin-bottom: 15px;
 }
 
 button {
-  cursor: pointer;
-  background: #222;
-  border: 1px solid #555;
-  font-size: 18px;
+  padding: 15px;
+  font-size: 20px;
   font-weight: bold;
+  border-radius: 8px;
+  border: 1px solid #555;
+  background: #222;
+  color: #fff;
+  cursor: pointer;
 }
 
 button:hover {
@@ -64,19 +79,16 @@ button:hover {
 
 <div class="panel">
   <h1>N60 Script Panel</h1>
-
-  <input id="filename" placeholder="حط اسم ملفك (اختياري)">
-
+  <input id="filename" placeholder="حط اسم الملف (اختياري)">
   <textarea id="script" placeholder="حط سكربتك هنا"></textarea>
-
   <button onclick="openRaw()">RAW</button>
 </div>
 
 <script>
 function openRaw() {
   const script = document.getElementById("script").value;
-  if (!script) {
-    alert("حط سكربت أول");
+  if(!script){
+    alert("حط سكربت أول!");
     return;
   }
   const encoded = encodeURIComponent(script);
