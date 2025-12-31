@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Panel</title>
+<style>
+body{background:#111;color:#fff;font-family:Arial;display:flex;justify-content:center;align-items:center;height:100vh}
+.box{background:#000;padding:20px;width:400px}
+textarea,button{width:100%;margin-top:10px;background:#111;color:#fff;border:1px solid #333;padding:8px}
+</style>
+</head>
+<body>
+
+<div class="box">
+  <textarea id="script" rows="12" placeholder="حط سكربتك هنا"></textarea>
+  <button onclick="save()">View</button>
+  <p id="link"></p>
+</div>
+
+<script>
+let user = localStorage.getItem("currentUser");
+let users = JSON.parse(localStorage.getItem("users"));
+
+if(!user) location.href="index.html";
+
+script.value = users[user].script || "";
+
+function save(){
+  users[user].script = script.value;
+  localStorage.setItem("users", JSON.stringify(users));
+  link.innerText =
+    location.origin + location.pathname.replace("panel.html","") +
+    "raw.html?u=" + user;
+}
+</script>
+
+</body>
+</html>
