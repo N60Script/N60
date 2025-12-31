@@ -1,101 +1,101 @@
 <!DOCTYPE html>
 <html lang="ar">
 <head>
-<meta charset="UTF-8">
-<title>N60 Script Panel</title>
-<style>
-html, body {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-  font-family: monospace;
-  background: #0b0b0b;
-  color: #fff;
-}
+  <meta charset="UTF-8">
+  <title>N60 Panel</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-body {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
+  <style>
+    body {
+      margin: 0;
+      width: 100vw;
+      height: 100vh;
+      background: #0f0f0f;
+      color: white;
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
 
-.panel {
-  width: 95%;
-  height: 95%;
-  background: #111;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 0 20px #000;
-  display: flex;
-  flex-direction: column;
-}
+    .panel {
+      width: 95%;
+      height: 90%;
+      background: #111;
+      border-radius: 16px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+    }
 
-h1 {
-  text-align: center;
-  font-size: 36px;
-  margin-bottom: 20px;
-}
+    h1 {
+      text-align: center;
+      margin: 10px 0 20px;
+      color: #00ff99;
+    }
 
-input {
-  width: 100%;
-  padding: 15px;
-  font-size: 18px;
-  margin-bottom: 15px;
-  border-radius: 8px;
-  border: 1px solid #333;
-  background: #000;
-  color: #fff;
-}
+    textarea {
+      flex: 1;
+      width: 100%;
+      background: #000;
+      color: #00ff99;
+      border: none;
+      border-radius: 10px;
+      padding: 15px;
+      font-size: 15px;
+      resize: none;
+      outline: none;
+    }
 
-textarea {
-  flex: 1;
-  padding: 15px;
-  font-size: 16px;
-  border-radius: 8px;
-  border: 1px solid #333;
-  background: #000;
-  color: #fff;
-  resize: none;
-  margin-bottom: 15px;
-}
+    .buttons {
+      margin-top: 15px;
+      display: flex;
+      gap: 15px;
+    }
 
-button {
-  padding: 15px;
-  font-size: 20px;
-  font-weight: bold;
-  border-radius: 8px;
-  border: 1px solid #555;
-  background: #222;
-  color: #fff;
-  cursor: pointer;
-}
+    button {
+      flex: 1;
+      padding: 15px;
+      font-size: 18px;
+      font-weight: bold;
+      border-radius: 12px;
+      border: none;
+      cursor: pointer;
+      background: #00ff99;
+      color: black;
+    }
 
-button:hover {
-  background: #333;
-}
-</style>
+    button:hover {
+      background: #00cc77;
+    }
+  </style>
 </head>
+
 <body>
 
-<div class="panel">
-  <h1>N60 Script Panel</h1>
-  <input id="filename" placeholder="حط اسم الملف (اختياري)">
-  <textarea id="script" placeholder="حط سكربتك هنا"></textarea>
-  <button onclick="openRaw()">RAW</button>
-</div>
+  <div class="panel">
+    <h1>N60 Script Panel</h1>
 
-<script>
-function openRaw() {
-  const script = document.getElementById("script").value;
-  if(!script){
-    alert("حط سكربت أول!");
-    return;
-  }
-  const encoded = encodeURIComponent(script);
-  const url = `https://n60scripts.vercel.app/api/raw?code=${encoded}`;
-  window.open(url, "_blank");
-}
-</script>
+    <textarea id="scriptBox" placeholder="حط سكربتك هنا..."></textarea>
+
+    <div class="buttons">
+      <button onclick="openRAW()">RAW</button>
+    </div>
+  </div>
+
+  <script>
+    function openRAW() {
+      const code = document.getElementById("scriptBox").value;
+
+      if (!code.trim()) {
+        alert("حط سكربتك أول");
+        return;
+      }
+
+      const encoded = encodeURIComponent(code);
+      window.open("raw.html?code=" + encoded, "_blank");
+    }
+  </script>
 
 </body>
 </html>
