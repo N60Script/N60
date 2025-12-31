@@ -1,11 +1,17 @@
-export default function handler(req, res) {
-  const { code } = req.query;
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>RAW</title>
+</head>
+<body>
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const code = params.get("code");
 
-  if (!code) {
-    res.status(400).send("-- no script");
-    return;
-  }
-
-  res.setHeader("Content-Type", "text/plain");
-  res.send(decodeURIComponent(code));
-}
+  document.body.innerText = code
+    ? decodeURIComponent(code)
+    : "-- لا يوجد سكربت";
+</script>
+</body>
+</html>
