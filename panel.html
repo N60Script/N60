@@ -1,61 +1,85 @@
 <!DOCTYPE html>
-<html>
+<html lang="ar">
 <head>
 <meta charset="UTF-8">
-<title>N60 Panel</title>
+<title>N60 Script Panel</title>
+
 <style>
-body{background:#111;color:#fff;font-family:Arial;display:flex;justify-content:center;align-items:center;height:100vh}
-.box{background:#000;padding:25px;width:500px}
-input,textarea,button{
+body {
+  background:#0b0b0b;
+  color:#fff;
+  font-family: Arial, sans-serif;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+  margin:0;
+}
+
+.panel {
+  width:700px;
+  background:#000;
+  border:1px solid #222;
+  padding:20px;
+  border-radius:10px;
+}
+
+h1 {
+  margin:0 0 15px 0;
+  text-align:center;
+}
+
+input, textarea, button {
   width:100%;
   margin-top:10px;
   background:#111;
   color:#fff;
   border:1px solid #333;
-  padding:10px
+  padding:10px;
+  border-radius:5px;
+  font-size:14px;
+}
+
+textarea {
+  height:300px;
+  resize:none;
+}
+
+button {
+  cursor:pointer;
+  background:#000;
+  border:1px solid #555;
+}
+
+button:hover {
+  background:#111;
 }
 </style>
 </head>
+
 <body>
 
-<div class="box">
-  <input id="filename" placeholder="حط اسم ملفك">
-  <textarea id="script" rows="12" placeholder="حط سكربتك هنا"></textarea>
-  <button onclick="openRAW()">RAW</button>
+<div class="panel">
+  <h1>N60 Script Panel</h1>
+
+  <input id="filename" placeholder="حط اسم ملفك (اختياري)">
+
+  <textarea id="script" placeholder="حط سكربتك هنا"></textarea>
+
+  <button onclick="openRaw()">RAW</button>
 </div>
 
 <script>
-let user = localStorage.getItem("currentUser");
-let users = JSON.parse(localStorage.getItem("users") || "{}");
-
-if(!user || !users[user]) location.href="index.html";
-
-filename.oninput = () => {
-  let name = filename.value.trim();
-  if(!name) return;
-
-  if(!users[user].files[name]){
-    users[user].files[name] = "";
-    localStorage.setItem("users", JSON.stringify(users));
+function openRaw(){
+  const script = document.getElementById("script").value;
+  if(!script){
+    alert("حط سكربت أول");
+    return;
   }
 
-  script.value = users[user].files[name];
-};
-
-script.oninput = () => {
-  let name = filename.value.trim();
-  if(!name) return;
-  users[user].files[name] = script.value;
-  localStorage.setItem("users", JSON.stringify(users));
-};
-
-function openRAW(){
-  let name = filename.value.trim();
-  if(!name) return;
-  window.open(
-    "raw.html?u=" + user + "&f=" + name,
-    "_blank"
-  );
+  const encoded = encodeURIComponent(script);
+  const url = `https://n60scripts.vercel.app/api/raw?code=${encoded}`;
+  window.open(url, "_blank");
 }
 </script>
 
