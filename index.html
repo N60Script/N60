@@ -1,74 +1,123 @@
 <!DOCTYPE html>
 <html lang="ar">
 <head>
-<meta charset="UTF-8">
-<title>N60 Hub</title>
-<style>
-body{background:#111;color:#fff;font-family:Arial;display:flex;justify-content:center;align-items:center;height:100vh}
-.box{background:#000;padding:25px;width:350px}
-.top{display:flex;justify-content:space-between;margin-bottom:10px}
-input,button{width:100%;margin-top:10px;background:#111;color:#fff;border:1px solid #333;padding:10px}
-.error{color:red;font-size:13px}
-</style>
+  <meta charset="UTF-8">
+  <title>N60 Scripts | Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      width: 100vw;
+      height: 100vh;
+      background: linear-gradient(135deg, #0f0f0f, #1a1a1a);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: white;
+    }
+
+    .login-box {
+      width: 90%;
+      max-width: 500px;
+      height: 70%;
+      background: #111;
+      border-radius: 16px;
+      box-shadow: 0 0 30px rgba(0,0,0,0.8);
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .login-box h1 {
+      text-align: center;
+      margin-bottom: 10px;
+      font-size: 36px;
+      color: #00ff99;
+    }
+
+    .login-box p {
+      text-align: center;
+      margin-bottom: 40px;
+      opacity: 0.8;
+    }
+
+    input {
+      width: 100%;
+      padding: 16px;
+      margin-bottom: 20px;
+      font-size: 18px;
+      border-radius: 10px;
+      border: none;
+      outline: none;
+      background: #1f1f1f;
+      color: white;
+    }
+
+    button {
+      padding: 16px;
+      font-size: 20px;
+      border-radius: 12px;
+      border: none;
+      cursor: pointer;
+      background: #00ff99;
+      color: black;
+      font-weight: bold;
+      transition: 0.2s;
+    }
+
+    button:hover {
+      background: #00cc77;
+    }
+
+    .note {
+      margin-top: 20px;
+      font-size: 14px;
+      opacity: 0.6;
+      text-align: center;
+    }
+  </style>
 </head>
+
 <body>
 
-<div class="box">
-  <div class="top">
-    <span onclick="loginUI()">تسجيل دخول</span>
-    <span onclick="registerUI()">إنشاء حساب</span>
+  <div class="login-box">
+    <h1>N60 Scripts</h1>
+    <p>تسجيل الدخول إلى لوحة السكربتات</p>
+
+    <input type="text" id="username" placeholder="اسم المستخدم">
+    <input type="password" id="password" placeholder="كلمة المرور">
+
+    <button onclick="login()">تسجيل الدخول</button>
+
+    <div class="note">
+      نسخة تجريبية – بدون حفظ حسابات
+    </div>
   </div>
-  <div id="form"></div>
-</div>
 
-<script>
-let users = JSON.parse(localStorage.getItem("users") || "{}");
+  <script>
+    function login() {
+      const u = document.getElementById("username").value;
+      const p = document.getElementById("password").value;
 
-function saveUsers(){
-  localStorage.setItem("users", JSON.stringify(users));
-}
+      if (!u || !p) {
+        alert("املأ جميع الحقول");
+        return;
+      }
 
-function loginUI(){
-  form.innerHTML = `
-    <input id="u" placeholder="يوزرك">
-    <input id="p" type="password" placeholder="كلمة المرور">
-    <button onclick="login()">دخول</button>
-  `;
-}
+      // تسجيل دخول تجريبي
+      localStorage.setItem("n60_user", u);
 
-function registerUI(){
-  form.innerHTML = `
-    <input id="u" placeholder="يوزرك">
-    <input id="p" type="password" placeholder="كلمة المرور">
-    <button onclick="register()">إنشاء</button>
-    <div class="error" id="err"></div>
-  `;
-}
-
-loginUI();
-
-function register(){
-  if(users[u.value]){
-    err.innerText="عذراً هذا الحساب مستخدم";
-    return;
-  }
-
-  users[u.value] = {
-    password:p.value,
-    files:{}
-  };
-
-  saveUsers();
-  localStorage.setItem("currentUser", u.value);
-  location.href="panel.html";
-}
-
-function login(){
-  if(!users[u.value] || users[u.value].password !== p.value) return;
-  localStorage.setItem("currentUser", u.value);
-  location.href="panel.html";
-}
-</script>
+      // تحويل للوحة التحكم
+      window.location.href = "panel.html";
+    }
+  </script>
 
 </body>
 </html>
