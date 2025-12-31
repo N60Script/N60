@@ -3,60 +3,63 @@
 <head>
 <meta charset="UTF-8">
 <title>N60 Script Panel</title>
-
 <style>
 body {
-  background:#0b0b0b;
-  color:#fff;
+  margin: 0;
   font-family: Arial, sans-serif;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  height:100vh;
-  margin:0;
+  background: #0b0b0b;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  color: #fff;
 }
 
 .panel {
-  width:700px;
-  background:#000;
-  border:1px solid #222;
-  padding:20px;
-  border-radius:10px;
+  width: 90%;
+  max-width: 1000px;
+  background: #111;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 0 20px #000;
 }
 
 h1 {
-  margin:0 0 15px 0;
-  text-align:center;
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 28px;
 }
 
 input, textarea, button {
-  width:100%;
-  margin-top:10px;
-  background:#111;
-  color:#fff;
-  border:1px solid #333;
-  padding:10px;
-  border-radius:5px;
-  font-size:14px;
+  width: 100%;
+  margin-top: 15px;
+  padding: 15px;
+  border-radius: 8px;
+  border: 1px solid #333;
+  background: #000;
+  color: #fff;
+  font-size: 16px;
 }
 
 textarea {
-  height:300px;
-  resize:none;
+  min-height: 400px;
+  resize: none;
+  font-family: monospace;
 }
 
 button {
-  cursor:pointer;
-  background:#000;
-  border:1px solid #555;
+  cursor: pointer;
+  background: #222;
+  border: 1px solid #555;
+  font-size: 18px;
+  font-weight: bold;
 }
 
 button:hover {
-  background:#111;
+  background: #333;
 }
 </style>
 </head>
-
 <body>
 
 <div class="panel">
@@ -70,13 +73,12 @@ button:hover {
 </div>
 
 <script>
-function openRaw(){
+function openRaw() {
   const script = document.getElementById("script").value;
-  if(!script){
+  if (!script) {
     alert("حط سكربت أول");
     return;
   }
-
   const encoded = encodeURIComponent(script);
   const url = `https://n60scripts.vercel.app/api/raw?code=${encoded}`;
   window.open(url, "_blank");
