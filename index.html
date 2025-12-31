@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<title>N60 Hub</title>
+<style>
+body{background:#111;color:#fff;font-family:Arial;display:flex;justify-content:center;align-items:center;height:100vh}
+.box{background:#000;padding:20px;width:300px}
+.top{display:flex;justify-content:space-between}
+input,button{width:100%;margin-top:10px;background:#111;color:#fff;border:1px solid #333;padding:8px}
+.error{color:red;font-size:13px}
+</style>
+</head>
+<body>
+
+<div class="box">
+  <div class="top">
+    <span onclick="loginUI()">تسجيل دخول</span>
+    <span onclick="registerUI()">إنشاء حساب</span>
+  </div>
+  <div id="form"></div>
+</div>
+
+<script>
+let users = JSON.parse(localStorage.getItem("users") || "{}");
+
+function saveUsers(){
+  localStorage.setItem("users", JSON.stringify(users));
+}
+
+function loginUI(){
+  form.innerHTML = `
+    <input id="u" placeholder="يوزرك">
+    <input id="p" type="password" placeholder="كلمة المرور">
+    <button onclick="login()">دخول</button>
+  `;
+}
+
+function registerUI(){
+  form.innerHTML = `
+    <input id="u" placeholder="يوزرك">
+    <input id="p" type="password" placeholder="كلمة المرور">
+    <button onclick="register()">إنشاء</button>
+    <div class="error" id="err"></div>
+  `;
+}
+
+loginUI();
+
+function register(){
+  if(users[u.value]){
+    err.innerText = "عذراً هذا الحساب مستخدم";
+    return;
+  }
+  users[u.value] = { password:p.value, script:"" };
+  saveUsers();
+  loginUI();
+}
+
+function login(){
+  if(!users[u.value] || users[u.value].password !== p.value) return;
+  localStorage.setItem("currentUser", u.value);
+  location.href = "panel.html";
+}
+</script>
+
+</body>
+</html>
