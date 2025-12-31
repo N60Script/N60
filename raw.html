@@ -1,0 +1,8 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<script>
+let users = JSON.parse(localStorage.getItem("users") || "{}");
+let u = new URLSearchParams(location.search).get("u");
+
+document.body.innerText = users[u]?.script || "";
+</script>
