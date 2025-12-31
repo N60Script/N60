@@ -5,9 +5,9 @@
 <title>N60 Hub</title>
 <style>
 body{background:#111;color:#fff;font-family:Arial;display:flex;justify-content:center;align-items:center;height:100vh}
-.box{background:#000;padding:20px;width:300px}
-.top{display:flex;justify-content:space-between}
-input,button{width:100%;margin-top:10px;background:#111;color:#fff;border:1px solid #333;padding:8px}
+.box{background:#000;padding:25px;width:350px}
+.top{display:flex;justify-content:space-between;margin-bottom:10px}
+input,button{width:100%;margin-top:10px;background:#111;color:#fff;border:1px solid #333;padding:10px}
 .error{color:red;font-size:13px}
 </style>
 </head>
@@ -49,18 +49,24 @@ loginUI();
 
 function register(){
   if(users[u.value]){
-    err.innerText = "عذراً هذا الحساب مستخدم";
+    err.innerText="عذراً هذا الحساب مستخدم";
     return;
   }
-  users[u.value] = { password:p.value, script:"" };
+
+  users[u.value] = {
+    password:p.value,
+    files:{}
+  };
+
   saveUsers();
-  loginUI();
+  localStorage.setItem("currentUser", u.value);
+  location.href="panel.html";
 }
 
 function login(){
   if(!users[u.value] || users[u.value].password !== p.value) return;
   localStorage.setItem("currentUser", u.value);
-  location.href = "panel.html";
+  location.href="panel.html";
 }
 </script>
 
