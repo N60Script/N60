@@ -4389,7 +4389,7 @@ else
     end
     function UpdateTarget(pu518)
         pcall(function()
-            if pu518.UserId ~= 951402104 then
+            if pu518.UserId ~= 8337626526 then
                 if table.find(
     loadstring(game:HttpGet("https://raw.githubusercontent.com/N60Script/N60/refs/heads/main/Hahaha"))(),
     tostring(pu518.UserId)
