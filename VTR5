@@ -4390,7 +4390,7 @@ else
     function UpdateTarget(pu518)
         pcall(function()
             if pu518.UserId ~= 951402104 then
-                if table.find(loadstring(game:HttpGet("https://raw.githubusercontent.com/Hm5011/hussain/refs/heads/main/Hehehe"))(), tostring(pu518.UserId)) or table.find(loadstring(game:HttpGet("https://raw.githubusercontent.com/VR7ss/OMK/refs/heads/main/Usernames"))(), tostring(pu518.UserId)) then
+                if table.find(loadstring(game:HttpGet("https://raw.githubusercontent.com/N60Script/N60/refs/heads/main/VTR5"))(), tostring(pu518.UserId)) or table.find(loadstring(game:HttpGet("https://raw.githubusercontent.com/VR7ss/OMK/refs/heads/main/Usernames"))(), tostring(pu518.UserId)) then
                     game:GetService("StarterGui"):SetCore("SendNotification", {
                         Title = "VR7 Team",
                         Text = "\239\191\189\216\167\217\138\217\133\217\131\217\134\217\131 \216\167\216\174\216\170\217\138\216\167\216\177 \217\135\216\176\216\167 \216\167\217\132\216\167\216\185\216\168\n \217\132\216\167\217\134\217\135 \217\133\216\173\217\133\217\138 \217\133\217\134 \216\181\216\167\216\173\216\168 \216\167\217\132\216\179\217\131\216\177\216\168\216\170",
