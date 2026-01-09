@@ -1,143 +1,71 @@
---================ Services =================
+-- ================= Services =================
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 
 local player = Players.LocalPlayer
-local camera = workspace.CurrentCamera
 
---================ Character =================
-local character = player.Character or player.CharacterAdded:Wait()
-local humanoid = character:WaitForChild("Humanoid")
-local hrp = character:WaitForChild("HumanoidRootPart")
-local animator = humanoid:WaitForChild("Animator")
-
---================ Settings =================
-local REAL_SPEED = 28        -- السرعة اللي يشوفها السيرفر
-local VFLY_SPEED = 28        -- إحساس VFly (خلها نفس REAL)
-local NORMAL_SPEED = 16
-local DURATION = 7           -- مدة التفعيل
-
---================ GUI =================
+-- ================= GUI =================
 local gui = Instance.new("ScreenGui")
-gui.Name = "SpeedFakeGUI"
+gui.Name = "CoordsGui"
 gui.ResetOnSpawn = false
 gui.Parent = player:WaitForChild("PlayerGui")
 
-local main = Instance.new("Frame")
-main.Size = UDim2.new(0, 160, 0, 60)
-main.Position = UDim2.new(0.4, 0, 0.4, 0)
-main.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-main.Active = true
-main.Draggable = true
-main.Parent = gui
+local frame = Instance.new("Frame")
+frame.Parent = gui
+frame.Size = UDim2.new(0, 260, 0, 40)
+frame.Position = UDim2.new(0, 15, 0.5, -20)
+frame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+frame.BorderSizePixel = 0
 
-Instance.new("UICorner", main).CornerRadius = UDim.new(0, 14)
+local corner = Instance.new("UICorner", frame)
+corner.CornerRadius = UDim.new(0, 6)
 
-local stroke = Instance.new("UIStroke", main)
-stroke.Color = Color3.fromRGB(0, 150, 255)
-stroke.Thickness = 2
+-- ================= Text =================
+local coordsLabel = Instance.new("TextLabel")
+coordsLabel.Parent = frame
+coordsLabel.Size = UDim2.new(1, -60, 1, 0)
+coordsLabel.Position = UDim2.new(0, 8, 0, 0)
+coordsLabel.BackgroundTransparency = 1
+coordsLabel.TextXAlignment = Enum.TextXAlignment.Left
+coordsLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+coordsLabel.Font = Enum.Font.Gotham
+coordsLabel.TextSize = 14
+coordsLabel.Text = "X: 0 | Y: 0 | Z: 0"
 
-local label = Instance.new("TextLabel")
-label.Size = UDim2.new(1, -10, 1, -10)
-label.Position = UDim2.new(0, 5, 0, 5)
-label.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
-label.Text = "SpeedFake"
-label.TextColor3 = Color3.fromRGB(0, 180, 255)
-label.Font = Enum.Font.GothamBold
-label.TextSize = 14
-label.Parent = main
-Instance.new("UICorner", label).CornerRadius = UDim.new(0, 10)
+-- ================= Copy Button =================
+local copyBtn = Instance.new("TextButton")
+copyBtn.Parent = frame
+copyBtn.Size = UDim2.new(0, 45, 1, -8)
+copyBtn.Position = UDim2.new(1, -50, 0, 4)
+copyBtn.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+copyBtn.Text = "نسخ"
+copyBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+copyBtn.Font = Enum.Font.GothamBold
+copyBtn.TextSize = 13
+copyBtn.BorderSizePixel = 0
 
---================ No Animation =================
-local noAnimConn
-local function enableNoAnim()
-	for _, track in ipairs(animator:GetPlayingAnimationTracks()) do
-		track:Stop(0)
+local btnCorner = Instance.new("UICorner", copyBtn)
+btnCorner.CornerRadius = UDim.new(0, 6)
+
+-- ================= Logic =================
+local lastCoords = ""
+
+RunService.RenderStepped:Connect(function()
+	local char = player.Character
+	local hrp = char and char:FindFirstChild("HumanoidRootPart")
+	if hrp then
+		local pos = hrp.Position
+		local x = math.floor(pos.X * 100) / 100
+		local y = math.floor(pos.Y * 100) / 100
+		local z = math.floor(pos.Z * 100) / 100
+
+		lastCoords = string.format("X: %s | Y: %s | Z: %s", x, y, z)
+		coordsLabel.Text = lastCoords
 	end
+end)
 
-	noAnimConn = animator.AnimationPlayed:Connect(function(track)
-		track:Stop(0)
-	end)
-
-	humanoid.AutoRotate = true
-end
-
-local function disableNoAnim()
-	if noAnimConn then
-		noAnimConn:Disconnect()
-		noAnimConn = nil
-	end
-	humanoid.AutoRotate = true
-end
-
---================ VFly REAL =================
-local vflyConn
-local function startVFly()
-	if vflyConn then vflyConn:Disconnect() end
-
-	vflyConn = RunService.RenderStepped:Connect(function()
-		if humanoid.MoveDirection.Magnitude > 0 then
-			hrp.AssemblyLinearVelocity = Vector3.new(
-				humanoid.MoveDirection.X * VFLY_SPEED,
-				hrp.AssemblyLinearVelocity.Y,
-				humanoid.MoveDirection.Z * VFLY_SPEED
-			)
-		else
-			hrp.AssemblyLinearVelocity = Vector3.new(
-				0,
-				hrp.AssemblyLinearVelocity.Y,
-				0
-			)
-		end
-	end)
-end
-
-local function stopVFly()
-	if vflyConn then
-		vflyConn:Disconnect()
-		vflyConn = nil
-	end
-end
-
---================ Enable Speed =================
-local active = false
-local function enableSpeed()
-	if active then return end
-	active = true
-
-	label.Text = "تم التفعيل.."
-	humanoid.WalkSpeed = REAL_SPEED
-	enableNoAnim()
-	startVFly()
-
-	task.delay(DURATION, function()
-		humanoid.WalkSpeed = NORMAL_SPEED
-		disableNoAnim()
-		stopVFly()
-		label.Text = "SpeedFake"
-		active = false
-	end)
-end
-
---================ ProximityPrompt Trigger =================
-local function hookPrompt(prompt)
-	prompt.Triggered:Connect(function(plr)
-		if plr == player then
-			enableSpeed()
-		end
-	end)
-end
-
--- الموجودين
-for _, obj in ipairs(workspace:GetDescendants()) do
-	if obj:IsA("ProximityPrompt") then
-		hookPrompt(obj)
-	end
-end
-
--- اللي ينضافوا لاحقًا
-workspace.DescendantAdded:Connect(function(obj)
-	if obj:IsA("ProximityPrompt") then
-		hookPrompt(obj)
+copyBtn.MouseButton1Click:Connect(function()
+	if setclipboard then
+		setclipboard(lastCoords)
 	end
 end)
