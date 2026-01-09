@@ -1,0 +1,134 @@
+--================ Services =================
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local CollectionService = game:GetService("CollectionService") -- لتحديد الـ ProximityPrompt
+
+local player = Players.LocalPlayer
+local camera = workspace.CurrentCamera
+
+--================ Character =================
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoid = character:WaitForChild("Humanoid")
+local hrp = character:WaitForChild("HumanoidRootPart")
+local animator = humanoid:WaitForChild("Animator")
+
+--================ Speed Values =================
+local REAL_SPEED_ON  = 40
+local REAL_SPEED_OFF = 16
+local VISUAL_SPEED   = 25
+local DURATION = 7 -- المدة بالثواني
+
+--================ GUI =================
+local gui = Instance.new("ScreenGui")
+gui.Name = "SpeedFakeGUI"
+gui.ResetOnSpawn = false
+gui.Parent = player:WaitForChild("PlayerGui")
+
+local main = Instance.new("Frame")
+main.Size = UDim2.new(0, 160, 0, 60)
+main.Position = UDim2.new(0.4, 0, 0.4, 0)
+main.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+main.Active = true
+main.Draggable = true
+main.Parent = gui
+
+Instance.new("UICorner", main).CornerRadius = UDim.new(0, 14)
+
+local stroke = Instance.new("UIStroke", main)
+stroke.Color = Color3.fromRGB(0, 150, 255)
+stroke.Thickness = 2
+
+-- ================= TextLabel بدل الزر =================
+local lbl = Instance.new("TextLabel")
+lbl.Size = UDim2.new(1, -10, 1, -10)
+lbl.Position = UDim2.new(0, 5, 0, 5)
+lbl.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+lbl.Text = "SpeedFake"
+lbl.TextColor3 = Color3.fromRGB(0, 180, 255)
+lbl.Font = Enum.Font.GothamBold
+lbl.TextSize = 14
+lbl.Parent = main
+Instance.new("UICorner", lbl).CornerRadius = UDim.new(0, 10)
+
+--================ NO ANIMATION =================
+local noAnimConn
+local function enableNoAnim()
+	for _, track in ipairs(animator:GetPlayingAnimationTracks()) do
+		track:Stop(0)
+	end
+
+	noAnimConn = animator.AnimationPlayed:Connect(function(track)
+		track:Stop(0)
+	end)
+
+	humanoid.AutoRotate = true
+end
+
+local function disableNoAnim()
+	if noAnimConn then
+		noAnimConn:Disconnect()
+		noAnimConn = nil
+	end
+	humanoid.AutoRotate = true
+end
+
+--================ FAKE SPEED =================
+local fakeConn
+local function startFakeSpeed()
+	if fakeConn then fakeConn:Disconnect() end
+	fakeConn = RunService.RenderStepped:Connect(function(dt)
+		if humanoid.MoveDirection.Magnitude > 0 then
+			local dir = humanoid.MoveDirection.Unit
+			camera.CFrame = camera.CFrame + (dir * VISUAL_SPEED * dt)
+		end
+	end)
+end
+
+local function stopFakeSpeed()
+	if fakeConn then
+		fakeConn:Disconnect()
+		fakeConn = nil
+	end
+end
+
+--================ السرعة الفعلية =================
+local function enableSpeed()
+	humanoid.WalkSpeed = REAL_SPEED_ON
+	enableNoAnim()
+	startFakeSpeed()
+	lbl.Text = "تم التفعيل.."
+
+	delay(DURATION, function()
+		humanoid.WalkSpeed = REAL_SPEED_OFF
+		disableNoAnim()
+		stopFakeSpeed()
+		lbl.Text = "SpeedFake"
+	end)
+end
+
+--================ تفعيل عند أي ProximityPrompt =================
+-- نبحث عن كل ProximityPrompt في اللعبة
+local function connectPrompts(parent)
+	for _, prompt in ipairs(parent:GetDescendants()) do
+		if prompt:IsA("ProximityPrompt") then
+			prompt.Triggered:Connect(function(plr)
+				if plr == player then
+					enableSpeed()
+				end
+			end)
+		end
+	end
+end
+
+connectPrompts(workspace) -- كل الـ Prompts في العالم
+
+-- لو أي Prompt يضاف لاحقاً تلقائي
+workspace.DescendantAdded:Connect(function(desc)
+	if desc:IsA("ProximityPrompt") then
+		desc.Triggered:Connect(function(plr)
+			if plr == player then
+				enableSpeed()
+			end
+		end)
+	end
+end)
