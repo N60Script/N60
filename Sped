@@ -1,5 +1,6 @@
 --================ Services =================
 local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
 
 local player = Players.LocalPlayer
 
@@ -7,42 +8,60 @@ local player = Players.LocalPlayer
 local character = player.Character or player.CharacterAdded:Wait()
 local humanoid = character:WaitForChild("Humanoid")
 local hrp = character:WaitForChild("HumanoidRootPart")
+local animator = humanoid:WaitForChild("Animator")
 
---================ Target Positions =================
+--================ Targets =================
 local POS_1 = Vector3.new(-350.54, -7.01, 27.08)
 local POS_2 = Vector3.new(-348.18, -701, 98.04)
 
-local NORMAL_SPEED = 16
-local MOVE_SPEED = 27
-
+local FAKE_SPEED = 22
 local running = false
 
---================ Walk To Function =================
-local function walkTo(position)
-	humanoid:MoveTo(position)
-	humanoid.MoveToFinished:Wait()
+--================ No Animation =================
+local animConn
+local function enableNoAnim()
+	for _, t in ipairs(animator:GetPlayingAnimationTracks()) do
+		t:Stop(0)
+	end
+
+	animConn = animator.AnimationPlayed:Connect(function(track)
+		track:Stop(0)
+	end)
+
+	humanoid.AutoRotate = true
 end
 
---================ Main Sequence =================
+--================ Disable Player Control =================
+local function lockPlayer()
+	humanoid.WalkSpeed = 0
+	humanoid.JumpPower = 0
+end
+
+--================ Fake Walk =================
+local function fakeWalkTo(target)
+	while (hrp.Position - target).Magnitude > 2 do
+		local dir = (target - hrp.Position).Unit
+		humanoid:Move(dir, false)
+		RunService.RenderStepped:Wait()
+	end
+end
+
+--================ Main =================
 local function startSequence()
 	if running then return end
 	running = true
 
-	-- سرعة مشي طبيعية (تشوفها السيرفر)
-	humanoid.WalkSpeed = MOVE_SPEED
+	lockPlayer()
+	enableNoAnim()
 
-	-- يمشي للإحداثية الأولى
-	walkTo(POS_1)
+	fakeWalkTo(POS_1)
+	fakeWalkTo(POS_2)
 
-	-- أول ما يوصل → الثانية
-	walkTo(POS_2)
-
-	-- بعد الوصول
-	task.wait(0.3)
+	task.wait(0.2)
 	player:Kick("تم السرقة..")
 end
 
---================ ProximityPrompt Trigger =================
+--================ ProximityPrompt Hook =================
 local function hookPrompt(prompt)
 	prompt.Triggered:Connect(function(plr)
 		if plr == player then
@@ -51,14 +70,12 @@ local function hookPrompt(prompt)
 	end)
 end
 
--- الموجودين
 for _, obj in ipairs(workspace:GetDescendants()) do
 	if obj:IsA("ProximityPrompt") then
 		hookPrompt(obj)
 	end
 end
 
--- اللي ينضافوا لاحقًا
 workspace.DescendantAdded:Connect(function(obj)
 	if obj:IsA("ProximityPrompt") then
 		hookPrompt(obj)
