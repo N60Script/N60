@@ -12,8 +12,8 @@ local hrp = character:WaitForChild("HumanoidRootPart")
 local animator = humanoid:WaitForChild("Animator")
 
 --================ Settings =================
-local REAL_SPEED = 19        -- السرعة اللي يشوفها السيرفر
-local VFLY_SPEED = 19        -- إحساس VFly (خلها نفس REAL)
+local REAL_SPEED = 25        -- السرعة اللي يشوفها السيرفر
+local VFLY_SPEED = 25        -- إحساس VFly (خلها نفس REAL)
 local NORMAL_SPEED = 16
 local DURATION = 7           -- مدة التفعيل
 
