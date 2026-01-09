@@ -1,71 +1,66 @@
--- ================= Services =================
+--================ Services =================
 local Players = game:GetService("Players")
-local RunService = game:GetService("RunService")
 
 local player = Players.LocalPlayer
 
--- ================= GUI =================
-local gui = Instance.new("ScreenGui")
-gui.Name = "CoordsGui"
-gui.ResetOnSpawn = false
-gui.Parent = player:WaitForChild("PlayerGui")
+--================ Character =================
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoid = character:WaitForChild("Humanoid")
+local hrp = character:WaitForChild("HumanoidRootPart")
 
-local frame = Instance.new("Frame")
-frame.Parent = gui
-frame.Size = UDim2.new(0, 260, 0, 40)
-frame.Position = UDim2.new(0, 15, 0.5, -20)
-frame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
-frame.BorderSizePixel = 0
+--================ Target Positions =================
+local POS_1 = Vector3.new(-350.54, -7.01, 27.08)
+local POS_2 = Vector3.new(-348.18, -701, 98.04)
 
-local corner = Instance.new("UICorner", frame)
-corner.CornerRadius = UDim.new(0, 6)
+local NORMAL_SPEED = 16
+local MOVE_SPEED = 27
 
--- ================= Text =================
-local coordsLabel = Instance.new("TextLabel")
-coordsLabel.Parent = frame
-coordsLabel.Size = UDim2.new(1, -60, 1, 0)
-coordsLabel.Position = UDim2.new(0, 8, 0, 0)
-coordsLabel.BackgroundTransparency = 1
-coordsLabel.TextXAlignment = Enum.TextXAlignment.Left
-coordsLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-coordsLabel.Font = Enum.Font.Gotham
-coordsLabel.TextSize = 14
-coordsLabel.Text = "X: 0 | Y: 0 | Z: 0"
+local running = false
 
--- ================= Copy Button =================
-local copyBtn = Instance.new("TextButton")
-copyBtn.Parent = frame
-copyBtn.Size = UDim2.new(0, 45, 1, -8)
-copyBtn.Position = UDim2.new(1, -50, 0, 4)
-copyBtn.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
-copyBtn.Text = "نسخ"
-copyBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-copyBtn.Font = Enum.Font.GothamBold
-copyBtn.TextSize = 13
-copyBtn.BorderSizePixel = 0
+--================ Walk To Function =================
+local function walkTo(position)
+	humanoid:MoveTo(position)
+	humanoid.MoveToFinished:Wait()
+end
 
-local btnCorner = Instance.new("UICorner", copyBtn)
-btnCorner.CornerRadius = UDim.new(0, 6)
+--================ Main Sequence =================
+local function startSequence()
+	if running then return end
+	running = true
 
--- ================= Logic =================
-local lastCoords = ""
+	-- سرعة مشي طبيعية (تشوفها السيرفر)
+	humanoid.WalkSpeed = MOVE_SPEED
 
-RunService.RenderStepped:Connect(function()
-	local char = player.Character
-	local hrp = char and char:FindFirstChild("HumanoidRootPart")
-	if hrp then
-		local pos = hrp.Position
-		local x = math.floor(pos.X * 100) / 100
-		local y = math.floor(pos.Y * 100) / 100
-		local z = math.floor(pos.Z * 100) / 100
+	-- يمشي للإحداثية الأولى
+	walkTo(POS_1)
 
-		lastCoords = string.format("X: %s | Y: %s | Z: %s", x, y, z)
-		coordsLabel.Text = lastCoords
+	-- أول ما يوصل → الثانية
+	walkTo(POS_2)
+
+	-- بعد الوصول
+	task.wait(0.3)
+	player:Kick("تم السرقة..")
+end
+
+--================ ProximityPrompt Trigger =================
+local function hookPrompt(prompt)
+	prompt.Triggered:Connect(function(plr)
+		if plr == player then
+			startSequence()
+		end
+	end)
+end
+
+-- الموجودين
+for _, obj in ipairs(workspace:GetDescendants()) do
+	if obj:IsA("ProximityPrompt") then
+		hookPrompt(obj)
 	end
-end)
+end
 
-copyBtn.MouseButton1Click:Connect(function()
-	if setclipboard then
-		setclipboard(lastCoords)
+-- اللي ينضافوا لاحقًا
+workspace.DescendantAdded:Connect(function(obj)
+	if obj:IsA("ProximityPrompt") then
+		hookPrompt(obj)
 	end
 end)
