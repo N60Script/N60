@@ -1,7 +1,6 @@
 --================ Services =================
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
-local CollectionService = game:GetService("CollectionService") -- لتحديد الـ ProximityPrompt
 
 local player = Players.LocalPlayer
 local camera = workspace.CurrentCamera
@@ -12,11 +11,11 @@ local humanoid = character:WaitForChild("Humanoid")
 local hrp = character:WaitForChild("HumanoidRootPart")
 local animator = humanoid:WaitForChild("Animator")
 
---================ Speed Values =================
-local REAL_SPEED_ON  = 40
-local REAL_SPEED_OFF = 16
-local VISUAL_SPEED   = 25
-local DURATION = 7 -- المدة بالثواني
+--================ Settings =================
+local REAL_SPEED = 27        -- السرعة اللي يشوفها السيرفر
+local VFLY_SPEED = 35        -- إحساس VFly (خلها نفس REAL)
+local NORMAL_SPEED = 16
+local DURATION = 7           -- مدة التفعيل
 
 --================ GUI =================
 local gui = Instance.new("ScreenGui")
@@ -38,19 +37,18 @@ local stroke = Instance.new("UIStroke", main)
 stroke.Color = Color3.fromRGB(0, 150, 255)
 stroke.Thickness = 2
 
--- ================= TextLabel بدل الزر =================
-local lbl = Instance.new("TextLabel")
-lbl.Size = UDim2.new(1, -10, 1, -10)
-lbl.Position = UDim2.new(0, 5, 0, 5)
-lbl.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
-lbl.Text = "SpeedFake"
-lbl.TextColor3 = Color3.fromRGB(0, 180, 255)
-lbl.Font = Enum.Font.GothamBold
-lbl.TextSize = 14
-lbl.Parent = main
-Instance.new("UICorner", lbl).CornerRadius = UDim.new(0, 10)
+local label = Instance.new("TextLabel")
+label.Size = UDim2.new(1, -10, 1, -10)
+label.Position = UDim2.new(0, 5, 0, 5)
+label.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+label.Text = "SpeedFake"
+label.TextColor3 = Color3.fromRGB(0, 180, 255)
+label.Font = Enum.Font.GothamBold
+label.TextSize = 14
+label.Parent = main
+Instance.new("UICorner", label).CornerRadius = UDim.new(0, 10)
 
---================ NO ANIMATION =================
+--================ No Animation =================
 local noAnimConn
 local function enableNoAnim()
 	for _, track in ipairs(animator:GetPlayingAnimationTracks()) do
@@ -72,63 +70,74 @@ local function disableNoAnim()
 	humanoid.AutoRotate = true
 end
 
---================ FAKE SPEED =================
-local fakeConn
-local function startFakeSpeed()
-	if fakeConn then fakeConn:Disconnect() end
-	fakeConn = RunService.RenderStepped:Connect(function(dt)
+--================ VFly REAL =================
+local vflyConn
+local function startVFly()
+	if vflyConn then vflyConn:Disconnect() end
+
+	vflyConn = RunService.RenderStepped:Connect(function()
 		if humanoid.MoveDirection.Magnitude > 0 then
-			local dir = humanoid.MoveDirection.Unit
-			camera.CFrame = camera.CFrame + (dir * VISUAL_SPEED * dt)
+			hrp.AssemblyLinearVelocity = Vector3.new(
+				humanoid.MoveDirection.X * VFLY_SPEED,
+				hrp.AssemblyLinearVelocity.Y,
+				humanoid.MoveDirection.Z * VFLY_SPEED
+			)
+		else
+			hrp.AssemblyLinearVelocity = Vector3.new(
+				0,
+				hrp.AssemblyLinearVelocity.Y,
+				0
+			)
 		end
 	end)
 end
 
-local function stopFakeSpeed()
-	if fakeConn then
-		fakeConn:Disconnect()
-		fakeConn = nil
+local function stopVFly()
+	if vflyConn then
+		vflyConn:Disconnect()
+		vflyConn = nil
 	end
 end
 
---================ السرعة الفعلية =================
+--================ Enable Speed =================
+local active = false
 local function enableSpeed()
-	humanoid.WalkSpeed = REAL_SPEED_ON
-	enableNoAnim()
-	startFakeSpeed()
-	lbl.Text = "تم التفعيل.."
+	if active then return end
+	active = true
 
-	delay(DURATION, function()
-		humanoid.WalkSpeed = REAL_SPEED_OFF
+	label.Text = "تم التفعيل.."
+	humanoid.WalkSpeed = REAL_SPEED
+	enableNoAnim()
+	startVFly()
+
+	task.delay(DURATION, function()
+		humanoid.WalkSpeed = NORMAL_SPEED
 		disableNoAnim()
-		stopFakeSpeed()
-		lbl.Text = "SpeedFake"
+		stopVFly()
+		label.Text = "SpeedFake"
+		active = false
 	end)
 end
 
---================ تفعيل عند أي ProximityPrompt =================
--- نبحث عن كل ProximityPrompt في اللعبة
-local function connectPrompts(parent)
-	for _, prompt in ipairs(parent:GetDescendants()) do
-		if prompt:IsA("ProximityPrompt") then
-			prompt.Triggered:Connect(function(plr)
-				if plr == player then
-					enableSpeed()
-				end
-			end)
+--================ ProximityPrompt Trigger =================
+local function hookPrompt(prompt)
+	prompt.Triggered:Connect(function(plr)
+		if plr == player then
+			enableSpeed()
 		end
+	end)
+end
+
+-- الموجودين
+for _, obj in ipairs(workspace:GetDescendants()) do
+	if obj:IsA("ProximityPrompt") then
+		hookPrompt(obj)
 	end
 end
 
-connectPrompts(workspace) -- كل الـ Prompts في العالم
-
--- لو أي Prompt يضاف لاحقاً تلقائي
-workspace.DescendantAdded:Connect(function(desc)
-	if desc:IsA("ProximityPrompt") then
-		desc.Triggered:Connect(function(plr)
-			if plr == player then
-				enableSpeed()
-			end
-		end)
+-- اللي ينضافوا لاحقًا
+workspace.DescendantAdded:Connect(function(obj)
+	if obj:IsA("ProximityPrompt") then
+		hookPrompt(obj)
 	end
 end)
