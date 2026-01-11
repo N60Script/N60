@@ -37,7 +37,7 @@ client.on("messageCreate", async (message) => {
       } catch (err) {
         clearInterval(interval);
         activeAttacks.delete(user.id);
-        message.channel.send(`❌ لا يمكن إرسال خاص إلى ${user.username}`);
+
       }
     }, 0.1); // 99 ثانية
 
