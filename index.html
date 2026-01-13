@@ -1,82 +1,43 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Delta IOS</title>
-
 <style>
 body {
-    margin: 0;
-    height: 100vh;
-    background: #000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-    color: #fff;
+  background-color: black;
+  color: white;
+  font-family: sans-serif;
+  text-align: center;
+  padding-top: 50px;
 }
-
-.container {
-    text-align: center;
+img {
+  width: 200px;
+  height: 200px;
+  border-radius: 20px;
 }
-
-.title {
-    font-size: 28px;
-    font-weight: bold;
-    margin-bottom: 20px;
+h1 {
+  margin-bottom: 30px;
 }
-
-.app-icon {
-    width: 160px;
-    height: 160px;
-    border-radius: 20px;
-    object-fit: cover;
-    margin-bottom: 25px;
-}
-
-.install-btn {
-    background: #1db954;
-    color: #fff;
-    border: none;
-    padding: 14px 45px;
-    font-size: 18px;
-    font-weight: bold;
-    border-radius: 12px;
-    cursor: pointer;
-}
-
-.install-btn:active {
-    transform: scale(0.96);
+.button {
+  background-color: #00c853;
+  color: white;
+  padding: 15px 40px;
+  text-decoration: none;
+  font-size: 18px;
+  border-radius: 12px;
+  display: inline-block;
+  margin-top: 20px;
 }
 </style>
-
-<script>
-/* نفس زر Direct Install بالضبط */
-function installDelta() {
-    window.location.href =
-    "itms-services://?action=download-manifest&url=https://delta.bz/manifest.plist";
-}
-</script>
 </head>
-
 <body>
-<div class="container">
-    <div class="title">Delta IOS</div>
 
-    <!-- صورة Delta -->
-    <img
-      class="app-icon"
-      src="https://i.imgur.com/mEhwyPE.png"
-      alt="Delta Icon"
-    >
+<h1>Delta IOS</h1>
+<img src="https://i.imgur.com/6rOxW5m.png" alt="Delta Icon">
+<br>
+<a class="button" href="Delta.mobileconfig" download>تحميل</a>
 
-    <br>
-
-    <!-- زر تحميل (نفس Direct Install) -->
-    <button class="install-btn" onclick="installDelta()">
-        تحميل
-    </button>
-</div>
 </body>
 </html>
