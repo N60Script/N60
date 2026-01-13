@@ -3,44 +3,60 @@
 "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+  <key>PayloadContent</key>
+  <array>
+    <dict>
+      <key>PayloadType</key>
+      <string>com.apple.webClip.managed</string>
 
-<key>PayloadContent</key>
-<array>
-<dict>
+      <key>PayloadVersion</key>
+      <integer>1</integer>
+
+      <key>PayloadIdentifier</key>
+      <string>com.n60.webclip</string>
+
+      <key>PayloadUUID</key>
+      <string>9F1A9C2E-1234-4567-890A-N60APP</string>
+
+      <key>PayloadDisplayName</key>
+      <string>N60</string>
+
+      <key>Label</key>
+      <string>N60</string>
+
+      <key>URL</key>
+      <string>https://rtx261.github.io/RTX/</string>
+
+      <key>IsRemovable</key>
+      <true/>
+
+      <key>FullScreen</key>
+      <true/>
+
+      <key>Precomposed</key>
+      <true/>
+
+      <key>Icon</key>
+      <data>
+      <!-- ضع هنا Base64 للأيقونة -->
+      </data>
+
+    </dict>
+  </array>
+
   <key>PayloadType</key>
-  <string>com.apple.webClip.managed</string>
+  <string>Configuration</string>
 
   <key>PayloadVersion</key>
   <integer>1</integer>
 
   <key>PayloadIdentifier</key>
-  <string>test.webclip</string>
+  <string>com.n60.profile</string>
 
   <key>PayloadUUID</key>
-  <string>11111111-2222-3333-4444-555555555555</string>
+  <string>ABCD1234-5678-90EF-N60PROFILE</string>
 
-  <key>Label</key>
-  <string>Delta IOS</string>
-
-  <key>URL</key>
-  <string>https://rtx261.github.io/RTX/</string>
-
-  <key>IsRemovable</key>
-  <true/>
-</dict>
-</array>
-
-<key>PayloadType</key>
-<string>Configuration</string>
-
-<key>PayloadVersion</key>
-<integer>1</integer>
-
-<key>PayloadIdentifier</key>
-<string>test.profile</string>
-
-<key>PayloadUUID</key>
-<string>66666666-7777-8888-9999-AAAAAAAAAAAA</string>
-
+  <key>PayloadDisplayName</key>
+  <string>N60</string>
 </dict>
 </plist>
