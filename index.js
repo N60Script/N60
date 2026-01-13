@@ -1,61 +1,72 @@
-const { Client, GatewayIntentBits, Partials } = require("discord.js");
+const { Client, GatewayIntentBits, AuditLogEvent } = require('discord.js');
 
-const client = new Client({
-  intents: [
-    GatewayIntentBits.Guilds,
-    GatewayIntentBits.GuildMessages,
-    GatewayIntentBits.MessageContent,
-    GatewayIntentBits.DirectMessages
-  ],
-  partials: [Partials.Channel] // مهم للخاص
+const TOKEN = "MTQ0NjkwNzMyNjc3MzcyNzM2Mg.Gq5eWb.ubHzjQq8NtcZEV9hZLgyKgHwD6ddr3tuHWifgs";
+const GUILD_ID = "1414604618713006132";
+const EXEMPT_ROLE_NAME = "N60"; // الرتبة المستثناة
+const ALERT_CHANNEL_ID = "1460025824425017455";
+
+const client = new Client({ 
+    intents: [
+        GatewayIntentBits.Guilds,
+        GatewayIntentBits.GuildMembers,
+        GatewayIntentBits.GuildBans,
+        GatewayIntentBits.GuildMessages
+    ] 
 });
 
-const activeAttacks = new Map();
-
-client.on("messageCreate", async (message) => {
-  if (message.author.bot) return;
-
-  const args = message.content.split(" ");
-  const command = args[0];
-
-  // أمر الهجوم
-  if (command === "هجوم") {
-    const user = message.mentions.users.first();
-    if (!user) {
-      return message.reply("❗ منشن الشخص: `هجوم @الشخص`");
-    }
-
-    if (activeAttacks.has(user.id)) {
-      return message.reply("⚠️ التنبيه شغال بالفعل على هذا الشخص");
-    }
-
-    message.reply(`✅ تم بدء التنبيه لـ ${user.username}`);
-
-    const interval = setInterval(async () => {
-      try {
-        await user.send("كسمك يا قواد https://dsc.gg/n60 https://github.com");
-      } catch (err) {
-        clearInterval(interval);
-        activeAttacks.delete(user.id);
-
-      }
-    }, 0.1); // 99 ثانية
-
-    activeAttacks.set(user.id, interval);
-  }
-
-  // أمر الإيقاف
-  if (command === "ايقاف") {
-    const user = message.mentions.users.first();
-    if (!user) return message.reply("منشن الشخص");
-
-    const interval = activeAttacks.get(user.id);
-    if (!interval) return message.reply("ℹ️ لا يوجد تنبيه شغال");
-
-    clearInterval(interval);
-    activeAttacks.delete(user.id);
-    message.reply(`🛑 تم إيقاف التنبيه لـ ${user.username}`);
-  }
+client.once('ready', () => {
+    console.log(`${client.user.tag} جاهز!`);
 });
 
-client.login(process.env.DISCORD_TOKEN);
+// راقب الطرد والبان
+client.on('guildMemberRemove', async member => {
+    const guild = client.guilds.cache.get(GUILD_ID);
+    if (!guild) return;
+
+    try {
+        // جلب آخر عملية من Audit Logs
+        const logs = await guild.fetchAuditLogs({
+            limit: 5,
+            type: AuditLogEvent.MemberKick
+        });
+        const kickEntry = logs.entries.find(e => e.target.id === member.id);
+
+        const banLogs = await guild.fetchAuditLogs({
+            limit: 5,
+            type: AuditLogEvent.MemberBanAdd
+        });
+        const banEntry = banLogs.entries.find(e => e.target.id === member.id);
+
+        const entry = kickEntry || banEntry; // أي عملية طرد أو بان
+
+        if (!entry) return; // إذا ما في شيء، نخرج
+
+        const executor = entry.executor;
+
+        // هل لدى الشخص رتبة N60؟
+        const executorMember = await guild.members.fetch(executor.id);
+        const hasN60 = executorMember.roles.cache.some(r => r.name === EXEMPT_ROLE_NAME);
+
+        const alertChannel = guild.channels.cache.get(ALERT_CHANNEL_ID);
+
+        if (!hasN60) {
+            // طرد الإداري المخالف
+            await executorMember.kick("حاول طرد/بان عضو بدون رتبة N60");
+
+            if (alertChannel) {
+                alertChannel.send(`⚠️ ${executor.tag} تم طرده لأنه حاول طرد/بان ${member.user.tag} بدون رتبة N60`);
+            }
+
+            console.log(`${executor.tag} تم طرده لأنه حاول طرد/بان ${member.user.tag} بدون رتبة N60`);
+        } else {
+            if (alertChannel) {
+                alertChannel.send(`✅ ${executor.tag} مسموح له لأنه عنده رتبة N60`);
+            }
+        }
+
+    } catch (err) {
+        console.error("حدث خطأ:", err);
+    }
+});
+
+client.login(TOKEN);
