@@ -3,6 +3,7 @@
 "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+
   <key>PayloadContent</key>
   <array>
     <dict>
@@ -16,7 +17,7 @@
       <string>com.n60.webclip</string>
 
       <key>PayloadUUID</key>
-      <string>9F1A9C2E-1234-4567-890A-N60APP</string>
+      <string>8A3E7C92-9B1D-4A9A-B7D3-111111111111</string>
 
       <key>PayloadDisplayName</key>
       <string>N60</string>
@@ -33,14 +34,6 @@
       <key>FullScreen</key>
       <true/>
 
-      <key>Precomposed</key>
-      <true/>
-
-      <key>Icon</key>
-      <data>
-      <!-- ضع هنا Base64 للأيقونة -->
-      </data>
-
     </dict>
   </array>
 
@@ -54,9 +47,10 @@
   <string>com.n60.profile</string>
 
   <key>PayloadUUID</key>
-  <string>ABCD1234-5678-90EF-N60PROFILE</string>
+  <string>1B2C3D4E-AAAA-BBBB-CCCC-222222222222</string>
 
   <key>PayloadDisplayName</key>
   <string>N60</string>
+
 </dict>
 </plist>
