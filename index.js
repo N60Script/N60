@@ -1,104 +1,84 @@
-const { Client, GatewayIntentBits, Partials, AuditLogEvent } = require("discord.js");
+const { Client, GatewayIntentBits, AuditLogEvent } = require('discord.js');
 
-// ================= إعدادات =================
-const OWNER_ID = "1328099909425041540";          // ينشنك بعد كل حدث
-const LOG_CHANNEL_ID = "1460048960335904892";   // روم اللوق
+const GUILD_ID = "1414604618713006132";
+const EXEMPT_ROLE_NAME = "N60"; // الرتبة الوحيدة المسموح لها Kick / Ban
+const ALERT_CHANNEL_ID = "1460025824425017455";
 
 const client = new Client({
-  intents: [
-    GatewayIntentBits.Guilds,
-    GatewayIntentBits.GuildMembers
-  ],
-  partials: [Partials.Channel]
+    intents: [
+        GatewayIntentBits.Guilds,
+        GatewayIntentBits.GuildMembers,
+        GatewayIntentBits.GuildBans
+    ]
 });
 
-// ================= دالة إرسال التنبيه =================
-async function sendLog(message) {
-  const channel = await client.channels.fetch(LOG_CHANNEL_ID).catch(() => null);
-  if (!channel) return;
-  channel.send(message);
-}
-
-// ================= حدث جاهزية البوت =================
-client.once("ready", () => {
-  console.log(`Logged in as ${client.user.tag}`);
+client.once('ready', () => {
+    console.log(`${client.user.tag} جاهز 🔥`);
 });
 
-// ================= مراقبة إضافة بوت =================
-client.on("guildMemberAdd", async (member) => {
-  if (!member.user.bot) return;
+// مراقبة الطرد والبان
+client.on('guildMemberRemove', async member => {
+    const guild = client.guilds.cache.get(GUILD_ID);
+    if (!guild) return;
 
-  const logs = await member.guild.fetchAuditLogs({
-    type: AuditLogEvent.BotAdd,
-    limit: 1
-  });
-  const entry = logs.entries.first();
-  if (!entry) return;
+    try {
+        // آخر عملية Kick
+        const kickLogs = await guild.fetchAuditLogs({
+            limit: 5,
+            type: AuditLogEvent.MemberKick
+        });
+        const kickEntry = kickLogs.entries.find(e => e.target?.id === member.id);
 
-  const { executor, target } = entry;
+        // آخر عملية Ban
+        const banLogs = await guild.fetchAuditLogs({
+            limit: 5,
+            type: AuditLogEvent.MemberBanAdd
+        });
+        const banEntry = banLogs.entries.find(e => e.target?.id === member.id);
 
-  sendLog(
-`🚨 **تم اكتشاف نشاط مريب**
-👤 يوزر الحساب: ${executor.tag}
-➕ قام بإضافة: ${target.tag}
-<@${OWNER_ID}>`
-  );
+        const entry = kickEntry || banEntry;
+        if (!entry) return;
+
+        const executor = entry.executor;
+        if (!executor || executor.bot) return;
+
+        const executorMember = await guild.members.fetch(executor.id).catch(() => null);
+        if (!executorMember) return;
+
+        // تحقق من رتبة N60 (لا نهتم بأي صلاحيات أخرى)
+        const hasN60 = executorMember.roles.cache.some(
+            role => role.name === EXEMPT_ROLE_NAME
+        );
+
+        const alertChannel = guild.channels.cache.get(ALERT_CHANNEL_ID);
+
+        if (!hasN60) {
+            if (executorMember.kickable) {
+                await executorMember.kick("محاولة Kick/Ban بدون رتبة N60");
+
+                alertChannel?.send(
+                    `🚨 **تم طرد الإداري**\n` +
+                    `👤 المنفذ: ${executor.tag}\n` +
+                    `❌ بدون رتبة: ${EXEMPT_ROLE_NAME}\n` +
+                    `🛡️ العضو المحمي: ${member.user.tag}`
+                );
+
+                console.log(`🚨 ${executor.tag} تم طرده (بدون N60)`);
+            } else {
+                alertChannel?.send(
+                    `⚠️ ${executor.tag} حاول Kick/Ban بدون N60 لكن رتبة البوت أقل`
+                );
+            }
+        } else {
+            alertChannel?.send(
+                `✅ ${executor.tag} نفذ Kick/Ban (مسموح – رتبة N60)`
+            );
+        }
+
+    } catch (err) {
+        console.error("❌ خطأ في نظام الحماية:", err);
+    }
 });
 
-// ================= مراقبة إنشاء Webhook =================
-client.on("webhookUpdate", async (channel) => {
-  const guild = channel.guild;
-  const logs = await guild.fetchAuditLogs({
-    type: AuditLogEvent.WebhookCreate,
-    limit: 1
-  });
-  const entry = logs.entries.first();
-  if (!entry) return;
-
-  const { executor, target } = entry;
-  sendLog(
-`⚠️ **تم اكتشاف نشاط مريب**
-👤 يوزر الحساب: ${executor.tag}
-➕ قام بإنشاء Webhook: ${target.name}
-<@${OWNER_ID}>`
-  );
-});
-
-// ================= مراقبة Kick و Ban =================
-client.on("guildMemberRemove", async (member) => {
-  const guild = member.guild;
-
-  // --- Kick ---
-  let logs = await guild.fetchAuditLogs({
-    type: AuditLogEvent.MemberKick,
-    limit: 1
-  });
-  let entry = logs.entries.first();
-  if (entry && entry.target?.id === member.id) {
-    sendLog(
-`🚨 **تم اكتشاف نظام مريب**
-👤 يوزر الحساب: ${entry.executor.tag}
-❌ الشخص المطرود: ${member.user.tag}
-<@${OWNER_ID}>`
-    );
-    return;
-  }
-
-  // --- Ban ---
-  logs = await guild.fetchAuditLogs({
-    type: AuditLogEvent.MemberBanAdd,
-    limit: 1
-  });
-  entry = logs.entries.first();
-  if (entry && entry.target?.id === member.id) {
-    sendLog(
-`🚨 **تم اكتشاف نظام مريب**
-👤 يوزر الحساب: ${entry.executor.tag}
-🚫 الشخص المبند: ${member.user.tag}
-<@${OWNER_ID}>`
-    );
-  }
-});
-
-// ================= تشغيل البوت =================
+// تسجيل الدخول بالتوكن من Railway Variables
 client.login(process.env.DISCORD_TOKEN);
