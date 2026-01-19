@@ -1,0 +1,22 @@
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+
+local ALLOWED_USERID = 5065586685
+
+if player.UserId ~= ALLOWED_USERID then
+    return
+end
+
+local PlayerGui = player:WaitForChild("PlayerGui")
+local screenGui = PlayerGui:WaitForChild("ScreenGui_1")
+
+if screenGui:FindFirstChild("111") then
+    screenGui["111"]:Destroy()
+end
+
+local GUI = PlayerGui:WaitForChild("GUI")
+GUI.Visible = true
+
+if GUI:FindFirstChild("N60") then
+    GUI.N60.Visible = true
+end
