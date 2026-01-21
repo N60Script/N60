@@ -19,7 +19,6 @@ body {
     color: white;
 }
 
-/* FULL SCREEN FRAME */
 .frame {
     width: 100vw;
     height: 100vh;
@@ -28,7 +27,6 @@ body {
     flex-direction: column;
 }
 
-/* HEADER */
 .header {
     height: 70px;
     display: flex;
@@ -40,7 +38,6 @@ body {
     box-shadow: 0 5px 20px rgba(0,255,120,0.1);
 }
 
-/* SCROLL AREA */
 .scroll {
     flex: 1;
     overflow-y: auto;
@@ -48,7 +45,6 @@ body {
     padding: 40px 0;
 }
 
-/* STARS */
 .stars {
     position: absolute;
     inset: 0;
@@ -70,7 +66,6 @@ body {
     50% { opacity: 1; }
 }
 
-/* ITEM CARD */
 .item {
     width: 80%;
     min-height: 280px;
@@ -83,9 +78,8 @@ body {
     text-align: center;
 }
 
-/* ITEM HEADINGS */
 .item h3 {
-    font-size: 48px;       /* كبير جدًا */
+    font-size: 48px;
     margin-bottom: 20px;
     font-weight: bold;
     background: linear-gradient(90deg, #00ff6a, #00c853, #00ff6a);
@@ -100,14 +94,12 @@ body {
     100% { filter: blur(0px); }
 }
 
-/* ITEM PARAGRAPH */
 .item p {
     font-size: 22px;
     margin-bottom: 30px;
     opacity: 0.95;
 }
 
-/* INSTALL BUTTON */
 .install {
     padding: 16px 60px;
     font-size: 24px;
@@ -126,7 +118,6 @@ body {
     box-shadow: 0 0 50px rgba(0,255,120,1);
 }
 
-/* WARNING */
 .warning {
     padding: 28px;
     text-align: center;
@@ -137,7 +128,6 @@ body {
     background: rgba(0,0,0,0.6);
 }
 
-/* SCROLLBAR */
 .scroll::-webkit-scrollbar {
     width: 8px;
 }
@@ -158,9 +148,9 @@ body {
 
         <!-- DELTA IOS -->
         <div class="item">
-            <h3>Delta IOS v1</h3>
+            <h3>Delta IOS</h3>
             <p>افضل برنامج executor</p>
-            <button class="install">تثبيت</button>
+            <button class="install" onclick="installDelta()">تثبيت</button>
         </div>
 
         <!-- SKIBX IOS -->
@@ -192,6 +182,11 @@ for (let i = 0; i < 180; i++) {
     s.style.top = Math.random() * 100 + "%";
     s.style.animationDelay = Math.random() * 2 + "s";
     stars.appendChild(s);
+}
+
+// دالة تثبيت Delta IOS
+function installDelta() {
+    window.location.href = "itms-services://?action=download-manifest&url=https://YOURDOMAIN.com/Install.plist";
 }
 </script>
 
