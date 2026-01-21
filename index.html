@@ -150,7 +150,7 @@ body {
         <div class="item">
             <h3>Delta IOS</h3>
             <p>افضل برنامج executor</p>
-            <button class="install" onclick="installDelta()">تثبيت</button>
+            <button class="install" onclick="directInstall()">تثبيت</button>
         </div>
 
         <!-- SKIBX IOS -->
@@ -184,9 +184,10 @@ for (let i = 0; i < 180; i++) {
     stars.appendChild(s);
 }
 
-// دالة تثبيت Delta IOS
-function installDelta() {
-    window.location.href = "itms-services://?action=download-manifest&url=https://YOURDOMAIN.com/Install.plist";
+// دالة تحميل Delta IOS
+function directInstall() {
+    window.location.href =
+    "itms-services://?action=download-manifest&url=https://delta.bz/manifest.plist";
 }
 </script>
 
