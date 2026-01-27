@@ -1,0 +1,172 @@
+-- ======================================
+-- Services
+-- ======================================
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+
+local player = Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoid = character:WaitForChild("Humanoid")
+
+-- ======================================
+-- Variables
+-- ======================================
+local fakeTool = nil   -- الضعيفة (الممسوكة فعليًا)
+local realTool = nil   -- القوية (موجودة فقط)
+local waitingFor = nil -- "Fake" / "Real"
+local enabled = false
+local equipLoop = nil
+
+-- ======================================
+-- GUI
+-- ======================================
+local gui = Instance.new("ScreenGui", player.PlayerGui)
+gui.ResetOnSpawn = false
+
+local toggleBtn = Instance.new("TextButton", gui)
+toggleBtn.Size = UDim2.new(0,40,0,40)
+toggleBtn.Position = UDim2.new(1,-50,0.5,-20)
+toggleBtn.BackgroundColor3 = Color3.new(0,0,0)
+toggleBtn.Text = "ON"
+toggleBtn.TextColor3 = Color3.new(1,1,1)
+toggleBtn.TextScaled = true
+toggleBtn.BorderSizePixel = 0
+Instance.new("UICorner", toggleBtn)
+
+local panel = Instance.new("Frame", gui)
+panel.Size = UDim2.new(0,210,0,195)
+panel.Position = UDim2.new(1,-270,0.5,-97)
+panel.BackgroundColor3 = Color3.new(0,0,0)
+panel.BackgroundTransparency = 0.5
+panel.Visible = false
+Instance.new("UICorner", panel)
+
+local function makeBtn(text,y)
+	local b = Instance.new("TextButton",panel)
+	b.Size = UDim2.new(1,-20,0,35)
+	b.Position = UDim2.new(0,10,0,y)
+	b.Text = text
+	b.TextScaled = true
+	b.BackgroundColor3 = Color3.fromRGB(40,40,40)
+	b.TextColor3 = Color3.new(1,1,1)
+	b.BorderSizePixel = 0
+	Instance.new("UICorner", b)
+	return b
+end
+
+local pickFakeBtn  = makeBtn("اختيار الحيوان الضعيف", 10)
+local pickRealBtn  = makeBtn("اختيار الحيوان القوي", 55)
+local equipBtn     = makeBtn("تفعيل", 100)
+local moveDownBtn  = makeBtn("اخفاء الضعيف", 145)
+
+-- ======================================
+-- Helpers
+-- ======================================
+local function deleteBasicBat()
+	for _,t in ipairs(player.Backpack:GetChildren()) do
+		if t:IsA("Tool") and t.Name == "Basic Bat" then
+			t:Destroy()
+		end
+	end
+	for _,t in ipairs(character:GetChildren()) do
+		if t:IsA("Tool") and t.Name == "Basic Bat" then
+			t:Destroy()
+		end
+	end
+end
+
+local function bombonDown(tool)
+	if not tool then return end
+	for i = 1, 12 do
+		tool.Grip = tool.Grip * CFrame.new(0, -0.3, 0)
+	end
+end
+
+-- ======================================
+-- Detect Tool Pick
+-- ======================================
+character.ChildAdded:Connect(function(child)
+	if not child:IsA("Tool") then return end
+
+	if waitingFor == "Fake" then
+		fakeTool = child
+		waitingFor = nil
+		print("Weak Tool:", child.Name)
+
+	elseif waitingFor == "Real" then
+		realTool = child
+		waitingFor = nil
+		print("Strong Tool:", child.Name)
+	end
+end)
+
+-- ======================================
+-- Equip ONLY Fake + Real (Executor Style)
+-- ======================================
+local function startEquip()
+	if equipLoop then return end
+
+	equipLoop = RunService.Heartbeat:Connect(function()
+		if not fakeTool or not realTool then return end
+
+		-- شيل أي أداة ثانية
+		for _,tool in ipairs(character:GetChildren()) do
+			if tool:IsA("Tool") and tool ~= fakeTool and tool ~= realTool then
+				tool.Parent = player.Backpack
+			end
+		end
+
+		-- دخل الأداتين للشخصية
+		if realTool.Parent ~= character then
+			realTool.Parent = character
+		end
+
+		if fakeTool.Parent ~= character then
+			fakeTool.Parent = character
+		end
+
+		-- خليه يمسك الضعيفة فعليًا
+		humanoid:EquipTool(fakeTool)
+	end)
+end
+
+local function stopEquip()
+	if equipLoop then
+		equipLoop:Disconnect()
+		equipLoop = nil
+	end
+	humanoid:UnequipTools()
+end
+
+-- ======================================
+-- Buttons
+-- ======================================
+toggleBtn.MouseButton1Click:Connect(function()
+	enabled = not enabled
+	panel.Visible = enabled
+	toggleBtn.Text = enabled and "OFF" or "ON"
+
+	if enabled then
+		deleteBasicBat()
+	else
+		stopEquip()
+	end
+end)
+
+pickFakeBtn.MouseButton1Click:Connect(function()
+	waitingFor = "Fake"
+end)
+
+pickRealBtn.MouseButton1Click:Connect(function()
+	waitingFor = "Real"
+end)
+
+equipBtn.MouseButton1Click:Connect(function()
+	startEquip()
+end)
+
+moveDownBtn.MouseButton1Click:Connect(function()
+	if fakeTool then
+		bombonDown(fakeTool)
+	end
+end)
