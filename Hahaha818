@@ -1,1 +1,113 @@
+-- LocalScript
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local UIS = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+local LocalPlayer = player
 
+-- إنشاء ScreenGui و الزر
+local screenGui = Instance.new("ScreenGui")
+screenGui.Parent = player:WaitForChild("PlayerGui")
+
+-- واجهة Fullscreen سوداء
+local blackOverlay = Instance.new("Frame")
+blackOverlay.Size = UDim2.new(1,0,1,0)
+blackOverlay.Position = UDim2.new(0,0,0,0)
+blackOverlay.BackgroundColor3 = Color3.new(0,0,0)
+blackOverlay.Visible = false
+blackOverlay.ZIndex = 10
+blackOverlay.Parent = screenGui
+
+-- زر على يمين منتصف الشاشة
+local button = Instance.new("TextButton")
+button.Size = UDim2.new(0,50,0,50)
+button.Position = UDim2.new(1,-60,0.5,-25)
+button.BackgroundColor3 = Color3.fromRGB(0,0,0)
+button.Text = "GO"
+button.TextColor3 = Color3.fromRGB(255,255,255)
+button.Parent = screenGui
+button.ZIndex = 11
+
+-- دالة لإيجاد أقرب لاعب
+local function getClosestPlayer()
+    local closestDistance = math.huge
+    local closestPlayer = nil
+    local myPos = player.Character and player.Character:FindFirstChild("HumanoidRootPart") and player.Character.HumanoidRootPart.Position
+    if not myPos then return nil end
+
+    for _, plr in pairs(Players:GetPlayers()) do
+        if plr ~= player and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
+            local dist = (myPos - plr.Character.HumanoidRootPart.Position).Magnitude
+            if dist < closestDistance then
+                closestDistance = dist
+                closestPlayer = plr
+            end
+        end
+    end
+    return closestPlayer
+end
+
+-- دالة للحصول على أول أداة
+local function getFirstTool()
+    return player.Backpack:FindFirstChildOfClass("Tool") or player.Character:FindFirstChildOfClass("Tool")
+end
+
+-- دالة لتفعيل أقرب ProximityPrompt
+local function activateNearestPrompt()
+    local prompts = {}
+    for _, obj in pairs(workspace:GetDescendants()) do
+        if obj:IsA("ProximityPrompt") then
+            table.insert(prompts, obj)
+        end
+    end
+    if #prompts > 0 then
+        local closestPrompt = prompts[1]
+        local myPos = player.Character and player.Character:FindFirstChild("HumanoidRootPart") and player.Character.HumanoidRootPart.Position
+        local closestDist = (myPos - closestPrompt.Parent.Position).Magnitude
+        for _, p in pairs(prompts) do
+            local dist = (myPos - p.Parent.Position).Magnitude
+            if dist < closestDist then
+                closestDist = dist
+                closestPrompt = p
+            end
+        end
+        closestPrompt:InputHoldBegin()
+        wait(0.1)
+        closestPrompt:InputHoldEnd()
+    end
+end
+
+-- الوظيفة الأساسية عند الضغط على الزر
+button.MouseButton1Click:Connect(function()
+    -- عرض Fullscreen أسود
+    blackOverlay.Visible = true
+    wait(0.2)
+
+    -- أقرب لاعب
+    local targetPlayer = getClosestPlayer()
+    if targetPlayer and targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart") then
+        player.Character.HumanoidRootPart.CFrame = targetPlayer.Character.HumanoidRootPart.CFrame + Vector3.new(2,0,0)
+    end
+
+    -- تجربة الأدوات
+    for i = 1, 2 do
+        local tool = getFirstTool()
+        if tool then
+            tool.Parent = player.Character
+            tool:Activate()
+        end
+
+        -- تفعيل أقرب ProximityPrompt
+        activateNearestPrompt()
+
+        -- الضغط على E
+        local eEvent = UIS.InputBegan:Wait()
+        if eEvent.KeyCode == Enum.KeyCode.E then
+            -- مجرد تمثيل، تقدر تحط هنا أي تفاعل آخر
+        end
+
+        wait(1)
+    end
+
+    blackOverlay.Visible = false
+end)
