@@ -11,8 +11,8 @@ local humanoid = character:WaitForChild("Humanoid")
 -- ======================================
 -- Variables
 -- ======================================
-local fakeTool = nil   -- الأداة الممسوكة فعليًا (ضعيفة)
-local realTool = nil   -- الأداة القوية (موجودة)
+local fakeTool = nil
+local realTool = nil
 local waitingFor = nil -- "Fake" / "Real"
 local enabled = false
 local equipLoop = nil
@@ -23,6 +23,7 @@ local equipLoop = nil
 local gui = Instance.new("ScreenGui", player.PlayerGui)
 gui.ResetOnSpawn = false
 
+-- زر صغير أسود
 local toggleBtn = Instance.new("TextButton", gui)
 toggleBtn.Size = UDim2.new(0,40,0,40)
 toggleBtn.Position = UDim2.new(1,-50,0.5,-20)
@@ -33,6 +34,7 @@ toggleBtn.TextScaled = true
 toggleBtn.BorderSizePixel = 0
 Instance.new("UICorner", toggleBtn)
 
+-- لوحة التحكم
 local panel = Instance.new("Frame", gui)
 panel.Size = UDim2.new(0,210,0,195)
 panel.Position = UDim2.new(1,-270,0.5,-97)
@@ -54,20 +56,22 @@ local function makeBtn(text,y)
 	return b
 end
 
-local pickFakeBtn  = makeBtn("اختيار الحيوان الضعيف", 10)
-local pickRealBtn  = makeBtn("اختيار الحيوان القوي", 55)
-local equipBtn     = makeBtn("تفعيل", 100)
+local pickFakeBtn  = makeBtn("اختيار حيوان قوي", 10)
+local pickRealBtn  = makeBtn("اختيار حيوان ضعيف", 55)
+local equipAllBtn  = makeBtn("تفعيل", 100)
 local moveDownBtn  = makeBtn("اخفاء الحيوان الضعيف", 145)
 
 -- ======================================
 -- Helpers
 -- ======================================
 local function deleteBasicBat()
+	-- من الـ Backpack
 	for _,t in ipairs(player.Backpack:GetChildren()) do
 		if t:IsA("Tool") and t.Name == "Basic Bat" then
 			t:Destroy()
 		end
 	end
+	-- من الـ Character
 	for _,t in ipairs(character:GetChildren()) do
 		if t:IsA("Tool") and t.Name == "Basic Bat" then
 			t:Destroy()
@@ -75,6 +79,7 @@ local function deleteBasicBat()
 	end
 end
 
+-- Bombon Down (Grip فقط)
 local function bombonDown(tool)
 	if not tool then return end
 	for i = 1, 12 do
@@ -83,7 +88,7 @@ local function bombonDown(tool)
 end
 
 -- ======================================
--- Detect Tool Pick
+-- Detect Tool Pick (بالإمساك)
 -- ======================================
 character.ChildAdded:Connect(function(child)
 	if not child:IsA("Tool") then return end
@@ -91,45 +96,37 @@ character.ChildAdded:Connect(function(child)
 	if waitingFor == "Fake" then
 		fakeTool = child
 		waitingFor = nil
-		print("Weak Tool:", child.Name)
+		print("Fake Tool:", child.Name)
 
 	elseif waitingFor == "Real" then
 		realTool = child
 		waitingFor = nil
-		print("Strong Tool:", child.Name)
+		print("Real Tool:", child.Name)
 	end
 end)
 
 -- ======================================
--- Executor Style Equip Only Fake + Real
+-- Executor Style Equip All
 -- ======================================
-local function startEquip()
+local function startEquipAll()
 	if equipLoop then return end
 
 	equipLoop = RunService.Heartbeat:Connect(function()
-		if not fakeTool or not realTool then return end
-
-		-- شيل أي أدوات ثانية
-		for _,tool in ipairs(character:GetChildren()) do
-			if tool:IsA("Tool") and tool ~= fakeTool and tool ~= realTool then
-				tool.Parent = player.Backpack
+		-- امسك كل الأدوات
+		for _,tool in ipairs(player.Backpack:GetChildren()) do
+			if tool:IsA("Tool") then
+				tool.Parent = character
 			end
 		end
 
-		-- أدخل الأداتين للشخصية
-		if realTool.Parent ~= character then
+		-- خلي الأداة الفعلية آخر وحدة (أولوية)
+		if realTool and realTool.Parent ~= character then
 			realTool.Parent = character
 		end
-		if fakeTool.Parent ~= character then
-			fakeTool.Parent = character
-		end
-
-		-- خلي الأداة الضعيفة هي الممسوكة فعليًا
-		humanoid:EquipTool(fakeTool)
 	end)
 end
 
-local function stopEquip()
+local function stopEquipAll()
 	if equipLoop then
 		equipLoop:Disconnect()
 		equipLoop = nil
@@ -146,9 +143,10 @@ toggleBtn.MouseButton1Click:Connect(function()
 	toggleBtn.Text = enabled and "OFF" or "ON"
 
 	if enabled then
+		-- أول ما يتفعل: حذف Basic Bat
 		deleteBasicBat()
 	else
-		stopEquip()
+		stopEquipAll()
 	end
 end)
 
@@ -160,8 +158,8 @@ pickRealBtn.MouseButton1Click:Connect(function()
 	waitingFor = "Real"
 end)
 
-equipBtn.MouseButton1Click:Connect(function()
-	startEquip()
+equipAllBtn.MouseButton1Click:Connect(function()
+	startEquipAll()
 end)
 
 moveDownBtn.MouseButton1Click:Connect(function()
