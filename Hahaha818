@@ -11,8 +11,8 @@ local humanoid = character:WaitForChild("Humanoid")
 -- ======================================
 -- Variables
 -- ======================================
-local fakeTool = nil   -- الضعيفة (الممسوكة فعليًا)
-local realTool = nil   -- القوية (موجودة فقط)
+local fakeTool = nil   -- الأداة الممسوكة فعليًا (ضعيفة)
+local realTool = nil   -- الأداة القوية (موجودة)
 local waitingFor = nil -- "Fake" / "Real"
 local enabled = false
 local equipLoop = nil
@@ -57,7 +57,7 @@ end
 local pickFakeBtn  = makeBtn("اختيار الحيوان الضعيف", 10)
 local pickRealBtn  = makeBtn("اختيار الحيوان القوي", 55)
 local equipBtn     = makeBtn("تفعيل", 100)
-local moveDownBtn  = makeBtn("اخفاء الضعيف", 145)
+local moveDownBtn  = makeBtn("اخفاء الحيوان الضعيف", 145)
 
 -- ======================================
 -- Helpers
@@ -101,7 +101,7 @@ character.ChildAdded:Connect(function(child)
 end)
 
 -- ======================================
--- Equip ONLY Fake + Real (Executor Style)
+-- Executor Style Equip Only Fake + Real
 -- ======================================
 local function startEquip()
 	if equipLoop then return end
@@ -109,23 +109,22 @@ local function startEquip()
 	equipLoop = RunService.Heartbeat:Connect(function()
 		if not fakeTool or not realTool then return end
 
-		-- شيل أي أداة ثانية
+		-- شيل أي أدوات ثانية
 		for _,tool in ipairs(character:GetChildren()) do
 			if tool:IsA("Tool") and tool ~= fakeTool and tool ~= realTool then
 				tool.Parent = player.Backpack
 			end
 		end
 
-		-- دخل الأداتين للشخصية
+		-- أدخل الأداتين للشخصية
 		if realTool.Parent ~= character then
 			realTool.Parent = character
 		end
-
 		if fakeTool.Parent ~= character then
 			fakeTool.Parent = character
 		end
 
-		-- خليه يمسك الضعيفة فعليًا
+		-- خلي الأداة الضعيفة هي الممسوكة فعليًا
 		humanoid:EquipTool(fakeTool)
 	end)
 end
