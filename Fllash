@@ -1,309 +1,2137 @@
+-- ============================================================
+--  Haze Mini Hub (UI + TOGGLED FEATURES)
+--  ✅ 3 Tabs left: Main / Visual / Settings
+--  ✅ Draggable (ONLY from header) + remembers position
+--  ✅ Persistent toggles + persistent keybind to show/hide UI
+--  ✅ Starts bottom-right
+--  ✅ Main: Inf Jump, Anti Ragdoll, Lagger, Speed + slider 25..30
+--  ✅ Visual:
+--      - Esp Timer => BRAINROT TIMER ESP (your code) ON/OFF
+--      - FPS Boost => your FPS BOOST script ON/OFF (NOTE: some changes are irreversible)
+--      - Mine Esp  => Subspace Tripmine ESP ON/OFF
+--  ✅ Settings: Rejoin + Auto Kick (toggles only, no logic)
+--  ✅ FIX: keybind label no queda debajo / no se sale
+-- ============================================================
+
+if not game:IsLoaded() then
+	game.Loaded:Wait()
+end
+
+-- ================= SERVICES =================
 local Players = game:GetService("Players")
-local ProximityPromptService = game:GetService("ProximityPromptService")
-local UserInputService = game:GetService("UserInputService")
-local RunService = game:GetService("RunService")
 local TweenService = game:GetService("TweenService")
-local StarterGui = game:GetService("StarterGui")
+local RunService = game:GetService("RunService")
+local UIS = game:GetService("UserInputService")
+local HttpService = game:GetService("HttpService")
+local Lighting = game:GetService("Lighting")
+local Workspace = game:GetService("Workspace")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local player = Players.LocalPlayer
-local tpOnStealEnabled = false
+local lp = Players.LocalPlayer
+local pg = lp:WaitForChild("PlayerGui")
 
---======================== ANTI-KICK =========================--
+-- ================= COLORS =================
+local COLORS = {
+	Background             = Color3.fromRGB(8, 8, 15),
+	BackgroundTransparency = 0.25,
+	Surface                = Color3.fromRGB(18, 12, 28),
+	SurfaceTransparency    = 0.20,
+	Text    = Color3.fromRGB(255, 255, 255),
+	TextDim = Color3.fromRGB(230, 230, 240),
+	Accent  = Color3.new(0.694118, 0.121569, 1.000000),
+	Purple  = Color3.new(0.796078, 0.317647, 0.972549),
+	Pink    = Color3.fromRGB(255, 140, 255),
+	Cyan    = Color3.fromRGB(120, 240, 255),
+	Red     = Color3.fromRGB(255, 120, 160),
+	Green   = Color3.fromRGB(120, 255, 200),
+}
 
-local function antiKick()
-    pcall(function()
-        for _,v in pairs(getconnections(player.Idled)) do
-            v:Disable()
-        end
-    end)
-    
-    pcall(function()
-        local mt = getrawmetatable(game)
-        setreadonly(mt, false)
-        local old = mt.__namecall
-        mt.__namecall = newcclosure(function(self, ...)
-            local method = getnamecallmethod()
-            if method == "Kick" or method == "kick" then
-                return nil
-            end
-            return old(self, ...)
-        end)
-    end)
+local tweenInfoFast = TweenInfo.new(0.2, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out)
+
+-- ================= HELPERS =================
+local function blendColor(c1, c2, a)
+	return Color3.new(
+		c1.R + (c2.R - c1.R) * a,
+		c1.G + (c2.G - c1.G) * a,
+		c1.B + (c2.B - c1.B) * a
+	)
 end
 
-pcall(antiKick)
-
-if player.PlayerGui:FindFirstChild("CloudHubFlashTP") then
-	player.PlayerGui.CloudHubFlashTP:Destroy()
+local function tween(el, info, props)
+	TweenService:Create(el, info, props):Play()
 end
 
---======================== NOTIFICATION SYSTEM =========================--
-
-local function sendNotification(title, text, duration)
-    pcall(function()
-        StarterGui:SetCore("SendNotification", {
-            Title = title,
-            Text = text,
-            Duration = duration or 5,
-            Icon = "rbxassetid://7733955740"
-        })
-    end)
+local function applyTitanzTextStyle(el)
+	if not el then return end
+	if el:IsA("TextLabel") or el:IsA("TextButton") or el:IsA("TextBox") then
+		el.TextStrokeColor3 = COLORS.Accent
+		local size = el.TextSize
+		if el.TextScaled then
+			size = math.floor((el.AbsoluteSize.Y / 24) * 18)
+		end
+		if size <= 14 then
+			el.TextStrokeTransparency = 0.65
+		elseif size <= 18 then
+			el.TextStrokeTransparency = 0.45
+		else
+			el.TextStrokeTransparency = 0.25
+		end
+	end
 end
 
---======================== FLASH TELEPORT EQUIP FUNCTION =========================--
+local function applyTitanzButtonStyle(frame)
+	if not frame or not (frame:IsA("Frame") or frame:IsA("TextButton")) then return end
 
-local function equipFlashTeleport()
-    local backpack = player:FindFirstChild("Backpack")
-    local character = player.Character
-    
-    if not backpack or not character then 
-        sendNotification("❌ Cloud Hub", "Character not found!", 3)
-        return false 
-    end
-    
-    local itemsToFind = {
-        "FlashTeleport",
-        "Flash Teleport",
-        "FlashTP",
-        "Flash TP"
-    }
-    
-    -- Check in backpack
-    for _, itemName in ipairs(itemsToFind) do
-        local item = backpack:FindFirstChild(itemName)
-        if item and item:IsA("Tool") then
-            character:FindFirstChildOfClass("Humanoid"):EquipTool(item)
-            return true
-        end
-    end
-    
-    -- Check if already equipped
-    for _, itemName in ipairs(itemsToFind) do
-        if character:FindFirstChild(itemName) then
-            return true
-        end
-    end
-    
-    -- Not found - send notification
-    sendNotification("❌ Flash Teleport", "Flash Teleport tool not found in inventory!", 5)
-    return false
+	frame.BackgroundColor3 = blendColor(COLORS.Surface, COLORS.Accent, 0.10)
+	frame.BackgroundTransparency = math.clamp(COLORS.SurfaceTransparency + 0.15, 0, 1)
+
+	local border = frame:FindFirstChild("TitanzBorder")
+	if not border then
+		border = Instance.new("UIStroke")
+		border.Name = "TitanzBorder"
+		border.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+		border.Parent = frame
+	end
+	border.Thickness = 1.5
+	border.Color = COLORS.Accent
+	border.Transparency = 0.35
+
+	if not frame:FindFirstChild("TitanzShadow") then
+		local corner = Instance.new("UICorner")
+		corner.Name = "TitanzShadow"
+		corner.CornerRadius = UDim.new(0, 10)
+		corner.Parent = frame
+	end
 end
 
---======================== GUI PRINCIPAL =========================--
+local function createElement(className, props)
+	local el = Instance.new(className)
+	for k, v in pairs(props) do el[k] = v end
+	applyTitanzTextStyle(el)
+	return el
+end
 
-local screenGui = Instance.new("ScreenGui", player.PlayerGui)
-screenGui.Name = "CloudHubFlashTP"
-screenGui.ResetOnSpawn = false
+local function makeTextGlow(textElement, color1, color2, duration, delay)
+	color1 = color1 or COLORS.Purple
+	color2 = color2 or Color3.fromRGB(255, 100, 255)
+	duration = duration or 1.2
+	delay = delay or 0
 
-local GUI_WIDTH = 300
-local TITLE_HEIGHT = 35
-local PADDING = 15
-local BUTTON_HEIGHT = 45
-local FOOTER_HEIGHT = 25
+	task.spawn(function()
+		if delay > 0 then task.wait(delay) end
+		while textElement.Parent do
+			tween(textElement, TweenInfo.new(duration, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), { TextColor3 = color2 })
+			task.wait(duration)
+			tween(textElement, TweenInfo.new(duration, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), { TextColor3 = color1 })
+			task.wait(duration)
+		end
+	end)
+end
 
-local totalHeight = TITLE_HEIGHT + PADDING*3 + BUTTON_HEIGHT + FOOTER_HEIGHT
+local function addTextGradient(textElement, color1, color2, rotation)
+	rotation = rotation or 45
+	local g = Instance.new("UIGradient")
+	g.Color = ColorSequence.new({
+		ColorSequenceKeypoint.new(0, color1),
+		ColorSequenceKeypoint.new(1, color2)
+	})
+	g.Rotation = rotation
+	g.Parent = textElement
 
-local mainGuiFrame = Instance.new("Frame")
-mainGuiFrame.Name = "MainFrame"
-mainGuiFrame.Size = UDim2.new(0, GUI_WIDTH, 0, totalHeight)
-mainGuiFrame.AnchorPoint = Vector2.new(0.5, 0.5)
-mainGuiFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
-mainGuiFrame.BackgroundColor3 = Color3.fromRGB(255,255,255)
-mainGuiFrame.BorderSizePixel = 0
-mainGuiFrame.Parent = screenGui
-Instance.new("UICorner", mainGuiFrame).CornerRadius = UDim.new(0,12)
+	task.spawn(function()
+		while textElement.Parent and g.Parent do
+			for rot = rotation, rotation + 360, 2 do
+				if not g.Parent then break end
+				g.Rotation = rot
+				task.wait(0.03)
+			end
+		end
+	end)
 
--- Rainbow border
-local borderFrame = Instance.new("Frame")
-borderFrame.Size = UDim2.new(1,0,1,0)
-borderFrame.Position = UDim2.new(0,0,0,0)
-borderFrame.BackgroundColor3 = Color3.fromRGB(255,255,255)
-borderFrame.Parent = mainGuiFrame
-Instance.new("UICorner", borderFrame).CornerRadius = UDim.new(0,12)
+	return g
+end
 
-local rainbowGradient = Instance.new("UIGradient")
-rainbowGradient.Color = ColorSequence.new({
-	ColorSequenceKeypoint.new(0, Color3.fromRGB(255,0,0)),
-	ColorSequenceKeypoint.new(0.15, Color3.fromRGB(255,128,0)),
-	ColorSequenceKeypoint.new(0.33, Color3.fromRGB(255,255,0)),
-	ColorSequenceKeypoint.new(0.5, Color3.fromRGB(0,255,0)),
-	ColorSequenceKeypoint.new(0.66, Color3.fromRGB(0,128,255)),
-	ColorSequenceKeypoint.new(0.82, Color3.fromRGB(0,0,255)),
-	ColorSequenceKeypoint.new(1, Color3.fromRGB(255,0,255)),
-})
-rainbowGradient.Parent = borderFrame
+-- ============================================================
+-- CONFIG (persistent) — uses writefile/readfile if executor supports it
+-- ============================================================
+local CONFIG_FILE = "HazeMiniHub_UI.json"
 
-RunService.Heartbeat:Connect(function(dt)
-	rainbowGradient.Rotation = (rainbowGradient.Rotation + dt * 60) % 360
+local function hasFileIO()
+	return type(writefile) == "function"
+		and type(readfile) == "function"
+		and type(isfile) == "function"
+end
+
+local function readConfig()
+	if not hasFileIO() then return {} end
+	local ok, data = pcall(function()
+		if isfile(CONFIG_FILE) then
+			local raw = readfile(CONFIG_FILE)
+			if raw and raw ~= "" then
+				return HttpService:JSONDecode(raw)
+			end
+		end
+		return {}
+	end)
+	return (ok and type(data) == "table") and data or {}
+end
+
+local function writeConfig(tbl)
+	if not hasFileIO() then return end
+	pcall(function()
+		writefile(CONFIG_FILE, HttpService:JSONEncode(tbl))
+	end)
+end
+
+local CONFIG = readConfig()
+CONFIG.__ui = CONFIG.__ui or {}
+CONFIG.__ui.pos = CONFIG.__ui.pos or {}
+CONFIG.__toggles = CONFIG.__toggles or {}
+CONFIG.__values = CONFIG.__values or {}
+CONFIG.__keys = CONFIG.__keys or {}
+
+local function saveConfig()
+	writeConfig(CONFIG)
+end
+
+local function packUDim2(u)
+	return {u.X.Scale,u.X.Offset,u.Y.Scale,u.Y.Offset}
+end
+
+local function unpackUDim2(t)
+	if type(t) ~= "table" then return nil end
+	return UDim2.new(t[1] or 0, t[2] or 0, t[3] or 0, t[4] or 0)
+end
+
+local function loadPos(key, frame)
+	local u = unpackUDim2(CONFIG.__ui.pos[key])
+	if u then frame.Position = u end
+end
+
+local function savePos(key, frame)
+	CONFIG.__ui.pos[key] = packUDim2(frame.Position)
+	saveConfig()
+end
+
+-- Keybind helpers
+local function normalizeId(label)
+	local s = tostring(label):lower()
+	s = s:gsub("[%c%p]", " ")
+	s = s:gsub("%s+", "_")
+	s = s:gsub("^_+", ""):gsub("_+$", "")
+	if s == "" then s = "id" end
+	return s
+end
+
+local function keycodeFromText(txt)
+	if not txt or txt == "" then return nil end
+	local ok, kc = pcall(function() return Enum.KeyCode[txt] end)
+	return ok and kc or nil
+end
+
+local function keycodeToText(kc)
+	return kc and kc.Name or "None"
+end
+
+local function getKey(actionId, fallback)
+	actionId = tostring(actionId)
+	local saved = CONFIG.__keys[actionId]
+	if saved then
+		local kc = keycodeFromText(saved)
+		if kc then return kc end
+	end
+	return keycodeFromText(fallback)
+end
+
+local function setKey(actionId, kc)
+	actionId = tostring(actionId)
+	CONFIG.__keys[actionId] = keycodeToText(kc)
+	saveConfig()
+end
+
+-- ============================================================
+-- DRAG MANAGER (drag only when clicking HEADER handle)
+-- ============================================================
+local Drag = { active = nil } -- {frame,key,startPos,dragStart}
+
+UIS.InputChanged:Connect(function(input)
+	if not Drag.active then return end
+	if input.UserInputType ~= Enum.UserInputType.MouseMovement then return end
+
+	local d = input.Position - Drag.active.dragStart
+	local startPos = Drag.active.startPos
+	local frame = Drag.active.frame
+	if frame and frame.Parent then
+		frame.Position = UDim2.new(
+			startPos.X.Scale, startPos.X.Offset + d.X,
+			startPos.Y.Scale, startPos.Y.Offset + d.Y
+		)
+	end
 end)
 
--- Inner frame (gray background)
-local innerFrame = Instance.new("Frame")
-innerFrame.Size = UDim2.new(1,-6,1,-6)
-innerFrame.Position = UDim2.new(0,3,0,3)
-innerFrame.BackgroundColor3 = Color3.fromRGB(45,45,50)
-innerFrame.Parent = borderFrame
-Instance.new("UICorner", innerFrame).CornerRadius = UDim.new(0,10)
+UIS.InputEnded:Connect(function(input)
+	if input.UserInputType ~= Enum.UserInputType.MouseButton1 then return end
+	if not Drag.active then return end
 
---======================== TITLE =========================--
+	local frame = Drag.active.frame
+	local key = Drag.active.key
+	Drag.active = nil
 
-local titleLabel = Instance.new("TextLabel")
-titleLabel.Size = UDim2.new(1,-PADDING*2,0,TITLE_HEIGHT)
-titleLabel.Position = UDim2.new(0,PADDING,0,PADDING)
-titleLabel.Text = "Cloud Hub | Flash TP"
-titleLabel.Font = Enum.Font.GothamBold
-titleLabel.TextSize = 16
-titleLabel.TextColor3 = Color3.fromRGB(255,255,255)
-titleLabel.BackgroundColor3 = Color3.fromRGB(55,55,65)
-titleLabel.TextScaled = false
-titleLabel.Parent = innerFrame
-Instance.new("UICorner", titleLabel).CornerRadius = UDim.new(0,8)
+	if frame and frame.Parent and key then
+		savePos(key, frame)
+	end
+end)
 
--- Drag functionality (mobile + PC)
-do
-	local dragging, dragStart, startPos
+local function dragSave(frame, key, handle)
+	handle = handle or frame
+	handle.InputBegan:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.MouseButton1 then
+			Drag.active = {
+				frame = frame,
+				key = key,
+				dragStart = input.Position,
+				startPos = frame.Position
+			}
+		end
+	end)
+end
 
-	local function beginDrag(input)
-		if input.UserInputType == Enum.UserInputType.MouseButton1
-		or input.UserInputType == Enum.UserInputType.Touch then
-			dragging = true
-			dragStart = input.Position
-			startPos = mainGuiFrame.Position
+-- ============================================================
+-- MODULE: TIMER ESP (toggleable) — your exact logic
+-- ============================================================
+local TimerESP = (function()
+	local M = {}
+	local conn = nil
+	local enabled = false
+	local estadoPorBase = {}
+	local FREEZE_THRESHOLD = 1
+	local ALTURA_MAX = 7
+	local ROOT = nil
+
+	local function applyBKTextStyle(el)
+		el.TextStrokeColor3 = COLORS.Accent
+		el.TextStrokeTransparency = 0.01
+	end
+
+	local function addTextGradientEl(el)
+		if el:FindFirstChildOfClass("UIGradient") then return end
+		local g = Instance.new("UIGradient")
+		g.Color = ColorSequence.new({
+			ColorSequenceKeypoint.new(0, COLORS.Pink),
+			ColorSequenceKeypoint.new(1, COLORS.Cyan),
+		})
+		g.Rotation = 45
+		g.Parent = el
+		task.spawn(function()
+			while g.Parent do
+				for i = 0, 360, 2 do
+					if not g.Parent then return end
+					g.Rotation = i
+					task.wait(0.03)
+				end
+			end
+		end)
+	end
+
+	local function makeGlow(el)
+		if el:GetAttribute("Glow") then return end
+		el:SetAttribute("Glow", true)
+		task.spawn(function()
+			while el.Parent do
+				tween(el, TweenInfo.new(1.1, Enum.EasingStyle.Sine), {TextColor3 = COLORS.Cyan})
+				task.wait(1.1)
+				tween(el, TweenInfo.new(1.1, Enum.EasingStyle.Sine), {TextColor3 = COLORS.Pink})
+				task.wait(1.1)
+			end
+		end)
+	end
+
+	local function findBasePart(obj)
+		while obj and not obj:IsA("BasePart") do
+			obj = obj.Parent
+		end
+		return obj
+	end
+
+	local function crearESP(base)
+		if base:FindFirstChild("TimerESP") then
+			local existing = base.TimerESP:FindFirstChild("Label")
+			return existing
+		end
+
+		local gui = Instance.new("BillboardGui")
+		gui.Name = "TimerESP"
+		gui.Adornee = base
+		gui.Size = UDim2.new(0, 130, 0, 30)
+		gui.StudsOffset = Vector3.new(0, 4.5, 0)
+		gui.AlwaysOnTop = true
+		gui.MaxDistance = 500
+
+		local label = Instance.new("TextLabel")
+		label.Name = "Label"
+		label.Size = UDim2.new(1, 0, 1, 0)
+		label.BackgroundTransparency = 1
+		label.Font = Enum.Font.GothamBold
+		label.Text = "Detectando…"
+		label.TextColor3 = COLORS.Text
+		label.TextScaled = false
+		label.TextSize = 13
+
+		applyBKTextStyle(label)
+		addTextGradientEl(label)
+		makeGlow(label)
+
+		label.Parent = gui
+		gui.Parent = base
+		return label
+	end
+
+	local function cleanup()
+		estadoPorBase = {}
+		if not ROOT then return end
+		for _, plot in ipairs(ROOT:GetChildren()) do
+			for _, g in ipairs(plot:GetDescendants()) do
+				if g:IsA("BillboardGui") and g.Name == "TimerESP" then
+					g:Destroy()
+				end
+			end
 		end
 	end
 
-	local function endDrag(input)
-		if input.UserInputType == Enum.UserInputType.MouseButton1
-		or input.UserInputType == Enum.UserInputType.Touch then
+	function M.start()
+		if enabled then return end
+		enabled = true
+
+		ROOT = workspace:FindFirstChild("Plots")
+		if not ROOT then
+			warn("[TimerESP] No se encontró workspace.Plots")
+			return
+		end
+
+		if conn then conn:Disconnect() conn = nil end
+		conn = RunService.Heartbeat:Connect(function()
+			if not enabled or not ROOT then return end
+
+			for _, plot in ipairs(ROOT:GetChildren()) do
+				for _, gui in ipairs(plot:GetDescendants()) do
+					if not gui:IsA("BillboardGui") then continue end
+					local rem = gui:FindFirstChild("RemainingTime")
+					if not rem then continue end
+
+					local base = findBasePart(gui)
+					if not base or base.Position.Y > ALTURA_MAX then continue end
+
+					local esp = crearESP(base)
+					if not esp then continue end
+
+					local raw = rem.Text or ""
+					local n = tonumber(raw:match("(%d+)%s*s"))
+
+					local st = estadoPorBase[base]
+					if not st then
+						st = {estado="locked", ultimoN=nil, freeze=nil}
+						estadoPorBase[base] = st
+					end
+
+					if not n or n <= 0 then
+						st.estado = "unlock"
+						st.freeze = nil
+					else
+						if st.ultimoN == n then
+							st.freeze = st.freeze or tick()
+							if tick() - st.freeze >= FREEZE_THRESHOLD then
+								st.estado = "unlock"
+							end
+						else
+							st.freeze = nil
+							st.estado = "locked"
+						end
+						st.ultimoN = n
+					end
+
+					if st.estado == "unlock" then
+						esp.Text = "UNLOCK"
+						esp.TextSize = 18
+						esp.TextColor3 = COLORS.Text
+						esp.TextStrokeColor3 = COLORS.Accent
+						esp.TextStrokeTransparency = 0.35
+					else
+						esp.Text = raw ~= "" and raw or "..."
+						esp.TextSize = 30
+						esp.TextColor3 = COLORS.Text
+						applyBKTextStyle(esp)
+					end
+				end
+			end
+		end)
+	end
+
+	function M.stop()
+		enabled = false
+		if conn then conn:Disconnect() conn = nil end
+		cleanup()
+	end
+
+	return M
+end)()
+
+
+-- =========================================================
+-- MODULE: ANTI RAGDOLL / ANTI KNOCKBACK (toggleable)
+-- (tu script convertido a start/stop para el hub)
+-- =========================================================
+local AntiRagdoll = (function()
+	local M = {}
+
+	local LocalPlayer = lp
+	local AntiKB_Active = false
+	local AntiKB_Connections = {}
+
+	-- WHITELIST ORIGINAL
+	local WHITELIST = {
+		["FlightSpin"] = true,
+		["FlightPower"] = true,
+		["FlightHold"] = true
+	}
+
+	-- ✅ FIX: quitado GettingUp para que no frene
+	local function IsRagdoll(hum)
+		local st = hum:GetState()
+		return (
+			st == Enum.HumanoidStateType.Physics or
+			st == Enum.HumanoidStateType.Ragdoll or
+			st == Enum.HumanoidStateType.FallingDown
+		)
+	end
+
+	local function RestoreControls()
+		pcall(function()
+			local pm = LocalPlayer:WaitForChild("PlayerScripts"):WaitForChild("PlayerModule")
+			require(pm):GetControls():Enable()
+		end)
+	end
+
+	local function FixCharacter(char, hum, hrp, animator)
+		for _, d in pairs(char:GetDescendants()) do
+			if d:IsA("BallSocketConstraint")
+				or d:IsA("NoCollisionConstraint")
+				or d:IsA("HingeConstraint")
+				or (d:IsA("Attachment") and (d.Name == "A" or d.Name == "B"))
+			then
+				d:Destroy()
+
+			elseif d:IsA("BodyVelocity")
+				or d:IsA("BodyPosition")
+				or d:IsA("BodyGyro")
+			then
+				if not WHITELIST[d.Name] then
+					d:Destroy()
+				end
+			end
+		end
+
+		for _, d in pairs(char:GetDescendants()) do
+			if d:IsA("Motor6D") then
+				d.Enabled = true
+			end
+		end
+
+		for _, track in pairs(animator:GetPlayingAnimationTracks()) do
+			local name = (track.Animation and track.Animation.Name:lower()) or ""
+			if name:find("rag") or name:find("fall") or name:find("hurt") or name:find("down") then
+				track:Stop(0)
+			end
+		end
+	end
+
+	-- CameraFix temporal (solo cuando hace falta)
+	local camFixUntil = 0
+	local function TriggerCamFix(sec)
+		camFixUntil = math.max(camFixUntil, os.clock() + (sec or 0.6))
+	end
+
+	local function UnlockFromRagdoll(char, hum, hrp, animator)
+		if not hum or not hrp then return end
+
+		hum.PlatformStand = false
+		hum.Sit = false
+		hum.AutoRotate = true
+		hrp.Anchored = false
+
+		pcall(function()
+			if LocalPlayer:GetAttribute("RagdollEndTime") ~= nil then
+				LocalPlayer:SetAttribute("RagdollEndTime", Workspace:GetServerTimeNow())
+			end
+		end)
+
+		if hum.Health > 0 then
+			hum:ChangeState(Enum.HumanoidStateType.GettingUp)
+			hum:ChangeState(Enum.HumanoidStateType.Running)
+		end
+
+		-- corta impulso SOLO cuando realmente está en ragdoll
+		hrp.AssemblyLinearVelocity = Vector3.new(0,0,0)
+		hrp.AssemblyAngularVelocity = Vector3.new(0,0,0)
+
+		FixCharacter(char, hum, hrp, animator)
+		RestoreControls()
+
+		local cam = Workspace.CurrentCamera
+		if cam then
+			cam.CameraSubject = hum
+			if cam.CameraType ~= Enum.CameraType.Custom then
+				cam.CameraType = Enum.CameraType.Custom
+			end
+		end
+		TriggerCamFix(0.8)
+	end
+
+	local function EnableAntiKB()
+		if AntiKB_Active then return end
+		AntiKB_Active = true
+
+		local char = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+		local hum = char:WaitForChild("Humanoid")
+		local hrp = char:WaitForChild("HumanoidRootPart")
+		local animator = hum:WaitForChild("Animator")
+
+		RestoreControls()
+		FixCharacter(char, hum, hrp, animator)
+
+		-- Estado cambiado: SOLO si hay ragdoll
+		table.insert(AntiKB_Connections, hum.StateChanged:Connect(function()
+			local state = hum:GetState()
+			if state == Enum.HumanoidStateType.Freefall then return end
+			if IsRagdoll(hum) then
+				UnlockFromRagdoll(char, hum, hrp, animator)
+			end
+		end))
+
+		-- Intercepta ApplyImpulse: NO frena, solo ayuda a cámara
+		pcall(function()
+			local re = ReplicatedStorage:FindFirstChild("Packages")
+				and ReplicatedStorage.Packages:FindFirstChild("Net")
+				and ReplicatedStorage.Packages.Net:FindFirstChild("RE/CombatService/ApplyImpulse")
+
+			if re and re.OnClientEvent then
+				table.insert(AntiKB_Connections, re.OnClientEvent:Connect(function()
+					TriggerCamFix(0.8)
+				end))
+			end
+		end)
+
+		-- Nuevos objetos añadidos: SOLO destruye forces (NO unlock)
+		table.insert(AntiKB_Connections, char.DescendantAdded:Connect(function(obj)
+			if obj:IsA("BodyVelocity") or obj:IsA("BodyPosition") or obj:IsA("BodyGyro") then
+				if not WHITELIST[obj.Name] then
+					obj:Destroy()
+				end
+			end
+		end))
+
+		-- Loop constante
+		table.insert(AntiKB_Connections, RunService.Heartbeat:Connect(function()
+			local state = hum:GetState()
+			if state == Enum.HumanoidStateType.Freefall then return end
+			if IsRagdoll(hum) then
+				UnlockFromRagdoll(char, hum, hrp, animator)
+			end
+		end))
+
+		-- CameraFix temporal
+		table.insert(AntiKB_Connections, RunService.RenderStepped:Connect(function()
+			if not AntiKB_Active then return end
+			if os.clock() > camFixUntil then return end
+
+			local cam = Workspace.CurrentCamera
+			if not cam then return end
+			if cam.CameraType ~= Enum.CameraType.Custom then
+				cam.CameraType = Enum.CameraType.Custom
+			end
+			if cam.CameraSubject ~= hum then
+				cam.CameraSubject = hum
+			end
+		end))
+
+		-- Respawn
+		table.insert(AntiKB_Connections, LocalPlayer.CharacterAdded:Connect(function(newChar)
+			char = newChar
+			hum = newChar:WaitForChild("Humanoid")
+			hrp = newChar:WaitForChild("HumanoidRootPart")
+			animator = hum:WaitForChild("Animator")
+
+			RestoreControls()
+			FixCharacter(char, hum, hrp, animator)
+			TriggerCamFix(1.0)
+		end))
+	end
+
+	local function DisableAntiKB()
+		AntiKB_Active = false
+		for _, c in ipairs(AntiKB_Connections) do
+			pcall(function() c:Disconnect() end)
+		end
+		AntiKB_Connections = {}
+	end
+
+	function M.start()
+		EnableAntiKB()
+	end
+
+	function M.stop()
+		DisableAntiKB()
+	end
+
+	return M
+end)()
+
+-- =========================================================
+-- MODULE: INF JUMP (hold Space) (toggleable)
+-- =========================================================
+local InfJump = (function()
+	local M = {}
+
+	local enabled = false
+	local conBegan, conEnded, conHB
+	local spaceHeld = false
+
+	local jumpForce = 40
+	local clampFallSpeed = 80
+
+	local function disconnectAll()
+		if conBegan then conBegan:Disconnect() conBegan = nil end
+		if conEnded then conEnded:Disconnect() conEnded = nil end
+		if conHB then conHB:Disconnect() conHB = nil end
+	end
+
+	function M.start()
+		if enabled then return end
+		enabled = true
+		spaceHeld = false
+
+		-- Detecta espacio presionada / soltada
+		conBegan = UIS.InputBegan:Connect(function(input, gpe)
+			if gpe then return end
+			if UIS:GetFocusedTextBox() then return end
+			if input.UserInputType == Enum.UserInputType.Keyboard and input.KeyCode == Enum.KeyCode.Space then
+				spaceHeld = true
+			end
+		end)
+
+		conEnded = UIS.InputEnded:Connect(function(input)
+			if input.UserInputType == Enum.UserInputType.Keyboard and input.KeyCode == Enum.KeyCode.Space then
+				spaceHeld = false
+			end
+		end)
+
+		-- Loop
+		conHB = RunService.Heartbeat:Connect(function()
+			if not enabled then return end
+			local char = lp.Character
+			if not char then return end
+
+			local hrp = char:FindFirstChild("HumanoidRootPart")
+			if not hrp then return end
+
+			-- Limita velocidad de caída
+			local v = hrp.AssemblyLinearVelocity
+			if v.Y < -clampFallSpeed then
+				hrp.AssemblyLinearVelocity = Vector3.new(v.X, -clampFallSpeed, v.Z)
+				v = hrp.AssemblyLinearVelocity
+			end
+
+			-- Salto mientras se mantiene espacio
+			if spaceHeld then
+				hrp.AssemblyLinearVelocity = Vector3.new(v.X, jumpForce, v.Z)
+			end
+		end)
+	end
+
+	function M.stop()
+		enabled = false
+		spaceHeld = false
+		disconnectAll()
+	end
+
+	-- opcional: si algún día quieres cambiar valores desde fuera
+	function M.setJumpForce(v) jumpForce = tonumber(v) or jumpForce end
+	function M.setClampFallSpeed(v) clampFallSpeed = tonumber(v) or clampFallSpeed end
+
+	return M
+end)()
+
+-- =========================================================
+-- MODULE: AUTO KICK (Anti "you stole" → INSTA LEAVE)
+-- (NO UI, NO KICK MESSAGE) — toggleable start/stop
+-- =========================================================
+local AutoKick = (function()
+	local M = {}
+	local enabled = false
+	local left = false
+
+	local keyword = "you stole" -- case-insensitive
+	local hooked = setmetatable({}, { __mode = "k" }) -- weak keys
+	local conns = {} -- para poder desconectar en stop()
+
+	local function hasKeyword(text)
+		if typeof(text) ~= "string" then return false end
+		return string.find(string.lower(text), keyword, 1, true) ~= nil
+	end
+
+	local function leaveInstant()
+		if left then return end
+		left = true
+
+		-- 🔥 Sale al menú / cierra la sesión (sin mensaje de kick)
+		pcall(function()
+			game:Shutdown()
+		end)
+
+		-- Fallback (solo si quieres):
+		-- pcall(function()
+		--     lp:Kick("")
+		-- end)
+	end
+
+	local function hookTextObject(obj)
+		if not enabled or left then return end
+		if hooked[obj] then return end
+		hooked[obj] = true
+
+		-- Check inicial
+		if hasKeyword(obj.Text) then
+			leaveInstant()
+			return
+		end
+
+		-- Watch cambios de texto
+		local c = obj:GetPropertyChangedSignal("Text"):Connect(function()
+			if not enabled or left then return end
+			if hasKeyword(obj.Text) then
+				leaveInstant()
+			end
+		end)
+		table.insert(conns, c)
+	end
+
+	local function scanDescendants(root)
+		for _, obj in ipairs(root:GetDescendants()) do
+			if left or not enabled then return end
+			if obj:IsA("TextLabel") or obj:IsA("TextButton") or obj:IsA("TextBox") then
+				hookTextObject(obj)
+			end
+		end
+	end
+
+	local function watchRoot(root)
+		if left or not enabled then return end
+
+		-- Hook a lo que ya existe
+		scanDescendants(root)
+		if left or not enabled then return end
+
+		-- Hook a lo nuevo
+		local c = root.DescendantAdded:Connect(function(desc)
+			if not enabled or left then return end
+			if desc:IsA("TextLabel") or desc:IsA("TextButton") or desc:IsA("TextBox") then
+				hookTextObject(desc)
+			end
+		end)
+		table.insert(conns, c)
+	end
+
+	function M.start()
+		if enabled then return end
+		enabled = true
+		left = false
+
+		-- Watch GUIs actuales
+		for _, gui in ipairs(pg:GetChildren()) do
+			if not enabled or left then break end
+			watchRoot(gui)
+		end
+
+		-- Watch GUIs nuevos
+		table.insert(conns, pg.ChildAdded:Connect(function(gui)
+			if not enabled or left then return end
+			watchRoot(gui)
+		end))
+
+		-- Scan global inicial (por si algo está directo en PlayerGui)
+		scanDescendants(pg)
+	end
+
+	function M.stop()
+		enabled = false
+		left = false
+		hooked = setmetatable({}, { __mode = "k" })
+
+		for _, c in ipairs(conns) do
+			pcall(function() c:Disconnect() end)
+		end
+		conns = {}
+	end
+
+	return M
+end)()
+
+-- =========================================================
+-- MODULE: RESOLUTION (camera effect) — toggleable start/stop
+-- (tu code, pero con On/Off real usando conexión)
+-- =========================================================
+local ResolutionFX = (function()
+	local M = {}
+	local enabled = false
+	local conn = nil
+
+	-- Valor global (como tu script)
+	getgenv().Resolution = getgenv().Resolution or { Value = 0.8 }
+
+	local function getCam()
+		return workspace.CurrentCamera
+	end
+
+	function M.start()
+		if enabled then return end
+		enabled = true
+
+		-- anti-duplicado propio del módulo
+		if conn then conn:Disconnect() conn = nil end
+
+		conn = RunService.RenderStepped:Connect(function()
+			if not enabled then return end
+
+			local Camera = getCam()
+			if not Camera then return end
+
+			local v = getgenv().Resolution and getgenv().Resolution.Value or 0.8
+
+			-- tu mismo efecto:
+			Camera.CFrame =
+				Camera.CFrame *
+				CFrame.new(
+					0, 0, 0,
+					1, 0, 0,
+					0, v, 0,
+					0, 0, 1
+				)
+		end)
+	end
+
+	function M.stop()
+		enabled = false
+		if conn then conn:Disconnect() conn = nil end
+	end
+
+	return M
+end)()
+
+-- =========================================================
+-- MODULE: DAY LOCK (toggleable) — convierte tu script a start/stop
+-- =========================================================
+local DayLock = (function()
+	local M = {}
+	local enabled = false
+
+	local conHB = nil
+	local conClock = nil
+
+	-- ===== CONFIG =====
+	local DAY_CLOCKTIME = 12.5 -- 12:30
+
+	local function applyDay()
+		Lighting.ClockTime = DAY_CLOCKTIME
+		Lighting.Brightness = 2.6
+		Lighting.Ambient = Color3.fromRGB(170, 200, 255)
+		Lighting.OutdoorAmbient = Color3.fromRGB(190, 220, 255)
+		Lighting.ColorShift_Top = Color3.new(0,0,0)
+		Lighting.ColorShift_Bottom = Color3.new(0,0,0)
+		Lighting.FogEnd = 9e9
+		Lighting.FogStart = 0
+	end
+
+	function M.start()
+		if enabled then return end
+		enabled = true
+
+		-- aplica ya
+		pcall(applyDay)
+
+		-- 🔒 Lock: si el juego lo cambia, lo corrige ligero
+		local last = 0
+		if conHB then conHB:Disconnect() conHB = nil end
+		conHB = RunService.Heartbeat:Connect(function(dt)
+			if not enabled then return end
+			last += dt
+			if last < 0.25 then return end
+			last = 0
+
+			local ct = Lighting.ClockTime or 0
+			if math.abs(ct - DAY_CLOCKTIME) > 0.05 then
+				pcall(applyDay)
+			end
+		end)
+
+		-- corrige instant cuando cambie ClockTime
+		if conClock then conClock:Disconnect() conClock = nil end
+		conClock = Lighting:GetPropertyChangedSignal("ClockTime"):Connect(function()
+			if not enabled then return end
+			pcall(function()
+				Lighting.ClockTime = DAY_CLOCKTIME
+			end)
+		end)
+
+		print("✅ Day Lock ON")
+	end
+
+	function M.stop()
+		enabled = false
+		if conHB then conHB:Disconnect() conHB = nil end
+		if conClock then conClock:Disconnect() conClock = nil end
+		print("⛔ Day Lock OFF")
+	end
+
+	return M
+end)()
+
+
+-- ============================================================
+-- MODULE: FPS BOOST (toggleable)
+-- FPS BOOST / LOW GRAPHICS GLOBAL + DISABLE ANIMS (NO PLAYERS)
+-- + EXTRA: REMOVE GLOW SOURCES (Highlights + Lights + Neon->Plastic)
+-- + FIX: EXCLUSION Flash Teleport preview (cyan ghost)
+-- Limpio: sin webhooks, sin httpget, sin loadstring
+-- ============================================================
+local FPSBoost = (function()
+	local M = {}
+	local enabled = false
+
+	local conLow = nil
+	local conModels = nil
+
+	local saved = {
+		Lighting = {},
+		PostEffects = {},
+		Quality = nil,
+	}
+
+	local function snapshot()
+		pcall(function()
+			saved.Lighting.GlobalShadows = Lighting.GlobalShadows
+			saved.Lighting.FogEnd = Lighting.FogEnd
+			saved.Lighting.Brightness = Lighting.Brightness
+			saved.Lighting.EnvironmentDiffuseScale = Lighting.EnvironmentDiffuseScale
+			saved.Lighting.EnvironmentSpecularScale = Lighting.EnvironmentSpecularScale
+			saved.Lighting.Ambient = Lighting.Ambient
+			saved.Lighting.OutdoorAmbient = Lighting.OutdoorAmbient
+		end)
+
+		saved.PostEffects = {}
+		for _, v in ipairs(Lighting:GetChildren()) do
+			if v:IsA("PostEffect") then
+				saved.PostEffects[v] = v.Enabled
+			end
+		end
+
+		pcall(function()
+			saved.Quality = settings().Rendering.QualityLevel
+		end)
+	end
+
+	local function restore()
+		pcall(function()
+			if saved.Lighting.GlobalShadows ~= nil then Lighting.GlobalShadows = saved.Lighting.GlobalShadows end
+			if saved.Lighting.FogEnd ~= nil then Lighting.FogEnd = saved.Lighting.FogEnd end
+			if saved.Lighting.Brightness ~= nil then Lighting.Brightness = saved.Lighting.Brightness end
+			if saved.Lighting.EnvironmentDiffuseScale ~= nil then Lighting.EnvironmentDiffuseScale = saved.Lighting.EnvironmentDiffuseScale end
+			if saved.Lighting.EnvironmentSpecularScale ~= nil then Lighting.EnvironmentSpecularScale = saved.Lighting.EnvironmentSpecularScale end
+			if saved.Lighting.Ambient ~= nil then Lighting.Ambient = saved.Lighting.Ambient end
+			if saved.Lighting.OutdoorAmbient ~= nil then Lighting.OutdoorAmbient = saved.Lighting.OutdoorAmbient end
+		end)
+
+		for pe, state in pairs(saved.PostEffects) do
+			if pe and pe.Parent == Lighting then
+				pe.Enabled = state
+			end
+		end
+
+		pcall(function()
+			if saved.Quality ~= nil then
+				settings().Rendering.QualityLevel = saved.Quality
+			end
+		end)
+	end
+
+	-- Excluir mi personaje siempre (usa lp del hub)
+	local function isMyCharacter(inst)
+		local char = lp.Character
+		return char and (inst == char or inst:IsDescendantOf(char))
+	end
+
+	-- ✅ EXCLUSION: Flash Teleport preview (cyan ghost)
+	local function isCyanLike(c)
+		return (c.B >= 0.70 and c.G >= 0.60 and c.R <= 0.55)
+	end
+
+	local function nameHasFlashTeleport(n)
+		n = (n or ""):lower()
+		if n:find("flashteleport", 1, true) then return true end
+		if n:find("flash teleport", 1, true) then return true end
+		if n:find("flash", 1, true) and n:find("teleport", 1, true) then return true end
+		if n:find("flash", 1, true) and n:find("tp", 1, true) then return true end
+		return false
+	end
+
+	local function isFlashTeleportPreview(inst)
+		-- 1) Nombre en self o padres cercanos
+		local p = inst
+		for _ = 1, 6 do
+			if not p then break end
+			if nameHasFlashTeleport(p.Name) then
+				return true
+			end
+			p = p.Parent
+		end
+
+		-- 2) Heurística visual: BasePart cyan brillante
+		if inst:IsA("BasePart") then
+			if isCyanLike(inst.Color) then
+				if inst.Transparency >= 0.05 or inst.Material == Enum.Material.Neon then
+					return true
+				end
+			end
+		end
+
+		-- 3) Highlight cyan
+		if inst:IsA("Highlight") then
+			local ok, fc = pcall(function() return inst.FillColor end)
+			if ok and fc and isCyanLike(fc) then
+				return true
+			end
+		end
+
+		return false
+	end
+
+	-- Quitar fuentes de glow
+	local function killGlowSources(inst)
+		if isMyCharacter(inst) then return end
+		if isFlashTeleportPreview(inst) then return end
+
+		if inst:IsA("Highlight") then
+			inst:Destroy()
+			return
+		end
+
+		if inst:IsA("PointLight") or inst:IsA("SurfaceLight") or inst:IsA("SpotLight") then
+			inst:Destroy()
+			return
+		end
+
+		if inst:IsA("BasePart") and inst.Material == Enum.Material.Neon then
+			inst.Material = Enum.Material.Plastic
+		end
+	end
+
+	-- Low graphics global
+	local function applyLowGraphics(inst)
+		if isMyCharacter(inst) then return end
+		if isFlashTeleportPreview(inst) then return end
+
+		killGlowSources(inst)
+
+		if inst:IsA("ParticleEmitter") or inst:IsA("Trail") or inst:IsA("Smoke") or inst:IsA("Fire") or inst:IsA("Sparkles") then
+			inst.Enabled = false
+		elseif inst:IsA("BasePart") then
+			inst.Material = Enum.Material.Plastic
+			inst.Reflectance = 0
+			inst.CastShadow = false
+		elseif inst:IsA("Texture") or inst:IsA("Decal") then
+			inst:Destroy() -- irreversible
+		end
+	end
+
+	-- Disable anims (no players)
+	local function disableAnimations(model)
+		if isFlashTeleportPreview(model) then return end
+		if Players:GetPlayerFromCharacter(model) then return end
+		for _, v in ipairs(model:GetDescendants()) do
+			if isFlashTeleportPreview(v) then
+				continue
+			end
+			if v:IsA("AnimationController") or v:IsA("Animator") then
+				v:Destroy() -- irreversible
+			elseif v:IsA("Humanoid") then
+				pcall(function()
+					v:ChangeState(Enum.HumanoidStateType.Physics)
+				end)
+			end
+		end
+	end
+
+	function M.start()
+		if enabled then return end
+		enabled = true
+
+		snapshot()
+
+		-- Lighting boost básico
+		pcall(function()
+			Lighting.GlobalShadows = false
+			Lighting.FogEnd = 9e9
+			Lighting.Brightness = 3
+			Lighting.EnvironmentDiffuseScale = 0
+			Lighting.EnvironmentSpecularScale = 0
+			Lighting.Ambient = Color3.fromRGB(180, 180, 180)
+			Lighting.OutdoorAmbient = Color3.fromRGB(200, 200, 200)
+		end)
+
+		-- Apaga TODOS los PostEffects (Bloom incluido)
+		for _, v in ipairs(Lighting:GetChildren()) do
+			if v:IsA("PostEffect") then
+				v.Enabled = false
+			end
+		end
+
+		pcall(function()
+			settings().Rendering.QualityLevel = Enum.QualityLevel.Level04
+		end)
+
+		-- Aplicar a lo existente
+		for _, inst in ipairs(Workspace:GetDescendants()) do
+			applyLowGraphics(inst)
+		end
+		for _, obj in ipairs(Workspace:GetDescendants()) do
+			if obj:IsA("Model") then
+				disableAnimations(obj)
+			end
+		end
+
+		-- Watchers
+		if conLow then conLow:Disconnect() conLow = nil end
+		if conModels then conModels:Disconnect() conModels = nil end
+
+		conLow = Workspace.DescendantAdded:Connect(function(inst)
+			if not enabled then return end
+			applyLowGraphics(inst)
+		end)
+
+		conModels = Workspace.DescendantAdded:Connect(function(inst)
+			if not enabled then return end
+			if inst:IsA("Model") then
+				disableAnimations(inst)
+			end
+		end)
+	end
+
+	function M.stop()
+		enabled = false
+		if conLow then conLow:Disconnect() conLow = nil end
+		if conModels then conModels:Disconnect() conModels = nil end
+		restore() -- best-effort (no revive lo destruido)
+	end
+
+	return M
+end)()
+
+
+-- ============================================================
+-- MODULE: SUBSPACE TRIPMINE ESP (toggleable) — your exact script
+-- ============================================================
+local MineESP = (function()
+	local M = {}
+	local enabled = false
+	local tagged = {}
+	local conAdd = nil
+	local conScan = nil
+
+	local PREFIX = "subspacetripmine"
+	local BOX_COLOR = Color3.new(0.694118, 0.121569, 1.000000)
+
+	local function isInPlayer(obj)
+		local p = obj.Parent
+		while p do
+			if p:IsA("Model") and Players:GetPlayerFromCharacter(p) then
+				return true
+			end
+			if p:IsA("Backpack") then
+				return true
+			end
+			p = p.Parent
+		end
+		return false
+	end
+
+	local function isTripmine(obj)
+		if not (obj:IsA("BasePart") or obj:IsA("Model")) then return false end
+		local n = (obj.Name or ""):lower()
+		return n:sub(1, #PREFIX) == PREFIX
+	end
+
+	local function extractOwnerFromName(obj)
+		local n = obj.Name or ""
+		local low = n:lower()
+		if low:sub(1, #PREFIX) ~= PREFIX then return nil end
+		local owner = n:sub(#PREFIX + 1)
+		if owner == "" then return nil end
+		return owner:gsub("%s+", "")
+	end
+
+	local function getAnchor(obj)
+		if obj:IsA("Model") then
+			return obj.PrimaryPart or obj:FindFirstChildWhichIsA("BasePart", true)
+		else
+			return obj
+		end
+	end
+
+	local function cleanupAll()
+		tagged = {}
+		for _, obj in ipairs(Workspace:GetDescendants()) do
+			if obj:IsA("SelectionBox") and obj.Name == "MineESP_Wire" then
+				obj:Destroy()
+			elseif obj:IsA("BillboardGui") and obj.Name == "MineESP_Label" then
+				obj:Destroy()
+			end
+		end
+	end
+
+	local function addMineESP(obj)
+		if not enabled then return end
+		if tagged[obj] then return end
+		if isInPlayer(obj) then return end
+		if not isTripmine(obj) then return end
+
+		local anchor = getAnchor(obj)
+		if not anchor then return end
+
+		tagged[obj] = true
+
+		local box = Instance.new("SelectionBox")
+		box.Name = "MineESP_Wire"
+		box.Adornee = anchor
+		box.LineThickness = 0.18
+		box.Color3 = BOX_COLOR
+		box.SurfaceColor3 = BOX_COLOR
+		box.SurfaceTransparency = 1
+		box.Transparency = 0
+		box.Parent = anchor
+
+		local owner = extractOwnerFromName(obj) or "Unknown"
+
+		local bill = Instance.new("BillboardGui")
+		bill.Name = "MineESP_Label"
+		bill.Adornee = anchor
+		bill.AlwaysOnTop = true
+		bill.Size = UDim2.new(0, 220, 0, 22)
+		bill.StudsOffsetWorldSpace = Vector3.new(0, 5.2, 0)
+		bill.Parent = anchor
+
+		local txt = Instance.new("TextLabel")
+		txt.BackgroundTransparency = 1
+		txt.Size = UDim2.new(1, 0, 1, 0)
+		txt.Text = owner .. "'s Subspace Mine"
+		txt.TextScaled = false
+		txt.TextSize = 15
+		txt.Font = Enum.Font.GothamBold
+		txt.TextColor3 = Color3.new(1, 1, 1)
+		txt.TextStrokeTransparency = 0.5
+		txt.Parent = bill
+
+		obj.AncestryChanged:Connect(function(_, parent)
+			if parent == nil then
+				tagged[obj] = nil
+				if box then box:Destroy() end
+				if bill then bill:Destroy() end
+			end
+		end)
+	end
+
+	function M.start()
+		if enabled then return end
+		enabled = true
+
+		-- scan inicial
+		if conScan then pcall(function() task.cancel(conScan) end) conScan = nil end
+		conScan = task.spawn(function()
+			task.wait(1)
+			for _, obj in ipairs(Workspace:GetDescendants()) do
+				addMineESP(obj)
+			end
+		end)
+
+		if conAdd then conAdd:Disconnect() conAdd = nil end
+		conAdd = Workspace.DescendantAdded:Connect(function(obj)
+			task.wait(0.05)
+			addMineESP(obj)
+		end)
+	end
+
+	function M.stop()
+		enabled = false
+		if conAdd then conAdd:Disconnect() conAdd = nil end
+		cleanupAll()
+	end
+
+	return M
+end)()
+
+-- ============================================================
+-- GUI ROOT
+-- ============================================================
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "HazeMiniHub_UIOnly"
+screenGui.ResetOnSpawn = false
+screenGui.IgnoreGuiInset = true
+screenGui.Parent = pg
+
+-- Main container (small + bottom-right)
+local mainW, mainH = 420, 360
+local mainFrame = createElement("Frame", {
+	Name = "MainFrame",
+	Size = UDim2.fromOffset(mainW, mainH),
+	Position = UDim2.new(1, -(mainW + 20), 1, -(mainH + 20)),
+	BackgroundColor3 = COLORS.Background,
+	BackgroundTransparency = COLORS.BackgroundTransparency,
+	BorderSizePixel = 0,
+	Parent = screenGui,
+})
+createElement("UICorner", { CornerRadius = UDim.new(0, 14), Parent = mainFrame })
+
+local mainStroke = createElement("UIStroke", {
+	ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
+	Thickness = 2,
+	Color = COLORS.Accent,
+	Transparency = 0.35,
+	Parent = mainFrame
+})
+mainStroke.LineJoinMode = Enum.LineJoinMode.Round
+
+-- Animated gradient border (haze)
+do
+	local grad = Instance.new("UIGradient")
+	grad.Color = ColorSequence.new({
+		ColorSequenceKeypoint.new(0, Color3.fromRGB(220,120,255)),
+		ColorSequenceKeypoint.new(0.5, Color3.fromRGB(120,240,255)),
+		ColorSequenceKeypoint.new(1, Color3.fromRGB(220,120,255))
+	})
+	grad.Rotation = 0
+	grad.Parent = mainStroke
+
+	task.spawn(function()
+		while mainStroke.Parent do
+			for i = 0, 360, 2 do
+				if not grad.Parent then break end
+				grad.Rotation = i
+				task.wait(0.01)
+			end
+		end
+	end)
+end
+
+-- Header (drag handle)
+local header = createElement("Frame", {
+	Name = "Header",
+	Size = UDim2.new(1, -20, 0, 52),
+	Position = UDim2.new(0, 10, 0, 10),
+	BackgroundColor3 = COLORS.Background,
+	BackgroundTransparency = COLORS.BackgroundTransparency,
+	BorderSizePixel = 0,
+	Parent = mainFrame,
+})
+createElement("UICorner", { CornerRadius = UDim.new(0, 12), Parent = header })
+
+local headerStroke = createElement("UIStroke", {
+	ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
+	Thickness = 1.5,
+	Color = COLORS.Accent,
+	Transparency = 0.35,
+	Parent = header
+})
+headerStroke.LineJoinMode = Enum.LineJoinMode.Round
+
+local title = createElement("TextLabel", {
+	Size = UDim2.new(1, -20, 1, 0),
+	Position = UDim2.new(0, 12, 0, 0),
+	BackgroundTransparency = 1,
+	Text = "Haze Mini Hub",
+	TextColor3 = COLORS.Text,
+	TextSize = 18,
+	Font = Enum.Font.GothamBold,
+	TextXAlignment = Enum.TextXAlignment.Left,
+	Parent = header,
+})
+makeTextGlow(title, COLORS.Pink, COLORS.Cyan, 1.2, 0.1)
+addTextGradient(title, Color3.fromRGB(255,140,255), Color3.fromRGB(180,220,255), 45)
+
+-- Divider line under header
+createElement("Frame", {
+	Size = UDim2.new(1, -20, 0, 1),
+	Position = UDim2.new(0, 10, 0, 70),
+	BackgroundColor3 = COLORS.Accent,
+	BackgroundTransparency = 0.55,
+	BorderSizePixel = 0,
+	Parent = mainFrame,
+})
+
+-- draggable + remember position (ONLY HEADER is handle)
+loadPos("haze_mini_main", mainFrame)
+dragSave(mainFrame, "haze_mini_main", header)
+
+-- ============================================================
+-- BODY: left tabs + right content
+-- ============================================================
+local body = createElement("Frame", {
+	Name = "Body",
+	Size = UDim2.new(1, -20, 1, -86),
+	Position = UDim2.new(0, 10, 0, 78),
+	BackgroundTransparency = 1,
+	Parent = mainFrame,
+})
+
+local tabsW = 120
+
+local leftTabs = createElement("Frame", {
+	Name = "LeftTabs",
+	Size = UDim2.new(0, tabsW, 1, 0),
+	BackgroundTransparency = 1,
+	Parent = body,
+})
+
+local leftLayout = Instance.new("UIListLayout")
+leftLayout.FillDirection = Enum.FillDirection.Vertical
+leftLayout.HorizontalAlignment = Enum.HorizontalAlignment.Left
+leftLayout.VerticalAlignment = Enum.VerticalAlignment.Top
+leftLayout.SortOrder = Enum.SortOrder.LayoutOrder
+leftLayout.Padding = UDim.new(0, 8)
+leftLayout.Parent = leftTabs
+
+createElement("Frame", {
+	Name = "TabsDivider",
+	Size = UDim2.new(0, 1, 1, 0),
+	Position = UDim2.new(0, tabsW + 10, 0, 0),
+	BackgroundColor3 = COLORS.Accent,
+	BackgroundTransparency = 0.55,
+	BorderSizePixel = 0,
+	Parent = body,
+})
+
+local contentFrame = createElement("Frame", {
+	Name = "Content",
+	Size = UDim2.new(1, -(tabsW + 22), 1, 0),
+	Position = UDim2.new(0, tabsW + 20, 0, 0),
+	BackgroundTransparency = 1,
+	Parent = body,
+})
+
+local function makePage()
+	local page = createElement("Frame", {
+		Size = UDim2.new(1, 0, 1, 0),
+		BackgroundTransparency = 1,
+		Visible = false,
+		Parent = contentFrame,
+	})
+
+	local pad = Instance.new("UIPadding")
+	pad.PaddingTop = UDim.new(0, 2)
+	pad.PaddingLeft = UDim.new(0, 0)
+	pad.PaddingRight = UDim.new(0, 0)
+	pad.PaddingBottom = UDim.new(0, 0)
+	pad.Parent = page
+
+	local lay = Instance.new("UIListLayout")
+	lay.Padding = UDim.new(0, 10)
+	lay.SortOrder = Enum.SortOrder.LayoutOrder
+	lay.Parent = page
+
+	return page
+end
+
+local pages = {
+	main = makePage(),
+	visual = makePage(),
+	settings = makePage(),
+}
+
+-- ============================================================
+-- TAB BUTTONS (vertical)
+-- ============================================================
+local function makeTabButton(text, icon)
+	local b = createElement("TextButton", {
+		Size = UDim2.new(1, 0, 0, 40),
+		BackgroundColor3 = COLORS.Surface,
+		BackgroundTransparency = COLORS.SurfaceTransparency,
+		BorderSizePixel = 0,
+		Text = "",
+		Parent = leftTabs,
+		AutoButtonColor = false,
+	})
+	createElement("UICorner", { CornerRadius = UDim.new(0, 10), Parent = b })
+	applyTitanzButtonStyle(b)
+
+	local pad = Instance.new("UIPadding")
+	pad.PaddingLeft = UDim.new(0, 10)
+	pad.PaddingRight = UDim.new(0, 10)
+	pad.Parent = b
+
+	local iconLbl = createElement("TextLabel", {
+		BackgroundTransparency = 1,
+		Size = UDim2.new(0, 20, 1, 0),
+		Text = icon or "•",
+		TextColor3 = COLORS.Text,
+		TextSize = 14,
+		Font = Enum.Font.GothamBold,
+		TextXAlignment = Enum.TextXAlignment.Left,
+		Parent = b,
+	})
+	makeTextGlow(iconLbl, COLORS.Pink, COLORS.Cyan, 1.2, 0.18)
+
+	local txt = createElement("TextLabel", {
+		BackgroundTransparency = 1,
+		Position = UDim2.new(0, 22, 0, 0),
+		Size = UDim2.new(1, -22, 1, 0),
+		Text = text,
+		TextColor3 = COLORS.Text,
+		TextSize = 12,
+		Font = Enum.Font.GothamBold,
+		TextXAlignment = Enum.TextXAlignment.Left,
+		Parent = b,
+	})
+	makeTextGlow(txt, COLORS.Pink, COLORS.Cyan, 1.2, 0.22)
+	addTextGradient(txt, Color3.fromRGB(255,140,255), Color3.fromRGB(180,220,255), 45)
+
+	b.MouseEnter:Connect(function()
+		tween(b, tweenInfoFast, { BackgroundTransparency = 0.10 })
+	end)
+	b.MouseLeave:Connect(function()
+		if b:GetAttribute("Selected") then return end
+		tween(b, tweenInfoFast, { BackgroundTransparency = COLORS.SurfaceTransparency })
+	end)
+
+	return b
+end
+
+local tabs = {
+	main     = makeTabButton("Main", "⚙"),
+	visual   = makeTabButton("Visual", "👁"),
+	settings = makeTabButton("Settings", "🛠"),
+}
+
+local function setSelected(btn, on)
+	btn:SetAttribute("Selected", on and true or false)
+
+	local st = btn:FindFirstChild("TitanzBorder") or btn:FindFirstChildOfClass("UIStroke")
+	if st then
+		st.Transparency = on and 0.15 or 0.35
+		st.Thickness = on and 2 or 1.5
+	end
+
+	if on then
+		tween(btn, tweenInfoFast, {
+			BackgroundTransparency = 0.10,
+			BackgroundColor3 = blendColor(COLORS.Surface, COLORS.Accent, 0.22),
+		})
+	else
+		tween(btn, tweenInfoFast, {
+			BackgroundTransparency = COLORS.SurfaceTransparency,
+			BackgroundColor3 = blendColor(COLORS.Surface, COLORS.Accent, 0.10),
+		})
+	end
+end
+
+local function showTab(key)
+	for k, p in pairs(pages) do
+		p.Visible = (k == key)
+	end
+	for k, b in pairs(tabs) do
+		setSelected(b, k == key)
+	end
+end
+
+-- ============================================================
+-- TOGGLES CORE (persistent) + start/stop hooks
+-- ============================================================
+local TOGGLES = {}
+
+local function saveToggleState(id, state)
+	CONFIG.__toggles[id] = state == true
+	saveConfig()
+end
+
+local function getToggleState(id, defaultState)
+	if CONFIG.__toggles[id] == nil then
+		return defaultState == true
+	end
+	return CONFIG.__toggles[id] == true
+end
+
+local function registerToggle(label, defaultState, setUI, startFn, stopFn)
+	local id = normalizeId(label)
+	local t = TOGGLES[id]
+	if t then
+		t.setUI = setUI
+		t.start = startFn or t.start
+		t.stop  = stopFn  or t.stop
+		return t
+	end
+
+	t = {
+		id = id,
+		label = label,
+		state = getToggleState(id, defaultState),
+		setUI = setUI,
+		start = startFn or function() end,
+		stop  = stopFn  or function() end,
+	}
+	TOGGLES[id] = t
+	return t
+end
+
+local function applyToggle(t, on, reason)
+	on = (on == true)
+	t.state = on
+
+	if t.setUI then pcall(t.setUI, on) end
+	if on then pcall(t.start) else pcall(t.stop) end
+
+	if reason ~= "init" then
+		saveToggleState(t.id, on)
+	end
+end
+
+local function initAllToggles()
+	for _, t in pairs(TOGGLES) do
+		applyToggle(t, t.state, "init")
+	end
+	saveConfig()
+end
+
+-- ============================================================
+-- SECTION LABEL
+-- ============================================================
+local function createSectionLabel(parent, txt, order)
+	local lab = createElement("TextLabel", {
+		BackgroundTransparency = 1,
+		Size = UDim2.new(1, 0, 0, 22),
+		Text = txt,
+		TextColor3 = COLORS.Accent,
+		TextSize = 14,
+		Font = Enum.Font.GothamBold,
+		TextXAlignment = Enum.TextXAlignment.Left,
+		LayoutOrder = order or 0,
+		Parent = parent,
+	})
+	makeTextGlow(lab, COLORS.Pink, COLORS.Cyan, 1.2, 0.1)
+	addTextGradient(lab, Color3.fromRGB(255,140,255), Color3.fromRGB(180,220,255), 45)
+	return lab
+end
+
+-- ============================================================
+-- TOGGLE ROW (style) — UPDATED to accept startFn/stopFn
+-- ============================================================
+local function createToggleRow(parent, labelText, order, defaultState, startFn, stopFn)
+	local container = createElement("Frame", {
+		Size = UDim2.new(1, 0, 0, 38),
+		BackgroundColor3 = COLORS.Surface,
+		BackgroundTransparency = COLORS.SurfaceTransparency,
+		BorderSizePixel = 0,
+		LayoutOrder = order or 0,
+		Parent = parent,
+	})
+	createElement("UICorner", { CornerRadius = UDim.new(0, 10), Parent = container })
+	applyTitanzButtonStyle(container)
+
+	createElement("TextLabel", {
+		Size = UDim2.new(1, -55, 1, 0),
+		Position = UDim2.new(0, 10, 0, 0),
+		BackgroundTransparency = 1,
+		Text = labelText,
+		TextColor3 = COLORS.Text,
+		TextSize = 12,
+		Font = Enum.Font.GothamBold,
+		TextXAlignment = Enum.TextXAlignment.Left,
+		Parent = container,
+	})
+
+	local toggleBg = createElement("Frame", {
+		Size = UDim2.new(0, 42, 0, 22),
+		Position = UDim2.new(1, -48, 0.5, -11),
+		BackgroundColor3 = blendColor(COLORS.Surface, COLORS.Accent, 0.25),
+		BackgroundTransparency = 0.40,
+		BorderSizePixel = 0,
+		Parent = container,
+	})
+	createElement("UICorner", { CornerRadius = UDim.new(1, 0), Parent = toggleBg })
+	applyTitanzButtonStyle(toggleBg)
+
+	local knob = createElement("Frame", {
+		Size = UDim2.new(0, 18, 0, 18),
+		Position = UDim2.new(0, 2, 0.5, -9),
+		BackgroundColor3 = COLORS.Text,
+		BorderSizePixel = 0,
+		Parent = toggleBg,
+	})
+	createElement("UICorner", { CornerRadius = UDim.new(1, 0), Parent = knob })
+	applyTitanzButtonStyle(knob)
+
+	local hit = createElement("TextButton", {
+		Size = UDim2.new(1, 0, 1, 0),
+		BackgroundTransparency = 1,
+		Text = "",
+		Parent = container,
+		AutoButtonColor = false,
+	})
+
+	local function setUI(on)
+		tween(toggleBg, tweenInfoFast, {
+			BackgroundColor3 = on and COLORS.Accent or blendColor(COLORS.Surface, COLORS.Accent, 0.25),
+			BackgroundTransparency = on and 0.10 or 0.40,
+		})
+		tween(knob, tweenInfoFast, {
+			Position = on and UDim2.new(0, 22, 0.5, -9) or UDim2.new(0, 2, 0.5, -9),
+		})
+	end
+
+	local t = registerToggle(labelText, defaultState, setUI, startFn or function() end, stopFn or function() end)
+
+	hit.MouseButton1Click:Connect(function()
+		applyToggle(t, not t.state, "click")
+	end)
+
+	setUI(t.state)
+	return container, t, setUI
+end
+
+-- ============================================================
+-- SPEED SLIDER (25..30) persistent
+-- ============================================================
+local function getValue(id, default)
+	if CONFIG.__values[id] == nil then return default end
+	return CONFIG.__values[id]
+end
+
+local function setValue(id, v)
+	CONFIG.__values[id] = v
+	saveConfig()
+end
+
+local function createSpeedSlider(parent, order, minV, maxV, defaultV)
+	local row = createElement("Frame", {
+		Size = UDim2.new(1, 0, 0, 34),
+		BackgroundColor3 = blendColor(COLORS.Surface, COLORS.Purple, 0.12),
+		BackgroundTransparency = 0.18,
+		BorderSizePixel = 0,
+		LayoutOrder = order or 0,
+		Parent = parent,
+	})
+	createElement("UICorner", { CornerRadius = UDim.new(0, 10), Parent = row })
+
+	local stroke = Instance.new("UIStroke")
+	stroke.Thickness = 1.5
+	stroke.Color = COLORS.Accent
+	stroke.Transparency = 0.35
+	stroke.Parent = row
+
+	local pad = Instance.new("UIPadding")
+	pad.PaddingLeft = UDim.new(0, 10)
+	pad.PaddingRight = UDim.new(0, 10)
+	pad.Parent = row
+
+	local label = createElement("TextLabel", {
+		BackgroundTransparency = 1,
+		Size = UDim2.new(1, 0, 0, 16),
+		Position = UDim2.new(0, 0, 0, 2),
+		TextXAlignment = Enum.TextXAlignment.Left,
+		Font = Enum.Font.GothamBold,
+		TextSize = 12,
+		TextColor3 = COLORS.Text,
+		Text = "Speed: 25",
+		Parent = row,
+	})
+	makeTextGlow(label, COLORS.Pink, COLORS.Cyan, 1.2, 0.12)
+
+	local bar = createElement("Frame", {
+		Size = UDim2.new(1, 0, 0, 10),
+		Position = UDim2.new(0, 0, 0, 20),
+		BackgroundColor3 = COLORS.Surface,
+		BackgroundTransparency = 0.25,
+		BorderSizePixel = 0,
+		Parent = row,
+	})
+	createElement("UICorner", { CornerRadius = UDim.new(0, 8), Parent = bar })
+	applyTitanzButtonStyle(bar)
+
+	local fill = createElement("Frame", {
+		Size = UDim2.new(0, 0, 1, 0),
+		BackgroundColor3 = COLORS.Accent,
+		BackgroundTransparency = 0.12,
+		BorderSizePixel = 0,
+		Parent = bar,
+	})
+	createElement("UICorner", { CornerRadius = UDim.new(0, 8), Parent = fill })
+
+	local knob = createElement("Frame", {
+		Size = UDim2.new(0, 14, 0, 14),
+		AnchorPoint = Vector2.new(0.5, 0.5),
+		Position = UDim2.new(0, 0, 0.5, 0),
+		BackgroundColor3 = COLORS.Text,
+		BorderSizePixel = 0,
+		Parent = bar,
+	})
+	createElement("UICorner", { CornerRadius = UDim.new(1, 0), Parent = knob })
+	applyTitanzButtonStyle(knob)
+
+	local id = "speed_value"
+	local value = tonumber(getValue(id, defaultV)) or defaultV
+	value = math.clamp(value, minV, maxV)
+
+	local function alphaFromValue(v) return (v - minV) / (maxV - minV) end
+	local function valueFromAlpha(a) return math.floor((minV + (maxV - minV) * a) + 0.5) end
+
+	local function refresh()
+		local a = math.clamp(alphaFromValue(value), 0, 1)
+		fill.Size = UDim2.new(a, 0, 1, 0)
+		knob.Position = UDim2.new(a, 0, 0.5, 0)
+		label.Text = ("Speed: %d"):format(value)
+	end
+
+	local dragging = false
+	local function setFromX(x)
+		local aPos = bar.AbsolutePosition.X
+		local aSize = bar.AbsoluteSize.X
+		local a = math.clamp((x - aPos) / aSize, 0, 1)
+		value = valueFromAlpha(a)
+		setValue(id, value)
+		refresh()
+	end
+
+	bar.InputBegan:Connect(function(i)
+		if i.UserInputType == Enum.UserInputType.MouseButton1 then
+			dragging = true
+			setFromX(i.Position.X)
+		end
+	end)
+	UIS.InputChanged:Connect(function(i)
+		if dragging and i.UserInputType == Enum.UserInputType.MouseMovement then
+			setFromX(i.Position.X)
+		end
+	end)
+	UIS.InputEnded:Connect(function(i)
+		if i.UserInputType == Enum.UserInputType.MouseButton1 then
 			dragging = false
 		end
+	end)
+
+	refresh()
+
+	_G.HazeMiniHub_GetSpeed = function()
+		return tonumber(getValue(id, value)) or value
 	end
 
-	local function dragMoved(input)
-		if dragging then
-			local delta = input.Position - dragStart
-			mainGuiFrame.Position = UDim2.new(
-				startPos.X.Scale, startPos.X.Offset + delta.X,
-				startPos.Y.Scale, startPos.Y.Offset + delta.Y
-			)
-		end
-	end
-
-	titleLabel.InputBegan:Connect(beginDrag)
-	titleLabel.InputEnded:Connect(endDrag)
-	UserInputService.InputChanged:Connect(dragMoved)
+	return row
 end
 
---======================== TP ON STEAL BUTTON =========================--
+-- ============================================================
+-- KEYBIND UI (bottom-left of hub)
+-- ============================================================
+local function createKeybindBox(parent)
+	local box = createElement("Frame", {
+		Name = "KeybindBox",
+		Size = UDim2.new(1, 0, 0, 44),
+		BackgroundTransparency = 1,
+		Parent = parent,
+	})
+	box.ClipsDescendants = true
 
-local yOffset = TITLE_HEIGHT + PADDING*2
+	local lab = createElement("TextLabel", {
+		BackgroundTransparency = 1,
+		Size = UDim2.new(1, -128, 1, 10),
+		Position = UDim2.new(0, 10, 0, -24),
+		Text = "Toggle UI key:",
+		TextColor3 = COLORS.TextDim,
+		TextSize = 12,
+		Font = Enum.Font.GothamBold,
+		TextXAlignment = Enum.TextXAlignment.Left,
+		TextYAlignment = Enum.TextYAlignment.Center,
+		Parent = box,
+	})
+	applyTitanzTextStyle(lab)
 
-local tpBtn = Instance.new("TextButton")
-tpBtn.Size = UDim2.new(1,-PADDING*2,0,BUTTON_HEIGHT)
-tpBtn.Position = UDim2.new(0,PADDING,0,yOffset)
-tpBtn.BackgroundColor3 = Color3.fromRGB(55,55,65)
-tpBtn.AutoButtonColor = false
-tpBtn.Text = "TP On Steal: OFF"
-tpBtn.Font = Enum.Font.GothamBold
-tpBtn.TextSize = 15
-tpBtn.TextColor3 = Color3.fromRGB(255,255,255)
-tpBtn.TextScaled = false
-tpBtn.Parent = innerFrame
-Instance.new("UICorner", tpBtn).CornerRadius = UDim.new(0,8)
+	local keyBtn = createElement("TextButton", {
+		Size = UDim2.new(0, 110, 0, 28),
+		AnchorPoint = Vector2.new(1, 0.5),
+		Position = UDim2.new(1, -6, 0.5, 0),
+		BackgroundColor3 = COLORS.Background,
+		BackgroundTransparency = 0.15,
+		BorderSizePixel = 0,
+		Text = "RightAlt",
+		TextColor3 = COLORS.Text,
+		TextSize = 12,
+		Font = Enum.Font.GothamBold,
+		Parent = box,
+		AutoButtonColor = false,
+	})
+	createElement("UICorner", { CornerRadius = UDim.new(0, 10), Parent = keyBtn })
+	applyTitanzButtonStyle(keyBtn)
 
---======================== FOOTER =========================--
+	keyBtn.MouseEnter:Connect(function()
+		tween(keyBtn, tweenInfoFast, { BackgroundTransparency = 0.08 })
+	end)
+	keyBtn.MouseLeave:Connect(function()
+		tween(keyBtn, tweenInfoFast, { BackgroundTransparency = 0.15 })
+	end)
 
-yOffset = yOffset + BUTTON_HEIGHT + PADDING
+	local actionId = "toggle_ui"
+	local currentKey = getKey(actionId, "RightAlt") or Enum.KeyCode.RightAlt
+	keyBtn.Text = keycodeToText(currentKey)
 
-local footer = Instance.new("TextLabel")
-footer.Size = UDim2.new(1,-PADDING*2,0,FOOTER_HEIGHT)
-footer.Position = UDim2.new(0, PADDING, 0, yOffset)
-footer.BackgroundTransparency = 1
-footer.Text = "dcd.gg/cloudhub-"
-footer.TextColor3 = Color3.fromRGB(150, 150, 255)
-footer.Font = Enum.Font.GothamMedium
-footer.TextSize = 12
-footer.TextXAlignment = Enum.TextXAlignment.Center
-footer.TextScaled = false
-footer.Parent = innerFrame
+	local capturing = false
+	local capConn
 
---======================== BUTTON LOGIC =========================--
-
-tpBtn.MouseButton1Click:Connect(function()
-	tpOnStealEnabled = not tpOnStealEnabled
-	tpBtn.Text = tpOnStealEnabled and "TP On Steal: ON" or "TP On Steal: OFF"
-	
-	TweenService:Create(tpBtn, TweenInfo.new(0.2), {
-		BackgroundColor3 = tpOnStealEnabled 
-			and Color3.fromRGB(0,170,255) 
-			or Color3.fromRGB(55,55,65)
-	}):Play()
-	
-	if tpOnStealEnabled then
-		sendNotification("✅ Cloud Hub", "Flash TP enabled!", 3)
-	else
-		sendNotification("⚠️ Cloud Hub", "Flash TP disabled!", 3)
+	local function stopCapture()
+		capturing = false
+		if capConn then capConn:Disconnect() capConn = nil end
 	end
-end)
 
---======================== PROXIMITY PROMPT DETECTION =========================--
+	keyBtn.MouseButton1Click:Connect(function()
+		if capturing then
+			stopCapture()
+			keyBtn.Text = keycodeToText(currentKey)
+			return
+		end
+		capturing = true
+		keyBtn.Text = "Press..."
+		if capConn then capConn:Disconnect() end
 
--- Track active prompts
-local currentPrompt = nil
-local promptConnection = nil
+		capConn = UIS.InputBegan:Connect(function(input, gpe)
+			if gpe then return end
+			if not capturing then return end
+			if input.UserInputType ~= Enum.UserInputType.Keyboard then return end
 
-ProximityPromptService.PromptShown:Connect(function(prompt)
-	currentPrompt = prompt
-end)
+			local kc = input.KeyCode
+			if kc == Enum.KeyCode.Unknown then return end
 
-ProximityPromptService.PromptHidden:Connect(function(prompt)
-	if currentPrompt == prompt then
-		currentPrompt = nil
-	end
-end)
+			if kc == Enum.KeyCode.Escape then
+				keyBtn.Text = keycodeToText(currentKey)
+				stopCapture()
+				return
+			end
 
--- Detect E key press on proximity prompts
-UserInputService.InputBegan:Connect(function(input, gameProcessed)
-	if gameProcessed then return end
-	
-	if input.KeyCode == Enum.KeyCode.E and currentPrompt and tpOnStealEnabled then
-		task.spawn(function()
-			-- Wait a tiny bit to let the prompt start
-			task.wait(0.05)
-			equipFlashTeleport()
+			currentKey = kc
+			setKey(actionId, currentKey)
+			keyBtn.Text = keycodeToText(currentKey)
+			stopCapture()
 		end)
+	end)
+
+	_G.HazeMiniHub_GetToggleKey = function()
+		return getKey(actionId, "RightAlt") or Enum.KeyCode.RightAlt
+	end
+
+	return box
+end
+
+-- ============================================================
+-- BUILD PAGES
+-- ============================================================
+do
+	createSectionLabel(pages.main, "Main", 0)
+	createToggleRow(pages.main, "Inf Jump", 1, false, InfJump.start, InfJump.stop)
+	createToggleRow(pages.main, "Anti Ragdoll", 2, false, AntiRagdoll.start, AntiRagdoll.stop)
+	createToggleRow(pages.main, "Lagger", 3, false)
+	createToggleRow(pages.main, "Speed", 4, false)
+	createSpeedSlider(pages.main, 5, 25, 30, 25)
+end
+
+do
+	createSectionLabel(pages.visual, "Visual", 0)
+
+	-- Your items, but 3 of them now have real ON/OFF:
+	-- Esp Timer => TimerESP
+	-- FPS Boost => FPSBoost
+	-- Mine Esp  => MineESP
+	local items = { "Esp Player", "Esp Timer", "X-ray", "FPS Boost", "Mine Esp" }
+	for i, name in ipairs(items) do
+		if name == "Esp Timer" then
+			createToggleRow(pages.visual, name, i, false, TimerESP.start, TimerESP.stop)
+		elseif name == "FPS Boost" then
+			createToggleRow(pages.visual, name, i, false, FPSBoost.start, FPSBoost.stop)
+		elseif name == "Mine Esp" then
+			createToggleRow(pages.visual, name, i, false, MineESP.start, MineESP.stop)
+		else
+			createToggleRow(pages.visual, name, i, false)
+		end
+	end
+end
+
+do
+	createSectionLabel(pages.settings, "Settings", 0)
+	createToggleRow(pages.settings, "Rejoin", 1, false)
+	createToggleRow(pages.settings, "Auto Kick", 2, false, AutoKick.start, AutoKick.stop)
+	createToggleRow(pages.settings, "Day Lock", 3, false, DayLock.start, DayLock.stop)
+	createToggleRow(pages.settings, "Resolution", 4, false, ResolutionFX.start, ResolutionFX.stop)
+end
+
+
+-- ============================================================
+-- KEYBIND BOX at bottom-left (under tabs)
+-- ============================================================
+local keybindWrap = createElement("Frame", {
+	Name = "KeybindWrap",
+	BackgroundTransparency = 1,
+	Size = UDim2.new(1, 0, 0, 44),
+	Parent = leftTabs,
+})
+keybindWrap.LayoutOrder = 999
+
+local spacer = createElement("Frame", {
+	Name = "Spacer",
+	BackgroundTransparency = 1,
+	Size = UDim2.new(1, 0, 1, -((40+8)*3 + 44)),
+	Parent = leftTabs,
+})
+spacer.LayoutOrder = 998
+
+tabs.main.LayoutOrder = 1
+tabs.visual.LayoutOrder = 2
+tabs.settings.LayoutOrder = 3
+
+createKeybindBox(keybindWrap)
+
+-- ============================================================
+-- Tab switching
+-- ============================================================
+showTab("main")
+for k, btn in pairs(tabs) do
+	btn.MouseButton1Click:Connect(function()
+		showTab(k)
+	end)
+end
+
+-- ============================================================
+-- Toggle UI with keybind (persistent)
+-- ============================================================
+if _G.__HazeMiniHub_KeyConn then
+	pcall(function() _G.__HazeMiniHub_KeyConn:Disconnect() end)
+	_G.__HazeMiniHub_KeyConn = nil
+end
+
+_G.__HazeMiniHub_KeyConn = UIS.InputBegan:Connect(function(input, gpe)
+	if gpe then return end
+	if input.UserInputType ~= Enum.UserInputType.Keyboard then return end
+	if UIS:GetFocusedTextBox() then return end
+
+	local kc = input.KeyCode
+	local toggleKey = getKey("toggle_ui", "RightAlt") or Enum.KeyCode.RightAlt
+
+	if toggleKey and kc == toggleKey then
+		mainFrame.Visible = not mainFrame.Visible
 	end
 end)
 
--- Also trigger on prompt hold began
-ProximityPromptService.PromptButtonHoldBegan:Connect(function(prompt)
-	if tpOnStealEnabled then
-		task.spawn(function()
-			task.wait(0.05)
-			equipFlashTeleport()
-		end)
-	end
-end)
+-- ============================================================
+-- Apply saved toggle states (will auto-start modules if saved ON)
+-- ============================================================
+initAllToggles()
 
---======================== BUTTON HOVER EFFECTS =========================--
-
-tpBtn.MouseEnter:Connect(function()
-	if not tpOnStealEnabled then
-		TweenService:Create(tpBtn, TweenInfo.new(0.2), {
-			BackgroundColor3 = Color3.fromRGB(65,65,75)
-		}):Play()
-	end
-end)
-
-tpBtn.MouseLeave:Connect(function()
-	if not tpOnStealEnabled then
-		TweenService:Create(tpBtn, TweenInfo.new(0.2), {
-			BackgroundColor3 = Color3.fromRGB(55,55,65)
-		}):Play()
-	end
-end)
-
---======================== INITIALIZATION =========================--
-
-print("✅ Cloud Hub | Flash TP chargé avec succès!")
-print("⚡ Équipe automatiquement Flash Teleport sur les Proximity Prompts")
+print("✅ Haze Mini Hub loaded (with Esp Timer + FPS Boost + Mine Esp toggles)")
