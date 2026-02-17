@@ -1,0 +1,94 @@
+--================ Services =================
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+
+local player = Players.LocalPlayer
+
+--================ Settings =================
+local REAL_SPEED = 7
+local VFLY_SPEED = 7
+local CHECK_DELAY = 0.3
+
+local MIN_TRIGGER = 19
+local MAX_TRIGGER = 23
+local STOP_TRIGGER = 24
+
+--================ Vars =================
+local character
+local humanoid
+local hrp
+local vflyConn
+local vflyEnabled = false
+
+--================ VFly =================
+local function startVFly()
+	if vflyConn then vflyConn:Disconnect() end
+	vflyEnabled = true
+	
+	humanoid.WalkSpeed = REAL_SPEED
+	
+	vflyConn = RunService.RenderStepped:Connect(function()
+		if not humanoid or not hrp then return end
+		
+		local moveDir = humanoid.MoveDirection
+		local velY = hrp.AssemblyLinearVelocity.Y
+		
+		if moveDir.Magnitude > 0 then
+			local dir = moveDir.Unit
+			hrp.AssemblyLinearVelocity = Vector3.new(
+				dir.X * VFLY_SPEED,
+				velY,
+				dir.Z * VFLY_SPEED
+			)
+		else
+			hrp.AssemblyLinearVelocity = Vector3.new(0, velY, 0)
+		end
+	end)
+end
+
+local function stopVFly()
+	if vflyConn then
+		vflyConn:Disconnect()
+		vflyConn = nil
+	end
+	vflyEnabled = false
+end
+
+--================ Main Loop =================
+local function speedLoop()
+	task.spawn(function()
+		while true do
+			if humanoid and hrp then
+				local currentSpeed = humanoid.WalkSpeed
+				
+				-- إذا بين 19 و 23 ➜ شغل VFly
+				if currentSpeed > MIN_TRIGGER and currentSpeed < MAX_TRIGGER then
+					startVFly()
+				else
+					stopVFly()
+				end
+				
+				-- إذا السرعة فوق STOP_TRIGGER ➜ أوقف VFly فوراً
+				if currentSpeed >= STOP_TRIGGER then
+					stopVFly()
+				end
+			end
+			task.wait(CHECK_DELAY)
+		end
+	end)
+end
+
+--================ Character Setup =================
+local function setupCharacter(char)
+	character = char
+	humanoid = character:WaitForChild("Humanoid")
+	hrp = character:WaitForChild("HumanoidRootPart")
+	
+	speedLoop()
+end
+
+if player.Character then
+	setupCharacter(player.Character)
+end
+
+player.CharacterAdded:Connect(setupCharacter)
