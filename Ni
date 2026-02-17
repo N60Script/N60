@@ -5,8 +5,8 @@ local RunService = game:GetService("RunService")
 local player = Players.LocalPlayer
 
 --================ Settings =================
-local REAL_SPEED = 7
-local VFLY_SPEED = 7
+local REAL_SPEED = 6.4
+local VFLY_SPEED = 6.4
 local CHECK_DELAY = 0.3
 
 local MIN_TRIGGER = 19
