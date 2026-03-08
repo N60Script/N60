@@ -2,112 +2,104 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smart Lua Obfuscator | Executor-Only</title>
+    <title>Ghost-Ducky Executor Protector</title>
     <script src="https://cdn.jsdelivr.net/npm/fengari-web@0.1.4/dist/fengari-web.min.js"></script>
     <style>
-        :root { --bg: #050505; --card: #111111; --primary: #ff3e3e; --accent: #00ff41; --text: #ffffff; }
-        body { background: var(--bg); color: var(--text); font-family: 'Consolas', monospace; display: flex; flex-direction: column; align-items: center; padding: 20px; }
-        .container { width: 100%; max-width: 900px; border: 1px solid #333; padding: 25px; border-radius: 5px; background: var(--card); }
-        h1 { text-align: center; color: var(--primary); text-transform: uppercase; letter-spacing: 2px; }
-        textarea { width: 100%; height: 250px; background: #000; border: 1px solid #444; color: var(--accent); padding: 15px; margin-top: 10px; border-radius: 4px; }
-        .btn-encrypt { width: 100%; padding: 15px; background: var(--primary); color: white; border: none; cursor: pointer; font-weight: bold; margin: 20px 0; border-radius: 4px; }
-        .btn-encrypt:hover { background: #cc0000; }
-        .output-wrapper { position: relative; }
-        .btn-copy { position: absolute; top: 10px; left: 10px; background: #333; color: white; border: 1px solid #555; padding: 5px 10px; cursor: pointer; }
-        .status-bar { font-size: 12px; color: #888; text-align: center; margin-top: 10px; }
+        :root { --bg: #0d1117; --primary: #58a6ff; --accent: #238636; --text: #c9d1d9; }
+        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; padding: 20px; display: flex; flex-direction: column; align-items: center; }
+        .panel { width: 100%; max-width: 850px; background: #161b22; border: 1px solid #30363d; padding: 20px; border-radius: 10px; }
+        h2 { color: var(--primary); text-align: center; border-bottom: 1px solid #30363d; padding-bottom: 10px; }
+        textarea { width: 100%; height: 200px; background: #010409; border: 1px solid #30363d; color: #7ee787; padding: 10px; font-family: monospace; border-radius: 5px; box-sizing: border-box; }
+        .btn { width: 100%; padding: 12px; margin: 15px 0; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; background: var(--accent); color: white; transition: 0.2s; }
+        .btn:hover { opacity: 0.8; }
+        .copy-btn { float: left; background: #30363d; color: white; padding: 5px 10px; font-size: 12px; margin-bottom: 5px; cursor: pointer; border: none; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h1>Fused Obfuscator (Anti-Reverse)</h1>
+<div class="panel">
+    <h2>LUA EXECUTOR PROTECTOR</h2>
     
-    <label>INPUT SCRIPT:</label>
-    <textarea id="inputCode" placeholder="-- ضع السكربت هنا..."></textarea>
+    <label>ضع كود السكربت الأصلي هنا:</label>
+    <textarea id="inputCode" placeholder="print('Hello from Executor!')"></textarea>
 
-    <button class="btn-encrypt" onclick="process()">تشفير وحماية للـ Executor 🔥</button>
+    <button class="btn" onclick="obfuscate()">تشفير متوافق مع المشغل (Safe Mode) 🛡️</button>
 
-    <div class="output-wrapper">
-        <label>PROTECTED OUTPUT:</label>
-        <button class="btn-copy" onclick="copy()">COPY</button>
-        <textarea id="outputCode" readonly placeholder="النتيجة ستظهر هنا..."></textarea>
+    <div style="overflow: hidden;">
+        <label>الكود الناتج (جاهز للـ Executor):</label>
+        <button class="copy-btn" onclick="copy()">نسخ النتيجة</button>
+        <textarea id="outputCode" readonly></textarea>
     </div>
-    
-    <div class="status-bar">المميزات: فحص البيئة (Executor Check) + تشفير Binary + طبقة Taurus</div>
 </div>
 
-<script type="application/lua" id="obfEngine">
-    -- وظيفة تحويل الكود إلى بايتات مشفرة
-    local function to_bytes(str)
-        local bytes = {}
+<script type="application/lua" id="luaLogic">
+    -- دالة تحويل الكود إلى بايتات مشفرة بصيغة \123
+    local function encode_to_escaped_bytes(str)
+        local escaped = ""
         for i = 1, #str do
-            bytes[i] = string.byte(str, i)
+            escaped = escaped .. "\\" .. string.byte(str, i)
         end
-        return "{" .. table.concat(bytes, ",") .. "}"
+        return escaped
     end
 
-    function protect_script(original_source)
-        local encoded_source = to_bytes(original_source)
+    function protect(source)
+        if not source or source == "" then return "-- Error: Empty Source" end
         
-        -- السكربت "الحارس" الذي سيتم وضعه داخل الملف المشفر
-        local guardian_template = [[
+        local encrypted_part = encode_to_escaped_bytes(source)
+        
+        -- القالب النهائي الذي سيشتغل داخل روبلوكس
+        local final_script = [[
 --[[ 
-    PROTECTED BY GHOST-DUCKY FUSED OBFUSCATOR
-    ENVIRONMENT: ROBLOX EXECUTOR ONLY
+    PROTECTED BY GHOST-DUCKY V3 (STABLE) 
+    TARGET: ROBLOX EXECUTOR
 ]]
-local function check_env()
-    -- فحص الميزات التي لا تتوفر إلا في الـ Executors
-    if (getgenv or getfenv) and (identifyexecutor or getexecutorname or Drawing) then
-        return true
+
+local function check()
+    -- التأكد من وجود loadstring وبيئة روبلوكس
+    return (typeof and (getfenv or getgenv))
+end
+
+if check() then
+    local _P = "]] .. encrypted_part .. [["
+    local success, func = pcall(loadstring, _P)
+    if success and func then
+        pcall(func)
+    else
+        warn("Critical: Execution failed. Bytecode mismatch.")
     end
-    return false
-end
-
-if not check_env() then
-    print("Security: This script is only allowed to run within a Roblox Executor.")
-    return 
-end
-
-local _data = ]] .. encoded_source .. [[
-local _decoded = ""
-for i=1, #_data do
-    _decoded = _decoded .. string.char(_data[i])
-end
-
-local _run = loadstring(_decoded)
-if _run then
-    _run()
 else
-    warn("Failed to execute protected byte-code.")
+    print("Unauthorized Environment.")
 end
 ]]
-        return guardian_template
+        return final_script
     end
 </script>
 
 <script>
-    function process() {
+    function obfuscate() {
         const input = document.getElementById('inputCode').value;
-        if(!input) return alert("أدخل الكود أولاً!");
-        
         const L = fengari.L;
-        const luaCode = document.getElementById('obfEngine').innerText;
-        fengari.load(luaCode)();
+        const luaCode = document.getElementById('luaLogic').innerText;
         
-        fengari.lua.lua_getglobal(L, "protect_script");
-        fengari.lua.lua_pushstring(L, input);
-        fengari.lua.lua_pcall(L, 1, 1, 0);
-        
-        const result = fengari.lua.lua_tostring(L, -1);
-        document.getElementById('outputCode').value = result;
+        try {
+            fengari.load(luaCode)();
+            fengari.lua.lua_getglobal(L, "protect");
+            fengari.lua.lua_pushstring(L, input);
+            fengari.lua.lua_pcall(L, 1, 1, 0);
+            
+            // الحل النهائي لمشكلة الـ Strings في Fengari
+            const result = fengari.to_jsstring(fengari.lua.lua_tostring(L, -1));
+            document.getElementById('outputCode').value = result;
+        } catch (e) {
+            document.getElementById('outputCode').value = "-- Error: " + e.message;
+        }
     }
 
     function copy() {
         const out = document.getElementById('outputCode');
         out.select();
         document.execCommand('copy');
-        alert("تم النسخ!");
+        alert("تم النسخ! جربه الآن في المشغل.");
     }
 </script>
 
