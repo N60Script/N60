@@ -3,121 +3,113 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fused Obfuscator V2 | Taurus & BlueSecure</title>
+    <title>Smart Lua Obfuscator | Executor-Only</title>
     <script src="https://cdn.jsdelivr.net/npm/fengari-web@0.1.4/dist/fengari-web.min.js"></script>
     <style>
-        :root { --bg: #0f172a; --card: #1e293b; --primary: #3b82f6; --accent: #10b981; --text: #f8fafc; }
-        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', Tahoma, sans-serif; display: flex; flex-direction: column; align-items: center; padding: 20px; margin: 0; }
-        .container { width: 100%; max-width: 900px; }
-        h1 { text-align: center; color: var(--primary); text-shadow: 0 0 10px rgba(59, 130, 246, 0.5); }
-        .box-container { background: var(--card); padding: 20px; border-radius: 12px; border: 1px solid #334155; margin-bottom: 20px; position: relative; }
-        label { display: block; margin-bottom: 10px; font-weight: bold; color: var(--primary); }
-        textarea { width: 100%; height: 220px; background: #020617; border: 1px solid #1e293b; border-radius: 8px; color: var(--accent); padding: 15px; font-family: 'Consolas', monospace; resize: vertical; box-sizing: border-box; }
-        .encrypt-btn { width: 100%; padding: 15px; background: var(--primary); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 18px; font-weight: bold; transition: 0.3s; margin-bottom: 10px; }
-        .encrypt-btn:hover { background: #2563eb; transform: scale(1.01); }
-        .copy-btn { position: absolute; top: 15px; left: 20px; background: var(--accent); color: white; border: none; padding: 5px 15px; border-radius: 4px; cursor: pointer; font-size: 12px; }
-        .footer { opacity: 0.5; font-size: 12px; margin-top: 20px; }
+        :root { --bg: #050505; --card: #111111; --primary: #ff3e3e; --accent: #00ff41; --text: #ffffff; }
+        body { background: var(--bg); color: var(--text); font-family: 'Consolas', monospace; display: flex; flex-direction: column; align-items: center; padding: 20px; }
+        .container { width: 100%; max-width: 900px; border: 1px solid #333; padding: 25px; border-radius: 5px; background: var(--card); }
+        h1 { text-align: center; color: var(--primary); text-transform: uppercase; letter-spacing: 2px; }
+        textarea { width: 100%; height: 250px; background: #000; border: 1px solid #444; color: var(--accent); padding: 15px; margin-top: 10px; border-radius: 4px; }
+        .btn-encrypt { width: 100%; padding: 15px; background: var(--primary); color: white; border: none; cursor: pointer; font-weight: bold; margin: 20px 0; border-radius: 4px; }
+        .btn-encrypt:hover { background: #cc0000; }
+        .output-wrapper { position: relative; }
+        .btn-copy { position: absolute; top: 10px; left: 10px; background: #333; color: white; border: 1px solid #555; padding: 5px 10px; cursor: pointer; }
+        .status-bar { font-size: 12px; color: #888; text-align: center; margin-top: 10px; }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h1>Fused Obfuscator (Taurus + BlueSecure)</h1>
+<div class="container">
+    <h1>Fused Obfuscator (Anti-Reverse)</h1>
+    
+    <label>INPUT SCRIPT:</label>
+    <textarea id="inputCode" placeholder="-- ضع السكربت هنا..."></textarea>
 
-        <div class="box-container">
-            <label>ضع سكربت Lua هنا:</label>
-            <textarea id="inputCode" placeholder="-- Paste your script here..."></textarea>
-        </div>
+    <button class="btn-encrypt" onclick="process()">تشفير وحماية للـ Executor 🔥</button>
 
-        <button class="encrypt-btn" onclick="obfuscateNow()">تشفير السكربت (Double Layer) 🔥</button>
-
-        <div class="box-container">
-            <label>الكود المشفر النهائي:</label>
-            <button class="copy-btn" onclick="copyResult()">نسخ الكود</button>
-            <textarea id="outputCode" readonly placeholder="النتيجة ستظهر هنا..."></textarea>
-        </div>
+    <div class="output-wrapper">
+        <label>PROTECTED OUTPUT:</label>
+        <button class="btn-copy" onclick="copy()">COPY</button>
+        <textarea id="outputCode" readonly placeholder="النتيجة ستظهر هنا..."></textarea>
     </div>
+    
+    <div class="status-bar">المميزات: فحص البيئة (Executor Check) + تشفير Binary + طبقة Taurus</div>
+</div>
 
-    <div class="footer">Ghost-Ducky#7698 | GitHub Edition</div>
-
-    <script type="application/lua" id="luaSource">
-        -- إصلاح البيئة للمتصفح
-        local function typeof(obj) return type(obj) end
-        local os = { clock = function() return 0 end }
-        local tick = function() return 0 end
-        local warn = function(msg) print("LOG: " .. tostring(msg)) end
-
-        -- طبقة Taurus (معدلة لتعمل 100% في المتصفح)
-        function taurus_layer(source, VarName)
-            local Variable = VarName or "Taurus_"
-            local SourceByte = ""
-            for i = 1, #source do 
-                SourceByte = SourceByte .. "'\\" .. string.byte(source, i) .. "'," 
-            end
-            return "local " .. Variable .. " = {" .. SourceByte .. "}; loadstring(table.concat(" .. Variable .. "))()"
+<script type="application/lua" id="obfEngine">
+    -- وظيفة تحويل الكود إلى بايتات مشفرة
+    local function to_bytes(str)
+        local bytes = {}
+        for i = 1, #str do
+            bytes[i] = string.byte(str, i)
         end
+        return "{" .. table.concat(bytes, ",") .. "}"
+    end
 
-        -- طبقة BlueSecure (Binary Encoding)
-        function blue_layer(source)
-            local function EncodeBinary(Text)
-                local encoded = ""
-                for i = 1, #Text do
-                    local byte = string.byte(Text:sub(i,i))
-                    encoded = encoded .. "\\" .. byte
-                end
-                return encoded
-            end
-            
-            local header = "--[[ Protected by BlueSecure 1.3 ]]\n"
-            local payload = "loadstring(\"" .. EncodeBinary(source) .. "\")()"
-            return header .. "getfenv().ProtectedByBlueSecure = true; " .. payload
-        end
+    function protect_script(original_source)
+        local encoded_source = to_bytes(original_source)
+        
+        -- السكربت "الحارس" الذي سيتم وضعه داخل الملف المشفر
+        local guardian_template = [[
+--[[ 
+    PROTECTED BY GHOST-DUCKY FUSED OBFUSCATOR
+    ENVIRONMENT: ROBLOX EXECUTOR ONLY
+]]
+local function check_env()
+    -- فحص الميزات التي لا تتوفر إلا في الـ Executors
+    if (getgenv or getfenv) and (identifyexecutor or getexecutorname or Drawing) then
+        return true
+    end
+    return false
+end
 
-        -- الدالة الرئيسية للربط مع JS
-        function process_encryption(input)
-            if not input or input == "" then return "Error: No input provided" end
-            
-            -- تشغيل Taurus
-            local step1 = taurus_layer(input, "Ducky_" .. math.random(100,999))
-            
-            -- تشغيل BlueSecure فوقها
-            local final = blue_layer(step1)
-            
-            return final
-        end
-    </script>
+if not check_env() then
+    print("Security: This script is only allowed to run within a Roblox Executor.")
+    return 
+end
 
-    <script>
-        function obfuscateNow() {
-            const input = document.getElementById('inputCode').value;
-            if(!input) return alert("الرجاء إدخال كود!");
+local _data = ]] .. encoded_source .. [[
+local _decoded = ""
+for i=1, #_data do
+    _decoded = _decoded .. string.char(_data[i])
+end
 
-            document.getElementById('outputCode').value = "جاري التشفير...";
+local _run = loadstring(_decoded)
+if _run then
+    _run()
+else
+    warn("Failed to execute protected byte-code.")
+end
+]]
+        return guardian_template
+    end
+</script>
 
-            try {
-                const L = fengari.L;
-                const luaCode = document.getElementById('luaSource').innerText;
-                fengari.load(luaCode)();
-                
-                // استدعاء دالة المعالجة
-                fengari.lua.lua_getglobal(L, "process_encryption");
-                fengari.lua.lua_pushstring(L, input);
-                fengari.lua.lua_pcall(L, 1, 1, 0);
-                
-                const result = fengari.lua.lua_tostring(L, -1);
-                document.getElementById('outputCode').value = result;
-            } catch (err) {
-                document.getElementById('outputCode').value = "خطأ تقني: " + err.message;
-            }
-        }
+<script>
+    function process() {
+        const input = document.getElementById('inputCode').value;
+        if(!input) return alert("أدخل الكود أولاً!");
+        
+        const L = fengari.L;
+        const luaCode = document.getElementById('obfEngine').innerText;
+        fengari.load(luaCode)();
+        
+        fengari.lua.lua_getglobal(L, "protect_script");
+        fengari.lua.lua_pushstring(L, input);
+        fengari.lua.lua_pcall(L, 1, 1, 0);
+        
+        const result = fengari.lua.lua_tostring(L, -1);
+        document.getElementById('outputCode').value = result;
+    }
 
-        function copyResult() {
-            const output = document.getElementById('outputCode');
-            if(!output.value || output.value.includes("...")) return;
-            output.select();
-            document.execCommand('copy');
-            alert("تم النسخ بنجاح!");
-        }
-    </script>
+    function copy() {
+        const out = document.getElementById('outputCode');
+        out.select();
+        document.execCommand('copy');
+        alert("تم النسخ!");
+    }
+</script>
+
 </body>
 </html>
