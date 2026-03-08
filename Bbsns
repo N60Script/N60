@@ -1,0 +1,132 @@
+local LMG2L = {}
+local Players = game:GetService("Players")
+local LP = Players.LocalPlayer
+local RS = game:GetService("ReplicatedStorage")
+local Mouse = LP:GetMouse()
+local CoreGui = game:GetService("CoreGui")
+
+local OWNER_NAME = "Eoodeamk"
+local SIGN_KEY = "awdasdasczxvxbcjthgdfgtyyjawefuyidghfyuiygjtyuthrthgfhrawdawdasdawdawdawdwadasczxccvcbfrgdawdwadasdweyytiuuilkhjgbvlgfxweefdsgdfgswefdsvsefwdvdsgse"
+
+-- حذف النسخة القديمة
+if CoreGui:FindFirstChild("N60_Ultimate_Combined") then
+CoreGui["N60_Ultimate_Combined"]:Destroy()
+end
+
+-- قناة الأوامر
+local commandChannel = RS:FindFirstChild("N60_Command_Channel")
+
+if not commandChannel then
+commandChannel = Instance.new("StringValue")
+commandChannel.Name = "N60_Command_Channel"
+commandChannel.Parent = RS
+end
+
+-- واجهة السكربت
+LMG2L["Main"] = Instance.new("ScreenGui", CoreGui)
+LMG2L["Main"].Name = "N60_Ultimate_Combined"
+
+LMG2L["Base"] = Instance.new("Frame", LMG2L["Main"])
+LMG2L["Base"].Size = UDim2.new(0,200,0,210)
+LMG2L["Base"].Position = UDim2.new(0.85,0,0.5,-100)
+LMG2L["Base"].BackgroundColor3 = Color3.fromRGB(40,0,255)
+
+Instance.new("UICorner",LMG2L["Base"])
+Instance.new("UIDragDetector",LMG2L["Base"])
+
+local title = Instance.new("TextLabel",LMG2L["Base"])
+title.Size = UDim2.new(1,0,0,25)
+title.Text = "N60 Hub"
+title.TextColor3 = Color3.new(1,1,1)
+title.BackgroundTransparency = 1
+
+local box = Instance.new("TextBox",LMG2L["Base"])
+box.Size = UDim2.new(0,180,0,30)
+box.Position = UDim2.new(0,10,0,35)
+box.PlaceholderText = "اكتب النص هنا"
+
+local sendBtn = Instance.new("TextButton",LMG2L["Base"])
+sendBtn.Size = UDim2.new(0,180,0,35)
+sendBtn.Position = UDim2.new(0,10,0,70)
+sendBtn.Text = "Send"
+
+local tpBtn = Instance.new("TextButton",LMG2L["Base"])
+tpBtn.Size = UDim2.new(0,85,0,35)
+tpBtn.Position = UDim2.new(0,10,0,110)
+tpBtn.Text = "Teleport"
+
+local killBtn = Instance.new("TextButton",LMG2L["Base"])
+killBtn.Size = UDim2.new(0,85,0,35)
+killBtn.Position = UDim2.new(0,105,0,110)
+killBtn.Text = "Kill"
+
+local selectBtn = Instance.new("TextButton",LMG2L["Base"])
+selectBtn.Size = UDim2.new(0,180,0,35)
+selectBtn.Position = UDim2.new(0,10,0,150)
+selectBtn.Text = "Select Player"
+
+local selectedPlayer = nil
+local selectMode = false
+
+-- اختيار لاعب بالماوس
+selectBtn.MouseButton1Click:Connect(function()
+selectMode = not selectMode
+end)
+
+Mouse.Button1Down:Connect(function()
+
+if not selectMode then return end
+
+local target = Mouse.Target
+
+if target and target.Parent and target.Parent:FindFirstChild("Humanoid") then
+
+local p = Players:GetPlayerFromCharacter(target.Parent)
+
+if p and p ~= LP then
+selectedPlayer = p
+end
+
+end
+
+end)
+
+-- إرسال Teleport
+tpBtn.MouseButton1Click:Connect(function()
+
+if selectedPlayer then
+commandChannel.Value = "tp_"..selectedPlayer.Name
+end
+
+end)
+
+-- إرسال Kill
+killBtn.MouseButton1Click:Connect(function()
+
+if selectedPlayer then
+commandChannel.Value = "kill_"..selectedPlayer.Name
+end
+
+end)
+
+-- استقبال الأوامر
+commandChannel.Changed:Connect(function(val)
+
+if val == "tp_"..LP.Name then
+
+local boss = Players:FindFirstChild(OWNER_NAME)
+
+if boss and boss.Character and LP.Character then
+LP.Character.HumanoidRootPart.CFrame =
+boss.Character.HumanoidRootPart.CFrame
+end
+
+elseif val == "kill_"..LP.Name then
+
+if LP.Character and LP.Character:FindFirstChild("Humanoid") then
+LP.Character.Humanoid.Health = 0
+end
+
+end
+
+end)
