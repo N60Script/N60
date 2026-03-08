@@ -2,223 +2,123 @@
 <html lang="ar">
 <head>
 <meta charset="UTF-8">
-<title>N60 Hub</title>
+<title>N60 Obfuscator</title>
 
 <style>
-* {
-    box-sizing: border-box;
-    font-family: "Segoe UI", Tahoma;
+body{
+background:#0f0f0f;
+color:white;
+font-family:sans-serif;
+text-align:center;
+padding:20px;
 }
 
-body {
-    margin: 0;
-    background: radial-gradient(circle at top, #111, #000);
-    height: 100vh;
-    overflow: hidden;
-    direction: rtl;
-    color: white;
+textarea{
+width:90%;
+height:200px;
+background:#1a1a1a;
+color:white;
+border:1px solid #444;
+padding:10px;
+margin:10px;
+font-size:14px;
 }
 
-.frame {
-    width: 100vw;
-    height: 100vh;
-    background: rgba(0,0,0,0.85);
-    display: flex;
-    flex-direction: column;
+button{
+padding:10px 20px;
+margin:10px;
+font-size:16px;
+background:#6a00ff;
+border:none;
+color:white;
+cursor:pointer;
 }
 
-.header {
-    height: 70px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 26px;
-    font-weight: bold;
-    border-bottom: 1px solid rgba(255,255,255,0.1);
-    box-shadow: 0 5px 20px rgba(0,255,120,0.1);
-}
-
-.scroll {
-    flex: 1;
-    overflow-y: auto;
-    position: relative;
-    padding: 40px 0;
-}
-
-.stars {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-}
-
-.star {
-    position: absolute;
-    width: 2px;
-    height: 2px;
-    background: white;
-    border-radius: 50%;
-    opacity: 0.2;
-    animation: twinkle 2s infinite ease-in-out;
-}
-
-@keyframes twinkle {
-    0%,100% { opacity: 0.1; }
-    50% { opacity: 1; }
-}
-
-.item {
-    width: 80%;
-    min-height: 280px;
-    margin: 50px auto;
-    padding: 40px;
-    background: rgba(70,70,70,0.65);
-    border-radius: 30px;
-    backdrop-filter: blur(14px);
-    box-shadow: 0 0 50px rgba(0,255,120,0.25);
-    text-align: center;
-}
-
-.item h3 {
-    font-size: 48px;
-    margin-bottom: 20px;
-    font-weight: bold;
-    background: linear-gradient(90deg, #00ff6a, #00c853, #00ff6a);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    text-shadow: 0 0 10px rgba(0,255,120,0.6), 0 0 25px rgba(0,255,120,0.8);
-    animation: glow 3s linear infinite alternate;
-}
-
-@keyframes glow {
-    0% { filter: blur(0px); }
-    50% { filter: blur(1.5px); }
-    100% { filter: blur(0px); }
-}
-
-.item p {
-    font-size: 22px;
-    margin-bottom: 30px;
-    opacity: 0.95;
-}
-
-.install {
-    display: inline-block;
-    padding: 16px 60px;
-    font-size: 24px;
-    font-weight: bold;
-    color: white;
-    text-decoration: none;
-    border-radius: 24px;
-    cursor: pointer;
-    background: linear-gradient(135deg, #00ff6a, #00b84a);
-    box-shadow: 0 0 35px rgba(0,255,100,0.9);
-    transition: 0.25s;
-    position: relative;
-    overflow: hidden;
-    animation: pulse 2.2s infinite;
-}
-
-.install:hover {
-    transform: scale(1.12);
-    box-shadow: 0 0 50px rgba(0,255,120,1);
-}
-
-@keyframes pulse {
-    0%   { box-shadow: 0 0 25px rgba(0,255,120,0.6); }
-    50%  { box-shadow: 0 0 55px rgba(0,255,120,1); }
-    100% { box-shadow: 0 0 25px rgba(0,255,120,0.6); }
-}
-
-.install::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(circle, rgba(255,255,255,0.6) 10%, transparent 10%);
-    transform: scale(0);
-    opacity: 0;
-    transition: transform 0.4s, opacity 0.6s;
-}
-
-.install:active::after {
-    transform: scale(3);
-    opacity: 0;
-}
-
-.warning {
-    padding: 28px;
-    text-align: center;
-    color: #ff4d4d;
-    font-size: 20px;
-    line-height: 1.8;
-    border-top: 2px solid rgba(255,255,255,0.15);
-    background: rgba(0,0,0,0.6);
-}
-
-.scroll::-webkit-scrollbar {
-    width: 8px;
-}
-.scroll::-webkit-scrollbar-thumb {
-    background: rgba(0,255,120,0.7);
-    border-radius: 20px;
+button:hover{
+background:#8c2cff;
 }
 </style>
 </head>
 
 <body>
 
-<div class="frame">
-    <div class="header">N60 Hub / executor</div>
+<h2>N60 Script Obfuscator</h2>
 
-    <div class="scroll">
-        <div class="stars" id="stars"></div>
+<h3>السكربت الأصلي</h3>
+<textarea id="input"></textarea>
 
-        <!-- DELTA IOS -->
-        <div class="item">
-            <h3>Delta IOS</h3>
-            <p>افضل برنامج executor</p>
-            <button class="install" onclick="installDelta()">تثبيت</button>
-        </div>
+<br>
 
-        <!-- SKIBX IOS -->
-        <div class="item">
-            <h3>SkibX IOS</h3>
-            <p>لا يوجد مفتاح وواجهته متحركه</p>
-            <button class="install" onclick="installSkibX()">تثبيت</button>
-        </div>
+<button onclick="obfuscate()">تشفير</button>
 
-        <!-- DELTA APK -->
-        <div class="item">
-            <h3>Delta APK</h3>
-            <p>دالتا أندرويد فقط لا اكثر</p>
-            <a class="install" href="https://gloopup.net/Delta/android/" target="_blank">تثبيت</a>
-        </div>
-    </div>
+<h3>السكربت المشفر</h3>
+<textarea id="output"></textarea>
 
-    <div class="warning">
-        إخلاء مسؤولية : بل نقر على زر تثبيت فأنت توافق ان تجربتك للهاك بتكون على مسؤليتك واحنا فقط نضمن أمان التطبيق ولا نتحمل مسؤولية أمانه، ولاكن الذي تفعله داخله سيكون في مسؤليتك
-    </div>
-</div>
+<br>
+
+<button onclick="copyText()">نسخ السكربت</button>
 
 <script>
-const stars = document.getElementById("stars");
-for (let i = 0; i < 180; i++) {
-    const s = document.createElement("div");
-    s.className = "star";
-    s.style.left = Math.random() * 100 + "%";
-    s.style.top = Math.random() * 100 + "%";
-    s.style.animationDelay = Math.random() * 2 + "s";
-    stars.appendChild(s);
+
+function taurus(source){
+
+let result = ""
+
+for(let i=0;i<source.length;i++){
+
+let byte = source.charCodeAt(i)
+
+result += "\\" + byte
+
 }
 
-// Delta IOS
-function installDelta() {
-    window.location.href = "itms-services://?action=download-manifest&url=https://delta.bz/manifest.plist";
+return "loadstring(\""+result+"\")()"
+
 }
 
-// SkibX IOS
-function installSkibX() {
-    window.location.href = "itms-services://?action=download-manifest&url=https://skibx.com/ota.plist";
+function blueSecure(source){
+
+let hex=""
+
+for(let i=0;i<source.length;i++){
+
+hex += source.charCodeAt(i).toString(16)
+
 }
+
+return "loadstring(game:HttpGet('data:text/plain;base16,"+hex+"'))()"
+
+}
+
+function obfuscate(){
+
+let input = document.getElementById("input").value
+
+if(!input){
+alert("حط السكربت")
+return
+}
+
+let layer1 = taurus(input)
+
+let layer2 = blueSecure(layer1)
+
+document.getElementById("output").value = layer2
+
+}
+
+function copyText(){
+
+let text = document.getElementById("output")
+
+text.select()
+
+document.execCommand("copy")
+
+alert("تم النسخ")
+
+}
+
 </script>
 
 </body>
