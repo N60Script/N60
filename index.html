@@ -2,76 +2,67 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>Ghost-Ducky Executor Protector</title>
+    <title>Ghost-Ducky Fused Obfuscator</title>
     <script src="https://cdn.jsdelivr.net/npm/fengari-web@0.1.4/dist/fengari-web.min.js"></script>
     <style>
         :root { --bg: #0d1117; --primary: #58a6ff; --accent: #238636; --text: #c9d1d9; }
         body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; padding: 20px; display: flex; flex-direction: column; align-items: center; }
-        .panel { width: 100%; max-width: 850px; background: #161b22; border: 1px solid #30363d; padding: 20px; border-radius: 10px; }
-        h2 { color: var(--primary); text-align: center; border-bottom: 1px solid #30363d; padding-bottom: 10px; }
-        textarea { width: 100%; height: 200px; background: #010409; border: 1px solid #30363d; color: #7ee787; padding: 10px; font-family: monospace; border-radius: 5px; box-sizing: border-box; }
-        .btn { width: 100%; padding: 12px; margin: 15px 0; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; background: var(--accent); color: white; transition: 0.2s; }
-        .btn:hover { opacity: 0.8; }
-        .copy-btn { float: left; background: #30363d; color: white; padding: 5px 10px; font-size: 12px; margin-bottom: 5px; cursor: pointer; border: none; }
+        .panel { width: 100%; max-width: 850px; background: #161b22; border: 1px solid #30363d; padding: 20px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+        h2 { color: var(--primary); text-align: center; margin-top: 0; }
+        textarea { width: 100%; height: 220px; background: #010409; border: 1px solid #30363d; color: #7ee787; padding: 12px; font-family: 'Consolas', monospace; border-radius: 5px; box-sizing: border-box; font-size: 13px; }
+        .btn { width: 100%; padding: 15px; margin: 15px 0; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; background: var(--accent); color: white; font-size: 16px; }
+        .btn:hover { background: #2ea043; }
+        .output-label { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
+        .copy-btn { background: #30363d; color: white; padding: 5px 12px; border-radius: 4px; cursor: pointer; border: 1px solid #444; font-size: 12px; }
+        .copy-btn:hover { background: #444; }
     </style>
 </head>
 <body>
 
 <div class="panel">
-    <h2>LUA EXECUTOR PROTECTOR</h2>
+    <h2>LUA EXECUTOR PROTECTOR V4</h2>
     
-    <label>ضع كود السكربت الأصلي هنا:</label>
-    <textarea id="inputCode" placeholder="print('Hello from Executor!')"></textarea>
+    <label>ضع السكربت الأصلي هنا:</label>
+    <textarea id="inputCode" placeholder="print('Hello World!')"></textarea>
 
-    <button class="btn" onclick="obfuscate()">تشفير متوافق مع المشغل (Safe Mode) 🛡️</button>
+    <button class="btn" onclick="obfuscate()">تشفير وحماية (Fix Syntax) 🔥</button>
 
-    <div style="overflow: hidden;">
-        <label>الكود الناتج (جاهز للـ Executor):</label>
-        <button class="copy-btn" onclick="copy()">نسخ النتيجة</button>
-        <textarea id="outputCode" readonly></textarea>
+    <div class="output-label">
+        <label>الكود المشفر للـ Executor:</label>
+        <button class="copy-btn" onclick="copy()">نسخ الكود 📋</button>
     </div>
+    <textarea id="outputCode" readonly placeholder="النتيجة ستظهر هنا..."></textarea>
 </div>
 
 <script type="application/lua" id="luaLogic">
-    -- دالة تحويل الكود إلى بايتات مشفرة بصيغة \123
-    local function encode_to_escaped_bytes(str)
-        local escaped = ""
+    -- دالة لتحويل النص إلى صيغة البايتات \123\45\67
+    local function to_byte_format(str)
+        local result = ""
         for i = 1, #str do
-            escaped = escaped .. "\\" .. string.byte(str, i)
+            result = result .. "\\" .. string.byte(str, i)
         end
-        return escaped
+        return result
     end
 
     function protect(source)
-        if not source or source == "" then return "-- Error: Empty Source" end
+        if not source or source == "" then return "-- [!] No Input Provided" end
         
-        local encrypted_part = encode_to_escaped_bytes(source)
+        local encrypted_data = to_byte_format(source)
         
-        -- القالب النهائي الذي سيشتغل داخل روبلوكس
-        local final_script = [[
---[[ 
-    PROTECTED BY GHOST-DUCKY V3 (STABLE) 
-    TARGET: ROBLOX EXECUTOR
-]]
-
-local function check()
-    -- التأكد من وجود loadstring وبيئة روبلوكس
-    return (typeof and (getfenv or getgenv))
-end
-
-if check() then
-    local _P = "]] .. encrypted_part .. [["
-    local success, func = pcall(loadstring, _P)
-    if success and func then
-        pcall(func)
-    else
-        warn("Critical: Execution failed. Bytecode mismatch.")
-    end
-else
-    print("Unauthorized Environment.")
-end
-]]
-        return final_script
+        -- بناء السكربت باستخدام Concatenation لتجنب مشاكل الأقواس المربعة في JS
+        local template = ""
+        template = template .. "--[[ Protected by Fused Obfuscator ]]\n"
+        template = template .. "local _env = (getgenv or getfenv)()\n"
+        template = template .. "local _bytecode = \"" .. encrypted_data .. "\"\n"
+        template = template .. "local _load = _env.loadstring or loadstring\n"
+        template = template .. "local success, result = pcall(function()\n"
+        template = template .. "    return _load(_bytecode)()\n"
+        template = template .. "end)\n"
+        template = template .. "if not success then \n"
+        template = template .. "    warn(\"Execution Error: \" .. tostring(result))\n"
+        template = template .. "end"
+        
+        return template
     end
 </script>
 
@@ -79,27 +70,33 @@ end
     function obfuscate() {
         const input = document.getElementById('inputCode').value;
         const L = fengari.L;
-        const luaCode = document.getElementById('luaLogic').innerText;
+        const luaScript = document.getElementById('luaLogic').innerText;
         
         try {
-            fengari.load(luaCode)();
+            // تحميل منطق Lua
+            fengari.load(luaScript)();
+            
+            // استدعاء دالة protect
             fengari.lua.lua_getglobal(L, "protect");
             fengari.lua.lua_pushstring(L, input);
             fengari.lua.lua_pcall(L, 1, 1, 0);
             
-            // الحل النهائي لمشكلة الـ Strings في Fengari
-            const result = fengari.to_jsstring(fengari.lua.lua_tostring(L, -1));
-            document.getElementById('outputCode').value = result;
+            // استخراج النتيجة بشكل آمن للمتصفح
+            const rawResult = fengari.lua.lua_tostring(L, -1);
+            const finalString = fengari.to_jsstring(rawResult);
+            
+            document.getElementById('outputCode').value = finalString;
         } catch (e) {
-            document.getElementById('outputCode').value = "-- Error: " + e.message;
+            document.getElementById('outputCode').value = "-- [Frontend Error]: " + e.message;
         }
     }
 
     function copy() {
         const out = document.getElementById('outputCode');
+        if (!out.value) return;
         out.select();
         document.execCommand('copy');
-        alert("تم النسخ! جربه الآن في المشغل.");
+        alert("تم النسخ! جربه الآن في الـ Executor.");
     }
 </script>
 
