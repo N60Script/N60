@@ -2,78 +2,65 @@
 <html lang="ar">
 <head>
 <meta charset="UTF-8">
-<title>N60 Hub | Obfuscation & Executors</title>
+<title>N60 Hub | Direct Download & Obfuscation</title>
 <script src="https://cdn.jsdelivr.net/npm/fengari-web@0.1.4/dist/fengari-web.min.js"></script>
 <style>
     * { box-sizing: border-box; font-family: "Segoe UI", Tahoma; }
     body { margin: 0; background: #000; color: white; direction: rtl; overflow-x: hidden; }
-    
-    /* الحاوية الرئيسية */
     .main-frame { width: 100vw; min-height: 100vh; display: flex; flex-direction: column; background: radial-gradient(circle at top, #051a05, #000); }
-    
-    /* الهيدر */
     .nav-bar { height: 70px; display: flex; align-items: center; justify-content: center; gap: 20px; border-bottom: 2px solid #00ff6a; background: rgba(0,0,0,0.9); position: sticky; top: 0; z-index: 1000; }
     .nav-link { background: none; border: 1px solid #00ff6a; color: #00ff6a; padding: 10px 25px; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.3s; }
     .nav-link.active { background: #00ff6a; color: black; box-shadow: 0 0 15px #00ff6a; }
-
     .container { flex: 1; padding: 30px; }
     .section { display: none; max-width: 900px; margin: auto; }
     .section.active { display: block; }
-
-    /* ستايل التحميل */
-    .exec-card { background: #111; padding: 20px; border-radius: 15px; border: 1px solid #333; margin-bottom: 15px; text-align: center; transition: 0.3s; }
-    .exec-card:hover { border-color: #00ff6a; }
-    .btn-download { display: inline-block; margin-top: 10px; padding: 10px 30px; background: #00ff6a; color: black; text-decoration: none; border-radius: 5px; font-weight: bold; }
-
-    /* ستايل التشفير */
+    .exec-card { background: #111; padding: 25px; border-radius: 15px; border: 1px solid #333; margin-bottom: 20px; text-align: center; }
+    .btn-download { display: inline-block; margin-top: 15px; padding: 12px 40px; background: #00ff6a; color: black; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 18px; transition: 0.3s; }
+    .btn-download:hover { transform: scale(1.05); box-shadow: 0 0 20px #00ff6a; }
     .obf-box { background: rgba(10,10,10,0.95); padding: 25px; border-radius: 20px; border: 1px solid #00ff6a; }
     textarea { width: 100%; height: 180px; background: #000; border: 1px solid #1a1a1a; color: #00ff6a; padding: 15px; font-family: monospace; font-size: 11px; margin-top: 10px; border-radius: 10px; resize: none; }
     .btn-action { width: 100%; padding: 18px; background: #00ff6a; color: black; border: none; font-weight: bold; font-size: 20px; margin: 20px 0; cursor: pointer; border-radius: 10px; }
-    
-    .footer { text-align: center; padding: 20px; color: #444; font-size: 13px; border-top: 1px solid #111; }
+    .footer { text-align: center; padding: 20px; color: #444; font-size: 13px; }
 </style>
 </head>
 <body>
 
 <div class="main-frame">
     <div class="nav-bar">
-        <button id="tab1" class="nav-link active" onclick="switchTab('executors', 'tab1')">تحميل Executor</button>
+        <button id="tab1" class="nav-link active" onclick="switchTab('executors', 'tab1')">تحميل مباشر للمشغلات</button>
         <button id="tab2" class="nav-link" onclick="switchTab('obfuscator', 'tab2')">N60 Hub Obfuscation</button>
     </div>
 
     <div class="container">
         <div id="executors" class="section active">
-            <h2 style="text-align:center; color:#00ff6a;">اختر المشغل الخاص بك</h2>
+            <h2 style="text-align:center; color:#00ff6a;">تحميل مباشر لـ Roblox Executors</h2>
+            
             <div class="exec-card">
-                <h3>Delta Executor (iOS)</h3>
-                <p>يدعم آخر تحديثات روبلوكس للايفون</p>
-                <a href="itms-services://?action=download-manifest&url=https://delta.bz/manifest.plist" class="btn-download">تثبيت مباشر</a>
+                <h3>Delta Android (Direct APK)</h3>
+                <p>اضغط للتحميل المباشر لجهاز الأندرويد</p>
+                <a href="https://delta-executor.com/download/android/latest.apk" class="btn-download">تحميل APK الآن 📥</a>
             </div>
+
             <div class="exec-card">
-                <h3>Delta Executor (Android)</h3>
-                <p>النسخة الرسمية للأندرويد APK</p>
-                <a href="https://delta-executor.com/" target="_blank" class="btn-download">تحميل APK</a>
+                <h3>Delta iOS (Direct Install)</h3>
+                <p>تثبيت مباشر للايفون (عبر متصفح Safari)</p>
+                <a href="itms-services://?action=download-manifest&url=https://delta.bz/manifest.plist" class="btn-download">تثبيت iOS الآن 📲</a>
             </div>
+
             <div class="exec-card">
-                <h3>SkibX (No Key)</h3>
-                <p>مشغل سريع لا يحتاج لمفتاح تشغيل</p>
-                <a href="https://skibx.com/" class="btn-download">تحميل الآن</a>
+                <h3>Arceus X Neo (Direct APK)</h3>
+                <p>تحميل مباشر لآخر إصدار من Arceus X</p>
+                <a href="https://spdmteam.com/api/v1/download/android/latest" class="btn-download">تحميل APK الآن 📥</a>
             </div>
         </div>
 
         <div id="obfuscator" class="section">
             <div class="obf-box">
                 <h2 style="text-align:center; color:#00ff6a; margin:0;">N60 HUB OBFUSCATOR</h2>
-                <p style="text-align:center; font-size:12px; opacity:0.6;">ASCII Shift + Anti-Dump + 200 Fake Lines</p>
-                
                 <textarea id="inputCode" placeholder="ضع سكربت الـ Lua هنا..."></textarea>
-                <button class="btn-action" onclick="generateObf()">تشفير السكربت وحمايته 🔥</button>
-                
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <label>الكود المشفر الناتج:</label>
-                    <button onclick="copyCode()" style="background:#111; color:#00ff6a; border:1px solid #00ff6a; padding:5px 15px; cursor:pointer; border-radius:5px;">نسخ 📋</button>
-                </div>
-                <textarea id="outputCode" readonly></textarea>
+                <button class="btn-action" onclick="generateObf()">تشفير وحماية 🔥</button>
+                <textarea id="outputCode" readonly placeholder="الكود المشفر سيظهر هنا..."></textarea>
+                <button onclick="copyCode()" style="width:100%; padding:10px; background:#222; color:#00ff6a; border:1px solid #00ff6a; cursor:pointer; margin-top:10px; border-radius:5px;">نسخ الكود 📋</button>
             </div>
         </div>
     </div>
@@ -85,50 +72,24 @@
 
 <script type="application/lua" id="luaEngine">
     function n60_hub_obfuscate(source)
-        if not source or source == "" then return "-- [!] No Input" end
-        
-        local key = math.random(15, 95)
+        local key = math.random(20, 90)
         local ascii_table = {}
+        for i = 1, #source do table.insert(ascii_table, string.byte(source, i) + key) end
         
-        -- تحويل إلى ASCII مع إزاحة المفتاح
-        for i = 1, #source do
-            table.insert(ascii_table, string.byte(source, i) + key)
-        end
-        
-        -- توليد 200 سطر وهمي
         local junk = ""
-        for i=1, 200 do
-            junk = junk .. "local _f"..i.."="..math.random(100,999)..";"
-            if i % 8 == 0 then junk = junk .. "\n" end
-        end
+        for i=1, 200 do junk = junk .. "local _f"..i.."="..math.random(100,999).."; " end
 
         local data_str = table.concat(ascii_table, ",")
-        
-        -- بناء السكربت النهائي بنظام فك التشفير الصامت
         local template = "--[[ N60 Hub Obfuscation ]]\n"
-        template = template .. "local _D = {" .. data_str .. "}\n"
-        template = template .. "local _K = " .. key .. "\n"
+        template = template .. "local _D = {" .. data_str .. "} local _K = " .. key .. "\n"
         template = template .. junk .. "\n"
         template = template .. [[
 local _ENV = (getgenv or getfenv)()
 local _L = _ENV.loadstring or loadstring
 local _R = {}
-
--- فك التشفير ASCII المطور
-for i=1, #_D do
-    _R[i] = string.char(_D[i] - _K)
-end
-
-local _S = table.concat(_R)
-_D = nil; _R = nil; -- حذف البيانات من الميموري
-
-local success, func = pcall(_L, _S)
-if success and func then
-    _S = nil; -- مسح السورس فوراً بعد التحميل
-    func()
-else
-    warn("N60 Hub: Execution Error")
-end
+for i=1, #_D do _R[i] = string.char(_D[i] - _K) end
+local success, func = pcall(_L, table.concat(_R))
+if success and func then func() end
 ]]
         template = template .. "\n-- https://n60script.github.io/N60/"
         return template
@@ -145,23 +106,18 @@ end
 
     function generateObf() {
         const input = document.getElementById('inputCode').value;
-        if(!input) return;
-        
         const L = fengari.L;
         fengari.load(document.getElementById('luaEngine').innerText)();
         fengari.lua.lua_getglobal(L, "n60_hub_obfuscate");
         fengari.lua.lua_pushstring(L, input);
         fengari.lua.lua_pcall(L, 1, 1, 0);
-        
-        const res = fengari.to_jsstring(fengari.lua.lua_tostring(L, -1));
-        document.getElementById('outputCode').value = res;
+        document.getElementById('outputCode').value = fengari.to_jsstring(fengari.lua.lua_tostring(L, -1));
     }
 
     function copyCode() {
         const out = document.getElementById('outputCode');
-        out.select();
-        document.execCommand('copy');
-        alert("تم نسخ السكربت المشفر بنجاح!");
+        out.select(); document.execCommand('copy');
+        alert("تم نسخ الكود!");
     }
 </script>
 </body>
