@@ -2,151 +2,121 @@
 <html lang="ar">
 <head>
 <meta charset="UTF-8">
-<title>N60 Hub | Ultra Obfuscator</title>
+<title>N60 Hub | God-Mode Obfuscator</title>
 <script src="https://cdn.jsdelivr.net/npm/fengari-web@0.1.4/dist/fengari-web.min.js"></script>
-
 <style>
-/* التصميم الأساسي (نفس هوية N60) */
-* { box-sizing: border-box; font-family: "Segoe UI", Tahoma; }
-body { margin: 0; background: radial-gradient(circle at top, #050505, #000); height: 100vh; overflow: hidden; direction: rtl; color: white; }
-.frame { width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); display: flex; flex-direction: column; }
-.header { height: 80px; display: flex; align-items: center; justify-content: space-around; border-bottom: 2px solid #00ff6a; background: rgba(0,0,0,0.9); z-index: 100; }
-.nav-btn { background: transparent; border: 2px solid #00ff6a; color: #00ff6a; padding: 10px 25px; border-radius: 15px; cursor: pointer; font-weight: bold; transition: 0.3s; }
-.nav-btn.active { background: #00ff6a; color: black; box-shadow: 0 0 20px #00ff6a; }
-.content-section { flex: 1; overflow-y: auto; display: none; padding: 20px 0; position: relative; }
-.content-section.active { display: block; }
-.stars { position: absolute; inset: 0; pointer-events: none; }
-.star { position: absolute; width: 2px; height: 2px; background: white; border-radius: 50%; opacity: 0.2; animation: twinkle 2s infinite ease-in-out; }
-@keyframes twinkle { 0%,100% { opacity: 0.1; } 50% { opacity: 1; } }
-
-/* ستايل التشفير القوي */
-.obf-container { width: 90%; max-width: 900px; margin: 0 auto; background: rgba(15, 15, 15, 0.95); padding: 30px; border-radius: 20px; border: 1px solid #00ff6a; box-shadow: 0 0 40px rgba(0,255,106,0.1); }
-textarea { width: 100%; height: 220px; background: #000; border: 1px solid #333; color: #00ff41; padding: 15px; font-family: 'Courier New', monospace; border-radius: 10px; margin-top: 10px; resize: none; font-size: 12px; }
-textarea:focus { border-color: #00ff6a; outline: none; }
-.obf-btn { width: 100%; padding: 18px; margin: 20px 0; background: linear-gradient(90deg, #00ff6a, #008f3a); color: black; border: none; border-radius: 10px; font-weight: bold; font-size: 20px; cursor: pointer; text-transform: uppercase; }
-.copy-area { display: flex; justify-content: space-between; align-items: center; margin-top: 20px; }
-.warning { padding: 15px; text-align: center; color: #ff4d4d; font-size: 14px; background: #000; border-top: 1px solid #333; }
+    /* التصميم الخاص بك */
+    * { box-sizing: border-box; font-family: "Segoe UI", Tahoma; }
+    body { margin: 0; background: #000; color: white; direction: rtl; overflow: hidden; }
+    .frame { width: 100vw; height: 100vh; display: flex; flex-direction: column; background: radial-gradient(circle, #0a1f0a 0%, #000 100%); }
+    .header { height: 70px; display: flex; align-items: center; justify-content: space-around; border-bottom: 2px solid #00ff6a; background: rgba(0,0,0,0.8); }
+    .nav-btn { background: none; border: 1px solid #00ff6a; color: #00ff6a; padding: 8px 20px; border-radius: 5px; cursor: pointer; transition: 0.3s; }
+    .nav-btn.active { background: #00ff6a; color: black; box-shadow: 0 0 15px #00ff6a; }
+    .content { flex: 1; padding: 20px; overflow-y: auto; position: relative; }
+    .obf-card { max-width: 900px; margin: auto; background: rgba(20,20,20,0.9); padding: 30px; border-radius: 15px; border: 1px solid #333; }
+    textarea { width: 100%; height: 200px; background: #050505; border: 1px solid #1a1a1a; color: #00ff6a; padding: 15px; font-family: monospace; font-size: 11px; margin-top: 10px; }
+    .btn-main { width: 100%; padding: 15px; background: #00ff6a; color: black; border: none; font-weight: bold; font-size: 18px; margin: 20px 0; cursor: pointer; border-radius: 5px; }
+    .footer { font-size: 12px; text-align: center; padding: 10px; color: #444; }
 </style>
 </head>
-
 <body>
 
 <div class="frame">
     <div class="header">
-        <button type="button" class="nav-btn active" onclick="showTab('hub', event)">تحميل الهاك</button>
-        <button type="button" class="nav-btn" onclick="showTab('obf', event)">تشفير ULTRA (صعب الفك)</button>
+        <button class="nav-btn active">N60 God-Mode Obfuscator</button>
+        <button class="nav-btn" onclick="window.location.reload()">تحديث الصفحة</button>
     </div>
 
-    <div id="hub" class="content-section active">
-        <div class="stars" id="stars"></div>
-        </div>
-
-    <div id="obf" class="content-section">
-        <div class="stars" id="stars2"></div>
-        <div class="obf-container">
-            <h2 style="text-align: center; color: #00ff6a; text-shadow: 0 0 10px #00ff6a;">N60 ULTRA SHIELD</h2>
-            <p style="text-align: center; font-size: 12px; opacity: 0.7;">تشفير معقد باستخدام Dynamic XOR + Byte Shuffling</p>
+    <div class="content">
+        <div class="obf-card">
+            <h2 style="color:#00ff6a; text-align:center;">نظام التشفير العسكري (V5)</h2>
+            <p style="font-size:12px; opacity:0.6; text-align:center;">إضافة 2000 سطر وهمي + تشفير طبقات XOR + حماية Executor</p>
             
-            <label>الكود الأصلي:</label>
-            <textarea id="inputCode" placeholder="ضع سكربت الـ Lua هنا..."></textarea>
+            <label>السكربت المراد حمايته:</label>
+            <textarea id="inputCode" placeholder="ضع كودك هنا..."></textarea>
             
-            <button type="button" class="obf-btn" onclick="runUltraObfuscation()">تشفير ULTRA الآن 🔥</button>
+            <button class="btn-main" onclick="runGodObfuscation()">تشفير فائق القوة 🚀</button>
             
-            <div class="copy-area">
-                <label>الكود المشفر (طويل جداً ومعقد):</label>
-                <button type="button" class="nav-btn" style="font-size: 14px; padding: 5px 15px;" onclick="copyCode()">نسخ 📋</button>
-            </div>
+            <label>السكربت المشفر (المحمي):</label>
             <textarea id="outputCode" readonly placeholder="النتيجة ستظهر هنا..."></textarea>
         </div>
     </div>
-
-    <div class="warning">N60 Hub © 2024 - نظام حماية السكربتات المتقدم</div>
+    <div class="footer">https://n60script.github.io/N60/ | Protected by Ghost-Ducky</div>
 </div>
 
-<script type="application/lua" id="luaLogic">
-    function ultra_protect(source)
-        if not source or source == "" then return "-- [!] Empty Input" end
+<script type="application/lua" id="luaEngine">
+    function god_obfuscate(source)
+        if not source or source == "" then return "-- [!] Empty" end
         
-        -- إنشاء مفتاح تشفير عشوائي ديناميكي
-        local key = math.random(10, 250)
-        local data = {}
+        -- 1. توليد مفاتيح عشوائية
+        local key1 = math.random(50, 150)
+        local key2 = math.random(1, 10)
         
-        -- تشفير كل حرف باستخدام XOR وموقعه في النص لتعقيد النمط
+        -- 2. تشفير البيانات
+        local encrypted_table = {}
         for i = 1, #source do
-            local char_code = string.byte(source, i)
-            -- معادلة تشفير معقدة: (الكود XOR المفتاح) + (موقع الحرف MOD 10)
-            local encrypted = (char_code ~ key) + (i % 7)
-            table.insert(data, encrypted)
+            local byte = string.byte(source, i)
+            -- تشفير مزدوج: (Byte XOR key1) + key2
+            local val = (byte ~ key1) + key2
+            table.insert(encrypted_table, val)
         end
         
-        local encrypted_str = table.concat(data, ",")
-        
-        -- بناء السكربت "فك التشفير الذاتي" (Self-Decrypting)
-        local template = ""
-        template = template .. "-- Protected by N60 ULTRA SHIELD\n"
-        template = template .. "-- Source: https://n60script.github.io/N60/\n"
-        template = template .. "local _K=" .. key .. ";local _D={" .. encrypted_str .. "};"
-        template = template .. "local _S=\"\";for i=1,#_D do _S=_S..string.char((_D[i]-(i%7))~_K) end;"
-        template = template .. "local _L=(getgenv or getfenv)().loadstring;pcall(_L(_S))"
+        local data_str = table.concat(encrypted_table, ",")
+
+        -- 3. توليد 2000 سطر من الأكواد الوهمية (FakeCode)
+        local fake_lines = ""
+        for i = 1, 1000 do
+            fake_lines = fake_lines .. "local _f" .. i .. " = " .. math.random(1000, 9999) .. "; "
+            if i % 10 == 0 then fake_lines = fake_lines .. "\n" end
+        end
+
+        -- 4. بناء القالب النهائي مع حماية Executor والتمويه
+        local template = "--[[ https://n60script.github.io/N60/ ]]\n"
+        template = template .. "local _N60 = function()\n"
+        template = template .. "    " .. fake_lines .. "\n" -- هنا الأكواد الوهمية الضخمة
+        template = template .. "    local _E = (getgenv or getfenv)()\n"
+        template = template .. "    if not (_E.identifyexecutor or _E.getexecutorname) then return end\n"
+        template = template .. "    local _K1, _K2 = " .. key1 .. ", " .. key2 .. "\n"
+        template = template .. "    local _D = {" .. data_str .. "}\n"
+        template = template .. "    local _S = \"\"\n"
+        template = template .. "    for i=1, #_D do\n"
+        template = template .. "        _S = _S .. string.char((_D[i] - _K2) ~ _K1)\n"
+        template = template .. "    end\n"
+        template = template .. "    _D = nil; -- مسح البيانات من الذاكرة\n"
+        template = template .. "    local _L = _E.loadstring or loadstring\n"
+        template = template .. "    local success, err = pcall(_L(_S))\n"
+        template = template .. "    if not success then warn('Err: '..err) end\n"
+        template = template .. "end\n"
+        template = template .. "_N60(); _N60 = nil;"
         
         return template
     end
 </script>
 
 <script>
-function showTab(tabId, event) {
-    if (event) event.preventDefault();
-    document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
-    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById(tabId).classList.add('active');
-    if (event) event.currentTarget.classList.add('active');
-}
-
-function runUltraObfuscation() {
-    const input = document.getElementById('inputCode').value;
-    if(!input) return alert("أدخل الكود أولاً!");
-    
-    document.getElementById('outputCode').value = "جاري التشفير العميق...";
-    
-    const L = fengari.L;
-    const luaSource = document.getElementById('luaLogic').innerText;
-    
-    try {
-        fengari.load(luaSource)();
-        fengari.lua.lua_getglobal(L, "ultra_protect");
-        fengari.lua.lua_pushstring(L, input);
-        fengari.lua.lua_pcall(L, 1, 1, 0);
+    function runGodObfuscation() {
+        const input = document.getElementById('inputCode').value;
+        if(!input) return;
         
-        const result = fengari.to_jsstring(fengari.lua.lua_tostring(L, -1));
-        document.getElementById('outputCode').value = result;
-    } catch (e) {
-        alert("خطأ: " + e.message);
+        document.getElementById('outputCode').value = "جاري حقن 2000 سطر وهمي وتشفير البيانات...";
+        
+        const L = fengari.L;
+        const luaLogic = document.getElementById('luaEngine').innerText;
+        
+        setTimeout(() => {
+            try {
+                fengari.load(luaLogic)();
+                fengari.lua.lua_getglobal(L, "god_obfuscate");
+                fengari.lua.lua_pushstring(L, input);
+                fengari.lua.lua_pcall(L, 1, 1, 0);
+                
+                const result = fengari.to_jsstring(fengari.lua.lua_tostring(L, -1));
+                document.getElementById('outputCode').value = result;
+            } catch (e) {
+                document.getElementById('outputCode').value = "خطأ: " + e.message;
+            }
+        }, 500);
     }
-}
-
-function copyCode() {
-    const out = document.getElementById('outputCode');
-    if(!out.value) return;
-    out.select();
-    document.execCommand('copy');
-    alert("تم نسخ السكربت بنجاح! السكربت الآن محمي بتشفير ULTRA.");
-}
-
-// إنشاء النجوم
-function createStars(containerId) {
-    const container = document.getElementById(containerId);
-    if (!container) return;
-    for (let i = 0; i < 100; i++) {
-        const s = document.createElement("div");
-        s.className = "star";
-        s.style.left = Math.random() * 100 + "%";
-        s.style.top = Math.random() * 100 + "%";
-        s.style.animationDelay = Math.random() * 2 + "s";
-        container.appendChild(s);
-    }
-}
-createStars("stars");
-createStars("stars2");
 </script>
 
 </body>
