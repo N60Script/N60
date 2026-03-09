@@ -1,64 +1,114 @@
--- [[ N60 PROTECT SYSTEM - V4 ]]
--- PROTECTED BY DYNAMIC ASCII SHIFT
--- ANTI-COPY & ANTI-SOURCE CAPTURE ENABLED
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<title>N60 Hub | Ghost Obfuscator</title>
+<script src="https://cdn.jsdelivr.net/npm/fengari-web@0.1.4/dist/fengari-web.min.js"></script>
+<style>
+    * { box-sizing: border-box; font-family: "Segoe UI", Tahoma; }
+    body { margin: 0; background: #000; color: white; direction: rtl; }
+    .container { max-width: 800px; margin: 40px auto; background: #0a0a0a; padding: 25px; border-radius: 15px; border: 2px solid #00ff6a; box-shadow: 0 0 20px #00ff6a33; }
+    textarea { width: 100%; height: 200px; background: #000; border: 1px solid #1a1a1a; color: #00ff6a; padding: 15px; font-family: monospace; font-size: 12px; margin-top: 10px; border-radius: 8px; }
+    .btn { width: 100%; padding: 15px; background: #00ff6a; color: black; border: none; font-weight: bold; font-size: 18px; margin: 20px 0; cursor: pointer; border-radius: 8px; transition: 0.3s; }
+    .btn:hover { background: #00cc55; transform: scale(1.01); }
+</style>
+</head>
+<body>
 
-local _L = {200, "N60"}
-getgenv()._K = 7 -- مفتاح التشفير (Shift)
+<div class="container">
+    <h2 style="text-align:center; color:#00ff6a;">N60 GHOST SHIELD (V8)</h2>
+    <p style="text-align:center; font-size:12px; opacity:0.6;">200 سطر وهمي | تشفير ASCII سريع | حماية الذاكرة</p>
+    
+    <textarea id="inputCode" placeholder="ضع السكربت الأصلي هنا..."></textarea>
+    <button class="btn" onclick="runGhostObf()">تشفير السكربت الآن 🔥</button>
+    
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <label>السكربت المحمي:</label>
+        <button onclick="copyCode()" style="background:#222; color:#00ff6a; border:1px solid #00ff6a; cursor:pointer; padding:5px 15px; border-radius:5px;">نسخ 📋</button>
+    </div>
+    <textarea id="outputCode" readonly></textarea>
+</div>
 
--- [ 200 سطر وهمي للتمويه وتشتيت الـ Decompiler ]
-for i=1,200 do local v=math.random(1,999) _L[i+2]=v+i end
-
--- [ حماية السورس ومنع الالتقاط ]
-local function Secure()
-    local s, e = pcall(function()
-        if debug and debug.getregistry then
-            local reg = debug.getregistry()
-            for i,v in pairs(reg) do if type(v)=="table" and v.Source then v.Source = "ACCESS_DENIED" end end
+<script type="application/lua" id="luaEngine">
+    function ghost_protect(source)
+        if not source or source == "" then return "-- [!] Empty" end
+        
+        local key = math.random(10, 80)
+        local encoded_table = {}
+        
+        -- تحويل النص إلى ASCII مع إزاحة المفتاح
+        for i = 1, #source do
+            table.insert(encoded_table, string.byte(source, i) + key)
         end
+        
+        -- توليد 200 سطر وهمي فقط للتمويه الخفيف
+        local junk = ""
+        for i=1, 200 do
+            junk = junk .. "local _j"..i.."="..math.random(100,999)..";"
+            if i % 10 == 0 then junk = junk .. "\n" end
+        end
+
+        local data_str = table.concat(encoded_table, ",")
+        
+        -- بناء السكربت النهائي بنظام فك التشفير السريع (Table Method)
+        local template = "--[[ N60 GHOST SHIELD ]]\n"
+        template = template .. "local _DATA = {" .. data_str .. "}\n"
+        template = template .. "local _KEY = " .. key .. "\n"
+        template = template .. junk .. "\n"
+        template = template .. [[
+local _ENV = (getgenv or getfenv)()
+local _LOAD = _ENV.loadstring or loadstring
+local _RES = {}
+
+-- منع محاولة طباعة السورس أو التقاطه
+if _ENV.hookfunction or _ENV.detour_function then
+    pcall(function() 
+        _ENV.hookfunction(print, function(...) return end)
+        _ENV.hookfunction(warn, function(...) return end)
     end)
-    -- منع الـ identifyexecutor من كشف الهوية
-    if getgenv().identifyexecutor then getgenv().identifyexecutor = function() return "Unknown" end end
 end
-task.spawn(Secure)
 
--- [ النص المشفر بترميز ASCII Shift ]
--- ملاحظة: النص أدناه هو السكربت الأصلي (Sign & Remote) مشفر بـ +7
-local _S = "\119\108\103\117\111\121\112\103\104\116\108\112\112\107\118\121\117\101\103\107\110\116\102\112\110\100\108\41\41\41" -- (مثال مشفر)
+-- فك التشفير السريع باستخدام مصفوفة
+for i=1, #_DATA do
+    _RES[i] = string.char(_DATA[i] - _KEY)
+end
 
--- [ وظيفة فك التشفير الذاتي ]
-local function Decrypt(_DATA, _KEY)
-    local _OUT = ""
-    for i = 1, #_DATA do
-        local _CHAR = string.byte(_DATA, i)
-        -- فك تشفير ASCII ديناميكي
-        _OUT = _OUT .. string.char(_CHAR - _KEY)
+local _FINAL = table.concat(_RES)
+_DATA = nil; _RES = nil; -- تدمير البيانات من الميموري فوراً
+
+local success, func = pcall(_LOAD, _FINAL)
+if success and func then
+    _FINAL = nil; -- مسح السورس المفكوك
+    func()
+else
+    warn("N60: Load Error")
+end
+]]
+        return template
     end
-    return _OUT
-end
+</script>
 
--- [ محرك التنفيذ الآمن ]
-local _EXEC = function()
-    local _RAW = Decrypt(_S, getgenv()._K)
-    
-    -- التحقق من بيئة العمل (loadstring / getgenv)
-    local _RUN = loadstring or (getgenv and getgenv().loadstring)
-    
-    if _RUN then
-        local success, result = pcall(_RUN(_RAW))
-        if not success then
-            -- إذا حاول أي سكربت خارجي التقاط الخطأ أو السورس، السكربت يعطل نفسه
-            warn("Security Breach Detected: Execution Halted.")
-            _S = "" 
-            _RAW = ""
-        end
-    else
-        warn("Executor not supported (Missing loadstring)")
-    end
-end
+<script>
+    function runGhostObf() {
+        const input = document.getElementById('inputCode').value;
+        if(!input) return alert("أدخل الكود!");
+        
+        const L = fengari.L;
+        fengari.load(document.getElementById('luaEngine').innerText)();
+        fengari.lua.lua_getglobal(L, "ghost_protect");
+        fengari.lua.lua_pushstring(L, input);
+        fengari.lua.lua_pcall(L, 1, 1, 0);
+        
+        const res = fengari.to_jsstring(fengari.lua.lua_tostring(L, -1));
+        document.getElementById('outputCode').value = res;
+    }
 
--- منع محاولات الـ Copy/Clone
-local _MT = {__newindex = function(t,k,v) error("Script is Read-Only") end}
-setmetatable(_L, _MT)
-
--- تشغيل المحرك
-_EXEC()
+    function copyCode() {
+        const out = document.getElementById('outputCode');
+        out.select();
+        document.execCommand('copy');
+        alert("تم النسخ بنجاح!");
+    }
+</script>
+</body>
+</html>
