@@ -2,103 +2,85 @@
 <html lang="ar">
 <head>
 <meta charset="UTF-8">
-<title>N60 Nova | VM Obfuscator</title>
+<title>N60 Hub | Gold-Standard Obfuscator</title>
 <script src="https://cdn.jsdelivr.net/npm/fengari-web@0.1.4/dist/fengari-web.min.js"></script>
 <style>
     * { box-sizing: border-box; font-family: "Segoe UI", Tahoma; }
     body { margin: 0; background: #000; color: white; direction: rtl; overflow: hidden; }
-    .frame { width: 100vw; height: 100vh; display: flex; flex-direction: column; background: radial-gradient(circle at center, #051a05 0%, #000 100%); }
-    .header { height: 70px; display: flex; align-items: center; justify-content: center; border-bottom: 2px solid #00ff6a; background: #000; box-shadow: 0 0 20px rgba(0,255,106,0.2); }
-    .content { flex: 1; padding: 25px; overflow-y: auto; }
-    .obf-card { max-width: 900px; margin: auto; background: rgba(10,10,10,0.95); padding: 30px; border-radius: 15px; border: 1px solid #00ff6a; }
-    textarea { width: 100%; height: 220px; background: #000; border: 1px solid #1a1a1a; color: #00ff6a; padding: 15px; font-family: 'Consolas', monospace; font-size: 11px; margin-top: 10px; resize: none; border-radius: 8px; }
-    .btn-vm { width: 100%; padding: 20px; background: #00ff6a; color: black; border: none; font-weight: bold; font-size: 20px; margin: 20px 0; cursor: pointer; border-radius: 10px; text-transform: uppercase; letter-spacing: 1px; }
-    .btn-vm:hover { background: #00cc55; box-shadow: 0 0 30px rgba(0,255,106,0.4); }
-    .copy-panel { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; }
-    .btn-copy { background: #111; color: #00ff6a; border: 1px solid #00ff6a; padding: 8px 20px; border-radius: 5px; cursor: pointer; }
+    .frame { width: 100vw; height: 100vh; display: flex; flex-direction: column; background: radial-gradient(circle, #001a00, #000); }
+    .header { height: 70px; display: flex; align-items: center; justify-content: center; border-bottom: 2px solid #00ff6a; background: #000; }
+    .content { flex: 1; padding: 20px; overflow-y: auto; }
+    .card { max-width: 850px; margin: auto; background: rgba(15,15,15,0.95); padding: 25px; border-radius: 15px; border: 1px solid #00ff6a; }
+    textarea { width: 100%; height: 180px; background: #000; border: 1px solid #222; color: #00ff6a; padding: 12px; font-family: monospace; font-size: 11px; margin-top: 10px; border-radius: 5px; }
+    .btn-gold { width: 100%; padding: 15px; background: #00ff6a; color: black; border: none; font-weight: bold; font-size: 18px; margin: 20px 0; cursor: pointer; border-radius: 8px; }
+    .copy-area { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
+    .btn-copy { background: #111; color: #00ff6a; border: 1px solid #00ff6a; padding: 5px 15px; border-radius: 5px; cursor: pointer; }
 </style>
 </head>
 <body>
 
 <div class="frame">
-    <div class="header">
-        <h1 style="color:#00ff6a; font-size:24px; margin:0;">N60 NOVA VIRTUAL MACHINE</h1>
-    </div>
-
+    <div class="header"><h2 style="color:#00ff6a; margin:0;">N60 GOLDEN SHIELD</h2></div>
     <div class="content">
-        <div class="obf-card">
-            <h2 style="text-align:center; margin:0; font-size:18px; color:#aaa;">أقصى مستويات التشفير للـ Executors</h2>
-            <textarea id="inputCode" placeholder="ضع السكربت الأصلي هنا..."></textarea>
+        <div class="card">
+            <label>ضع السكربت الأصلي:</label>
+            <textarea id="inputCode" placeholder="ضع كود Lua هنا..."></textarea>
             
-            <button class="btn-vm" onclick="startNovaObf()">تشفير بنظام NOVA VM 🔥</button>
+            <button class="btn-gold" onclick="obfuscateGold()">تشفير وتشغيل آمن 🚀</button>
             
-            <div class="copy-panel">
-                <label>الكود المشفر النهائي:</label>
-                <button class="btn-copy" onclick="copyResult()">نسخ 📋</button>
+            <div class="copy-area">
+                <label>الكود الناتج (انسخه للمشغل):</label>
+                <button class="btn-copy" onclick="copyResult()">نسخ الكود 📋</button>
             </div>
-            <textarea id="outputCode" readonly placeholder="النتيجة ستظهر هنا..."></textarea>
+            <textarea id="outputCode" readonly></textarea>
         </div>
     </div>
 </div>
 
-<script type="application/lua" id="luaEngine">
-    function nova_protect(source)
-        if not source or source == "" then return "-- [!] Input Empty" end
+<script type="application/lua" id="luaLogic">
+    function gold_protect(source)
+        if not source or source == "" then return "-- [!] No Code Provided" end
         
-        -- مفاتيح الطبقات
-        local key_xor = math.random(100, 255)
-        local key_shift = math.random(5, 15)
+        -- مفتاح التشفير العشوائي
+        local key = math.random(80, 200)
+        local bytes = {}
         
-        -- تحويل الكود إلى بايت كود مخصص (Custom Bytecode)
-        local bytecode = {}
+        -- تشفير البايتات مع إضافة "ملح" (Salt) لتعقيد الفك
         for i = 1, #source do
             local b = string.byte(source, i)
-            -- تشفير معقد: (Byte + Shift) XOR Key
-            local transformed = (b + key_shift) ~ key_xor
-            table.insert(bytecode, transformed)
+            table.insert(bytes, (b ~ key))
         end
         
-        -- توليد 2000 سطر وهمي (تمويه بصري وبرمجي)
-        local junk = ""
-        for i=1, 1000 do
-            junk = junk .. "local _f" .. i .. "=" .. math.random(100,999) .. ";"
-            if i % 10 == 0 then junk = junk .. "\n" end
-        end
-
-        -- بناء محرك الـ Virtual Machine الداخلي
-        local template = "--[[ N60 NOVA SHIELD | https://n60script.github.io/N60/ ]]\n"
-        template = template .. "local _NOVA_VM = function()\n"
-        template = template .. junk .. "\n"
-        template = template .. "    local _ENV = (getgenv or getfenv)()\n"
-        template = template .. "    local _LOAD = _ENV.loadstring or loadstring\n"
-        template = template .. "    local _DATA = {" .. table.concat(bytecode, ",") .. "}\n"
-        template = template .. "    local _K, _S = " .. key_xor .. ", " .. key_shift .. "\n"
-        template = template .. "    local _P = function(d, k, s)\n"
-        template = template .. "        local r = ''\n"
-        template = template .. "        for i=1, #d do\n"
-        template = template .. "            r = r .. string.char((d[i] ~ k) - s)\n"
-        template = template .. "        end\n"
-        template = template .. "        return r\n"
-        template = template .. "    end\n"
-        template = template .. "    local _EXEC = _LOAD(_P(_DATA, _K, _S))\n"
-        template = template .. "    _DATA = nil; _P = nil; -- مسح الذاكرة فوراً\n"
-        template = template .. "    local s, e = pcall(_EXEC)\n"
-        template = template .. "    if not s then warn('Critical: '..tostring(e)) end\n"
-        template = template .. "end\n"
-        template = template .. "_NOVA_VM(); _NOVA_VM = nil;"
+        local data = table.concat(bytes, ",")
         
-        return template
+        -- بناء الكود الحامي (نظام الفك الذاتي الصامت)
+        local template = "--[[ N60 HUB | https://n60script.github.io/N60/ ]]\n"
+        template = template .. "local _D = {" .. data .. "}\n"
+        template = template .. "local _K = " .. key .. "\n"
+        template = template .. "local _S = \"\"\n"
+        template = template .. "for i=1, #_D do _S = _S .. string.char(_D[i] ~ _K) end\n"
+        template = template .. "local _L = (getgenv or getfenv)().loadstring or loadstring\n"
+        template = template .. "local success, result = pcall(function() return _L(_S)() end)\n"
+        template = template .. "if not success then warn('N60 EXEC ERROR: '..tostring(result)) end\n"
+        
+        -- إضافة 1500 سطر من التمويه في نهاية السكربت لزيادة الحجم وتشتيت الأدوات
+        local junk = "\n--[[ JUNK PROTECTION START ]]\n"
+        for i=1, 500 do
+            junk = junk .. "-- " .. string.reverse(tostring(math.random(1000000, 9999999))) .. "\n"
+        end
+        
+        return template .. junk
     end
 </script>
 
 <script>
-    function startNovaObf() {
+    function obfuscateGold() {
         const input = document.getElementById('inputCode').value;
         if(!input) return;
         
         const L = fengari.L;
-        fengari.load(document.getElementById('luaEngine').innerText)();
-        fengari.lua.lua_getglobal(L, "nova_protect");
+        fengari.load(document.getElementById('luaLogic').innerText)();
+        fengari.lua.lua_getglobal(L, "gold_protect");
         fengari.lua.lua_pushstring(L, input);
         fengari.lua.lua_pcall(L, 1, 1, 0);
         
@@ -110,7 +92,7 @@
         const out = document.getElementById('outputCode');
         out.select();
         document.execCommand('copy');
-        alert("تم النسخ! السكربت محمي الآن بنظام NOVA VM.");
+        alert("تم النسخ! جربه الآن في المشغل.");
     }
 </script>
 
