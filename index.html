@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مولد المفاتيح</title>
+    <title>مستخرج مفاتيح Delta</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -12,112 +12,131 @@
             align-items: center;
             justify-content: center;
             height: 100vh;
-            background-color: #f0f2f5;
+            background-color: #121212; /* لون داكن مريح */
+            color: white;
             margin: 0;
         }
 
         .container {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            width: 350px;
+            background: #1e1e1e;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+            width: 90%;
+            max-width: 500px;
             text-align: center;
         }
 
-        .input-box {
+        .input-field {
             width: 100%;
-            padding: 15px;
+            padding: 12px;
+            margin-top: 10px;
             margin-bottom: 20px;
-            border: 2px dashed #007bff;
+            border: 2px solid #333;
             border-radius: 8px;
-            cursor: pointer;
-            background-color: #e7f3ff;
-            color: #007bff;
-            font-weight: bold;
+            background: #2b2b2b;
+            color: #00ff00; /* لون التكست أخضر مثل الهكر */
+            font-size: 14px;
             box-sizing: border-box;
-            transition: 0.3s;
+            outline: none;
         }
 
-        .input-box:hover {
-            background-color: #007bff;
-            color: white;
+        .input-field:focus {
+            border-color: #007bff;
         }
 
         .result-section {
             display: flex;
             align-items: center;
             gap: 10px;
-            background: #f8f9fa;
-            padding: 10px;
+            background: #2b2b2b;
+            padding: 15px;
             border-radius: 8px;
-            border: 1px solid #ddd;
+            border: 1px solid #444;
+            min-height: 50px;
         }
 
         .result-text {
             flex-grow: 1;
-            text-align: right;
+            text-align: left; /* الروابط والمفاتيح عادة يسار */
             font-size: 14px;
-            color: #333;
+            color: #fff;
             word-break: break-all;
+            font-family: monospace;
         }
 
         .copy-btn {
-            padding: 8px 15px;
-            background-color: #28a745;
+            padding: 10px 20px;
+            background-color: #007bff;
             color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            white-space: nowrap;
+            font-weight: bold;
+            transition: 0.3s;
         }
 
         .copy-btn:hover {
-            background-color: #218838;
+            background-color: #0056b3;
         }
 
         .label {
             display: block;
-            margin-bottom: 8px;
+            text-align: right;
+            margin-bottom: 5px;
             font-size: 14px;
-            font-weight: bold;
-            color: #555;
+            color: #bbb;
         }
+
+        h2 { margin-bottom: 20px; color: #007bff; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <label class="label">ضع المفتاح هنا</label>
-    <div class="input-box" onclick="generateKey()">
-        اضغط هنا لتوليد المفتاح
-    </div>
+    <h2>مستخرج المفاتيح</h2>
 
-    <hr>
+    <label class="label">ضع الرابط هنا:</label>
+    <input type="text" id="urlInput" class="input-field" placeholder="إلصق الرابط الطويل هنا..." oninput="extractKey()">
 
     <label class="label">المفتاح المستخرج:</label>
     <div class="result-section">
-        <div class="result-text" id="keyDisplay">المفتاح: (لم يتم التوليد)</div>
+        <div class="result-text" id="keyDisplay">ينتظر الرابط...</div>
         <button class="copy-btn" onclick="copyKey()">نسخ</button>
     </div>
 </div>
 
 <script>
-    function generateKey() {
-        // إنشاء مفتاح عشوائي بسيط كمثال
-        const randomKey = "Delta-" + Math.random().toString(36).substring(2, 10).toUpperCase();
-        document.getElementById('keyDisplay').innerText = "المفتاح: " + randomKey;
+    function extractKey() {
+        const input = document.getElementById('urlInput').value;
+        const display = document.getElementById('keyDisplay');
+
+        try {
+            // البحث عن البارامتر d أو r في الرابط
+            const urlParams = new URLSearchParams(input.substring(input.indexOf('?')));
+            let encodedData = urlParams.get('d') || urlParams.get('r');
+
+            if (encodedData) {
+                // فك تشفير Base64
+                const decodedKey = atob(encodedData);
+                display.innerText = decodedKey;
+                display.style.color = "#00ff00"; // تغيير اللون للأخضر عند النجاح
+            } else {
+                display.innerText = "لم يتم العثور على بيانات مشفرة";
+                display.style.color = "#ff4444";
+            }
+        } catch (e) {
+            display.innerText = "الرابط غير صحيح أو التشفير غير مدعوم";
+            display.style.color = "#ff4444";
+        }
     }
 
     function copyKey() {
-        const keyText = document.getElementById('keyDisplay').innerText.replace("المفتاح: ", "");
-        if (keyText.includes("(لم يتم التوليد)")) {
-            alert("الرجاء توليد مفتاح أولاً!");
-            return;
-        }
-        
-        navigator.clipboard.writeText(keyText).then(() => {
-            alert("تم نسخ المفتاح بنجاح: " + keyText);
+        const text = document.getElementById('keyDisplay').innerText;
+        if (text === "ينتظر الرابط..." || text.includes("لم يتم")) return;
+
+        navigator.clipboard.writeText(text).then(() => {
+            alert("تم نسخ المفتاح بنجاح!");
         });
     }
 </script>
