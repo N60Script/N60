@@ -2,99 +2,73 @@
 <html lang="ar">
 <head>
 <meta charset="UTF-8">
-<title>N60 Hub | Gold-Standard Obfuscator</title>
+<title>N60 Hub | Turbo-Lite Obfuscator</title>
 <script src="https://cdn.jsdelivr.net/npm/fengari-web@0.1.4/dist/fengari-web.min.js"></script>
 <style>
     * { box-sizing: border-box; font-family: "Segoe UI", Tahoma; }
-    body { margin: 0; background: #000; color: white; direction: rtl; overflow: hidden; }
-    .frame { width: 100vw; height: 100vh; display: flex; flex-direction: column; background: radial-gradient(circle, #001a00, #000); }
-    .header { height: 70px; display: flex; align-items: center; justify-content: center; border-bottom: 2px solid #00ff6a; background: #000; }
-    .content { flex: 1; padding: 20px; overflow-y: auto; }
-    .card { max-width: 850px; margin: auto; background: rgba(15,15,15,0.95); padding: 25px; border-radius: 15px; border: 1px solid #00ff6a; }
-    textarea { width: 100%; height: 180px; background: #000; border: 1px solid #222; color: #00ff6a; padding: 12px; font-family: monospace; font-size: 11px; margin-top: 10px; border-radius: 5px; }
-    .btn-gold { width: 100%; padding: 15px; background: #00ff6a; color: black; border: none; font-weight: bold; font-size: 18px; margin: 20px 0; cursor: pointer; border-radius: 8px; }
-    .copy-area { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
-    .btn-copy { background: #111; color: #00ff6a; border: 1px solid #00ff6a; padding: 5px 15px; border-radius: 5px; cursor: pointer; }
+    body { margin: 0; background: #000; color: white; direction: rtl; }
+    .frame { width: 100vw; height: 100vh; display: flex; flex-direction: column; background: #050505; }
+    .card { max-width: 700px; margin: 50px auto; background: #111; padding: 25px; border-radius: 15px; border: 1px solid #00ff6a; }
+    textarea { width: 100%; height: 150px; background: #000; border: 1px solid #222; color: #00ff6a; padding: 10px; font-family: monospace; margin-top: 10px; }
+    .btn-run { width: 100%; padding: 15px; background: #00ff6a; color: black; border: none; font-weight: bold; font-size: 18px; margin: 15px 0; cursor: pointer; border-radius: 8px; }
 </style>
 </head>
 <body>
 
 <div class="frame">
-    <div class="header"><h2 style="color:#00ff6a; margin:0;">N60 GOLDEN SHIELD</h2></div>
-    <div class="content">
-        <div class="card">
-            <label>ضع السكربت الأصلي:</label>
-            <textarea id="inputCode" placeholder="ضع كود Lua هنا..."></textarea>
-            
-            <button class="btn-gold" onclick="obfuscateGold()">تشفير وتشغيل آمن 🚀</button>
-            
-            <div class="copy-area">
-                <label>الكود الناتج (انسخه للمشغل):</label>
-                <button class="btn-copy" onclick="copyResult()">نسخ الكود 📋</button>
-            </div>
-            <textarea id="outputCode" readonly></textarea>
-        </div>
+    <div class="card">
+        <h2 style="color:#00ff6a; text-align:center;">N60 Turbo Obfuscator</h2>
+        <p style="font-size:12px; text-align:center; opacity:0.6;">إصدار سريع ومتوافق مع جميع المشغلات (PC/Mobile)</p>
+        
+        <textarea id="inputCode" placeholder="ضع كود Lua هنا..."></textarea>
+        <button class="btn-run" onclick="obfuscateTurbo()">تشفير فوري ⚡</button>
+        
+        <label>الكود الناتج:</label>
+        <textarea id="outputCode" readonly></textarea>
+        <button class="btn-run" style="background:#222; color:#00ff6a; border:1px solid #00ff6a;" onclick="copyResult()">نسخ الكود 📋</button>
     </div>
 </div>
 
 <script type="application/lua" id="luaLogic">
-    function gold_protect(source)
-        if not source or source == "" then return "-- [!] No Code Provided" end
+    function turbo_protect(source)
+        if not source or source == "" then return "-- لا يوجد كود" end
         
-        -- مفتاح التشفير العشوائي
-        local key = math.random(80, 200)
-        local bytes = {}
+        local key = math.random(5, 50)
+        local encoded = ""
         
-        -- تشفير البايتات مع إضافة "ملح" (Salt) لتعقيد الفك
+        -- تشفير خفيف جداً لا يستهلك الذاكرة
         for i = 1, #source do
-            local b = string.byte(source, i)
-            table.insert(bytes, (b ~ key))
+            encoded = encoded .. "\\" .. (string.byte(source, i) + key)
         end
         
-        local data = table.concat(bytes, ",")
+        local out = "--[[ N60 Turbo ]]\n"
+        out = out .. "local _K = " .. key .. "\n"
+        out = out .. "local _S = \"" .. encoded .. "\"\n"
+        out = out .. "local function _D(s, k) local r = '' for b in s:gmatch('\\\\(%d+)') do r = r .. string.char(tonumber(b) - k) end return r end\n"
+        out = out .. "local _L = loadstring or (getgenv and getgenv().loadstring) or (getfenv and getfenv().loadstring)\n"
+        out = out .. "if _L then pcall(_L(_D(_S, _K))) else warn('Your executor does not support loadstring!') end"
         
-        -- بناء الكود الحامي (نظام الفك الذاتي الصامت)
-        local template = "--[[ N60 HUB | https://n60script.github.io/N60/ ]]\n"
-        template = template .. "local _D = {" .. data .. "}\n"
-        template = template .. "local _K = " .. key .. "\n"
-        template = template .. "local _S = \"\"\n"
-        template = template .. "for i=1, #_D do _S = _S .. string.char(_D[i] ~ _K) end\n"
-        template = template .. "local _L = (getgenv or getfenv)().loadstring or loadstring\n"
-        template = template .. "local success, result = pcall(function() return _L(_S)() end)\n"
-        template = template .. "if not success then warn('N60 EXEC ERROR: '..tostring(result)) end\n"
-        
-        -- إضافة 1500 سطر من التمويه في نهاية السكربت لزيادة الحجم وتشتيت الأدوات
-        local junk = "\n--[[ JUNK PROTECTION START ]]\n"
-        for i=1, 500 do
-            junk = junk .. "-- " .. string.reverse(tostring(math.random(1000000, 9999999))) .. "\n"
-        end
-        
-        return template .. junk
+        return out
     end
 </script>
 
 <script>
-    function obfuscateGold() {
+    function obfuscateTurbo() {
         const input = document.getElementById('inputCode').value;
-        if(!input) return;
-        
         const L = fengari.L;
         fengari.load(document.getElementById('luaLogic').innerText)();
-        fengari.lua.lua_getglobal(L, "gold_protect");
+        fengari.lua.lua_getglobal(L, "turbo_protect");
         fengari.lua.lua_pushstring(L, input);
         fengari.lua.lua_pcall(L, 1, 1, 0);
-        
-        const res = fengari.to_jsstring(fengari.lua.lua_tostring(L, -1));
-        document.getElementById('outputCode').value = res;
+        document.getElementById('outputCode').value = fengari.to_jsstring(fengari.lua.lua_tostring(L, -1));
     }
 
     function copyResult() {
         const out = document.getElementById('outputCode');
         out.select();
         document.execCommand('copy');
-        alert("تم النسخ! جربه الآن في المشغل.");
+        alert("تم النسخ!");
     }
 </script>
-
 </body>
 </html>
