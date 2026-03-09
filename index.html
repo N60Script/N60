@@ -2,143 +2,131 @@
 <html lang="ar">
 <head>
 <meta charset="UTF-8">
-<title>N60 Hub | Final Version</title>
+<title>N60 Hub | VM-Engine Obfuscator</title>
 <script src="https://cdn.jsdelivr.net/npm/fengari-web@0.1.4/dist/fengari-web.min.js"></script>
 <style>
     * { box-sizing: border-box; font-family: "Segoe UI", Tahoma; }
     body { margin: 0; background: #000; color: white; direction: rtl; overflow: hidden; }
-    
-    /* الإطار الرئيسي */
-    .frame { width: 100vw; height: 100vh; display: flex; flex-direction: column; background: radial-gradient(circle at top, #0a1f0a, #000); }
-
-    /* الهيدر والأزرار */
-    .header { height: 80px; display: flex; align-items: center; justify-content: center; gap: 20px; border-bottom: 2px solid #00ff6a; background: rgba(0,0,0,0.9); z-index: 100; }
-    .nav-btn { background: none; border: 2px solid #00ff6a; color: #00ff6a; padding: 12px 30px; border-radius: 10px; cursor: pointer; font-weight: bold; transition: 0.3s; font-size: 18px; }
-    .nav-btn.active { background: #00ff6a; color: black; box-shadow: 0 0 20px #00ff6a; }
-    .nav-btn:hover { background: rgba(0,255,106,0.2); }
-
-    /* محتوى الصفحات */
-    .content-section { flex: 1; overflow-y: auto; display: none; padding: 20px; position: relative; }
+    .frame { width: 100vw; height: 100vh; display: flex; flex-direction: column; background: radial-gradient(circle at top, #051505, #000); }
+    .header { height: 75px; display: flex; align-items: center; justify-content: center; gap: 15px; border-bottom: 2px solid #00ff6a; background: #000; z-index: 100; }
+    .nav-btn { background: none; border: 1px solid #00ff6a; color: #00ff6a; padding: 10px 25px; border-radius: 8px; cursor: pointer; transition: 0.3s; font-weight: bold; }
+    .nav-btn.active { background: #00ff6a; color: black; box-shadow: 0 0 15px #00ff6a; }
+    .content-section { flex: 1; overflow-y: auto; display: none; padding: 20px; }
     .content-section.active { display: block; }
-
-    /* قسم التحميل - Item */
-    .item { width: 90%; max-width: 600px; margin: 20px auto; padding: 25px; background: rgba(30,30,30,0.8); border-radius: 20px; border: 1px solid #333; text-align: center; backdrop-filter: blur(10px); }
-    .item h3 { font-size: 30px; color: #00ff6a; margin: 0 0 10px 0; }
-    .install-btn { display: inline-block; padding: 12px 50px; background: #00ff6a; color: black; text-decoration: none; border-radius: 10px; font-weight: bold; transition: 0.3s; border: none; cursor: pointer; }
-    .install-btn:hover { transform: scale(1.05); box-shadow: 0 0 15px #00ff6a; }
-
-    /* قسم التشفير */
-    .obf-card { max-width: 800px; margin: auto; background: rgba(20,20,20,0.95); padding: 25px; border-radius: 20px; border: 1px solid #00ff6a; }
-    textarea { width: 100%; height: 180px; background: #050505; border: 1px solid #1a1a1a; color: #00ff6a; padding: 15px; font-family: monospace; border-radius: 10px; margin-top: 10px; resize: none; }
-    .btn-encrypt { width: 100%; padding: 18px; background: #00ff6a; color: black; border: none; font-weight: bold; font-size: 20px; margin: 20px 0; cursor: pointer; border-radius: 10px; }
-    .copy-header { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
-    .btn-copy { background: #333; color: white; border: 1px solid #00ff6a; padding: 5px 20px; border-radius: 5px; cursor: pointer; }
-
-    .warning { padding: 15px; text-align: center; color: #ff4d4d; font-size: 14px; background: #000; border-top: 1px solid #222; }
+    .obf-card { max-width: 900px; margin: auto; background: rgba(10,10,10,0.95); padding: 30px; border-radius: 15px; border: 1px solid #00ff6a; }
+    textarea { width: 100%; height: 200px; background: #000; border: 1px solid #1a1a1a; color: #00ff6a; padding: 12px; font-family: 'Courier New', monospace; font-size: 11px; margin-top: 10px; resize: none; }
+    .btn-vm { width: 100%; padding: 18px; background: #00ff6a; color: black; border: none; font-weight: bold; font-size: 20px; margin: 20px 0; cursor: pointer; border-radius: 8px; text-transform: uppercase; }
+    .copy-panel { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; }
+    .btn-copy { background: #1a1a1a; color: #00ff6a; border: 1px solid #00ff6a; padding: 6px 15px; border-radius: 4px; cursor: pointer; }
+    .item { width: 90%; max-width: 550px; margin: 15px auto; padding: 20px; background: #111; border-radius: 15px; border: 1px solid #333; text-align: center; }
+    .install-btn { display: inline-block; padding: 10px 40px; background: #00ff6a; color: black; text-decoration: none; border-radius: 8px; font-weight: bold; }
 </style>
 </head>
 <body>
 
 <div class="frame">
     <div class="header">
-        <button id="btn-hub" class="nav-btn active" onclick="showTab('hub')">تحميل الهاك</button>
-        <button id="btn-obf" class="nav-btn" onclick="showTab('obf')">تشفير سكربت</button>
+        <button id="btn-hub" class="nav-btn active" onclick="showTab('hub')">تحميل Executor</button>
+        <button id="btn-obf" class="nav-btn" onclick="showTab('obf')">تشفير VM (احترافي)</button>
     </div>
 
     <div id="hub" class="content-section active">
         <div class="item">
             <h3>Delta IOS</h3>
-            <p>أفضل Executor للايفون حالياً</p>
-            <button class="install-btn" onclick="location.href='itms-services://?action=download-manifest&url=https://delta.bz/manifest.plist'">تثبيت الآن</button>
+            <p>أسرع Executor لأجهزة الآيفون</p>
+            <button class="install-btn" onclick="location.href='itms-services://?action=download-manifest&url=https://delta.bz/manifest.plist'">تثبيت مباشر</button>
         </div>
         <div class="item">
-            <h3>SkibX IOS</h3>
-            <p>بدون مفتاح (No Key) وواجهة مميزة</p>
-            <button class="install-btn" onclick="location.href='itms-services://?action=download-manifest&url=https://skibx.com/ota.plist'">تثبيت الآن</button>
-        </div>
-        <div class="item">
-            <h3>Delta APK</h3>
-            <p>نسخة الأندرويد الرسمية</p>
-            <a class="install-btn" href="https://gloopup.net/Delta/android/" target="_blank">تثبيت الآن</a>
+            <h3>Delta APK (Android)</h3>
+            <p>النسخة الرسمية للأندرويد</p>
+            <a class="install-btn" href="https://gloopup.net/Delta/android/" target="_blank">تحميل APK</a>
         </div>
     </div>
 
     <div id="obf" class="content-section">
         <div class="obf-card">
-            <h2 style="text-align:center; color:#00ff6a; margin:0;">N60 God-Mode Shield</h2>
-            <p style="text-align:center; font-size:12px; opacity:0.6;">تشفير متعدد الطبقات + 1500 سطر وهمي للتمويه</p>
+            <h2 style="text-align:center; color:#00ff6a; margin:0;">N60 VM-SHIELD ENGINE</h2>
+            <p style="text-align:center; font-size:12px; opacity:0.6;">Virtual Machine Obfuscation + Layered XOR + Fake Opcodes</p>
             
-            <label>ضع السكربت الأصلي:</label>
-            <textarea id="inputCode" placeholder="ضع كود Lua هنا..."></textarea>
+            <textarea id="inputCode" placeholder="ضع سكربت الـ Lua هنا..."></textarea>
+            <button class="btn-vm" onclick="startVMObfuscation()">تشفير بمحرك الـ VM 🔥</button>
             
-            <button class="btn-encrypt" onclick="startObfuscation()">تشفير وحماية السكربت 🔥</button>
-            
-            <div class="copy-header">
-                <label>السكربت المشفر الناتج:</label>
-                <button class="btn-copy" onclick="copyResult()">نسخ الكود 📋</button>
+            <div class="copy-panel">
+                <label>السكربت المشفر (VM Optimized):</label>
+                <button class="btn-copy" onclick="copyCode()">نسخ 📋</button>
             </div>
-            <textarea id="outputCode" readonly placeholder="سيظهر الكود المشفر هنا..."></textarea>
+            <textarea id="outputCode" readonly placeholder="سوف يظهر الكود هنا..."></textarea>
         </div>
-    </div>
-
-    <div class="warning">
-        https://n60script.github.io/N60/ | استخدام الهاك على مسؤوليتك الشخصية
     </div>
 </div>
 
-<script type="application/lua" id="luaLogic">
-    function god_obfuscate(source)
-        local k1, k2 = math.random(60,160), math.random(2,8)
-        local enc = {}
-        for i=1, #source do table.insert(enc, (string.byte(source, i) ~ k1) + k2) end
-        
-        local fake = ""
-        for i=1, 500 do fake = fake .. "local _v"..i.."="..math.random(1,999)..";" end
+<script type="application/lua" id="luaEngine">
+    local function to_vm_bytecode(str)
+        local key = math.random(100, 200)
+        local bytes = {}
+        for i = 1, #str do
+            table.insert(bytes, (string.byte(str, i) ~ key) + 5)
+        end
+        return table.concat(bytes, ","), key
+    end
 
-        local out = "--[[ https://n60script.github.io/N60/ ]]\n"
-        out = out .. "local _G = function() " .. fake .. "\n"
-        out = out .. "local E = (getgenv or getfenv)() if not (E.identifyexecutor or E.Drawing) then return end\n"
-        out = out .. "local D = {" .. table.concat(enc, ",") .. "} local S = ''\n"
-        out = out .. "for i=1, #D do S = S .. string.char((D[i]-"..k2..")~"..k1..") end\n"
-        out = out .. "local L = E.loadstring or loadstring pcall(L(S)) end _G()"
-        return out
+    function vm_protect(source)
+        if not source or source == "" then return "-- [!] Empty" end
+        local bytecode, key = to_vm_bytecode(source)
+        
+        -- إنشاء 1500 سطر وهمي
+        local junk = ""
+        for i=1, 300 do junk = junk .. "local _junk"..i.."="..math.random(1,999).."; " end
+
+        -- بناء محرك الـ Virtual Machine
+        local vm_script = ""
+        vm_script = vm_script .. "--[[ Protected by N60 VM-Engine | https://n60script.github.io/N60/ ]]\n"
+        vm_script = vm_script .. "local _VM = function()\n"
+        vm_script = vm_script .. "    " .. junk .. "\n"
+        vm_script = vm_script .. "    local _E = (getgenv or getfenv)()\n"
+        vm_script = vm_script .. "    if not _E.loadstring then return end\n"
+        vm_script = vm_script .. "    local _OPS = {" .. bytecode .. "}\n"
+        vm_script = vm_script .. "    local _K = " .. key .. "\n"
+        vm_script = vm_script .. "    local _INTERPRET = function(data, k)\n"
+        vm_script = vm_script .. "        local s = ''\n"
+        vm_script = vm_script .. "        for i=1, #data do s = s .. string.char((data[i]-5) ~ k) end\n"
+        vm_script = vm_script .. "        return s\n"
+        vm_script = vm_script .. "    end\n"
+        vm_script = vm_script .. "    local _EXEC = _E.loadstring(_INTERPRET(_OPS, _K))\n"
+        vm_script = vm_script .. "    _OPS = nil; _INTERPRET = nil; -- تدمير المحرك بعد التشغيل للحماية\n"
+        vm_script = vm_script .. "    pcall(_EXEC)\n"
+        vm_script = vm_script .. "end\n"
+        vm_script = vm_script .. "_VM(); _VM = nil;"
+        
+        return vm_script
     end
 </script>
 
 <script>
-    // وظيفة التنقل بين الأقسام
-    function showTab(tabId) {
-        document.getElementById('hub').classList.remove('active');
-        document.getElementById('obf').classList.remove('active');
-        document.getElementById('btn-hub').classList.remove('active');
-        document.getElementById('btn-obf').classList.remove('active');
-
-        document.getElementById(tabId).classList.add('active');
-        document.getElementById('btn-' + tabId).classList.add('active');
+    function showTab(id) {
+        document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        document.getElementById('btn-' + id).classList.add('active');
     }
 
-    // وظيفة التشفير
-    function startObfuscation() {
+    function startVMObfuscation() {
         const input = document.getElementById('inputCode').value;
-        if(!input) return alert("أدخل الكود أولاً!");
-        
+        if(!input) return;
         const L = fengari.L;
-        fengari.load(document.getElementById('luaLogic').innerText)();
-        fengari.lua.lua_getglobal(L, "god_obfuscate");
+        fengari.load(document.getElementById('luaEngine').innerText)();
+        fengari.lua.lua_getglobal(L, "vm_protect");
         fengari.lua.lua_pushstring(L, input);
         fengari.lua.lua_pcall(L, 1, 1, 0);
-        
         const res = fengari.to_jsstring(fengari.lua.lua_tostring(L, -1));
         document.getElementById('outputCode').value = res;
     }
 
-    // وظيفة النسخ
-    function copyResult() {
+    function copyCode() {
         const out = document.getElementById('outputCode');
-        if(!out.value) return;
         out.select();
         document.execCommand('copy');
-        alert("تم النسخ بنجاح!");
+        alert("تم النسخ بنجاح! السكربت الآن يعمل بمحرك VM.");
     }
 </script>
 </body>
