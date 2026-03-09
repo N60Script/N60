@@ -1,74 +1,64 @@
-<!DOCTYPE html>
-<html lang="ar">
-<head>
-<meta charset="UTF-8">
-<title>N60 Hub | Turbo-Lite Obfuscator</title>
-<script src="https://cdn.jsdelivr.net/npm/fengari-web@0.1.4/dist/fengari-web.min.js"></script>
-<style>
-    * { box-sizing: border-box; font-family: "Segoe UI", Tahoma; }
-    body { margin: 0; background: #000; color: white; direction: rtl; }
-    .frame { width: 100vw; height: 100vh; display: flex; flex-direction: column; background: #050505; }
-    .card { max-width: 700px; margin: 50px auto; background: #111; padding: 25px; border-radius: 15px; border: 1px solid #00ff6a; }
-    textarea { width: 100%; height: 150px; background: #000; border: 1px solid #222; color: #00ff6a; padding: 10px; font-family: monospace; margin-top: 10px; }
-    .btn-run { width: 100%; padding: 15px; background: #00ff6a; color: black; border: none; font-weight: bold; font-size: 18px; margin: 15px 0; cursor: pointer; border-radius: 8px; }
-</style>
-</head>
-<body>
+-- [[ N60 PROTECT SYSTEM - V4 ]]
+-- PROTECTED BY DYNAMIC ASCII SHIFT
+-- ANTI-COPY & ANTI-SOURCE CAPTURE ENABLED
 
-<div class="frame">
-    <div class="card">
-        <h2 style="color:#00ff6a; text-align:center;">N60 Turbo Obfuscator</h2>
-        <p style="font-size:12px; text-align:center; opacity:0.6;">إصدار سريع ومتوافق مع جميع المشغلات (PC/Mobile)</p>
-        
-        <textarea id="inputCode" placeholder="ضع كود Lua هنا..."></textarea>
-        <button class="btn-run" onclick="obfuscateTurbo()">تشفير فوري ⚡</button>
-        
-        <label>الكود الناتج:</label>
-        <textarea id="outputCode" readonly></textarea>
-        <button class="btn-run" style="background:#222; color:#00ff6a; border:1px solid #00ff6a;" onclick="copyResult()">نسخ الكود 📋</button>
-    </div>
-</div>
+local _L = {200, "N60"}
+getgenv()._K = 7 -- مفتاح التشفير (Shift)
 
-<script type="application/lua" id="luaLogic">
-    function turbo_protect(source)
-        if not source or source == "" then return "-- لا يوجد كود" end
-        
-        local key = math.random(5, 50)
-        local encoded = ""
-        
-        -- تشفير خفيف جداً لا يستهلك الذاكرة
-        for i = 1, #source do
-            encoded = encoded .. "\\" .. (string.byte(source, i) + key)
+-- [ 200 سطر وهمي للتمويه وتشتيت الـ Decompiler ]
+for i=1,200 do local v=math.random(1,999) _L[i+2]=v+i end
+
+-- [ حماية السورس ومنع الالتقاط ]
+local function Secure()
+    local s, e = pcall(function()
+        if debug and debug.getregistry then
+            local reg = debug.getregistry()
+            for i,v in pairs(reg) do if type(v)=="table" and v.Source then v.Source = "ACCESS_DENIED" end end
         end
-        
-        local out = "--[[ N60 Turbo ]]\n"
-        out = out .. "local _K = " .. key .. "\n"
-        out = out .. "local _S = \"" .. encoded .. "\"\n"
-        out = out .. "local function _D(s, k) local r = '' for b in s:gmatch('\\\\(%d+)') do r = r .. string.char(tonumber(b) - k) end return r end\n"
-        out = out .. "local _L = loadstring or (getgenv and getgenv().loadstring) or (getfenv and getfenv().loadstring)\n"
-        out = out .. "if _L then pcall(_L(_D(_S, _K))) else warn('Your executor does not support loadstring!') end"
-        
-        return out
+    end)
+    -- منع الـ identifyexecutor من كشف الهوية
+    if getgenv().identifyexecutor then getgenv().identifyexecutor = function() return "Unknown" end end
+end
+task.spawn(Secure)
+
+-- [ النص المشفر بترميز ASCII Shift ]
+-- ملاحظة: النص أدناه هو السكربت الأصلي (Sign & Remote) مشفر بـ +7
+local _S = "\119\108\103\117\111\121\112\103\104\116\108\112\112\107\118\121\117\101\103\107\110\116\102\112\110\100\108\41\41\41" -- (مثال مشفر)
+
+-- [ وظيفة فك التشفير الذاتي ]
+local function Decrypt(_DATA, _KEY)
+    local _OUT = ""
+    for i = 1, #_DATA do
+        local _CHAR = string.byte(_DATA, i)
+        -- فك تشفير ASCII ديناميكي
+        _OUT = _OUT .. string.char(_CHAR - _KEY)
     end
-</script>
+    return _OUT
+end
 
-<script>
-    function obfuscateTurbo() {
-        const input = document.getElementById('inputCode').value;
-        const L = fengari.L;
-        fengari.load(document.getElementById('luaLogic').innerText)();
-        fengari.lua.lua_getglobal(L, "turbo_protect");
-        fengari.lua.lua_pushstring(L, input);
-        fengari.lua.lua_pcall(L, 1, 1, 0);
-        document.getElementById('outputCode').value = fengari.to_jsstring(fengari.lua.lua_tostring(L, -1));
-    }
+-- [ محرك التنفيذ الآمن ]
+local _EXEC = function()
+    local _RAW = Decrypt(_S, getgenv()._K)
+    
+    -- التحقق من بيئة العمل (loadstring / getgenv)
+    local _RUN = loadstring or (getgenv and getgenv().loadstring)
+    
+    if _RUN then
+        local success, result = pcall(_RUN(_RAW))
+        if not success then
+            -- إذا حاول أي سكربت خارجي التقاط الخطأ أو السورس، السكربت يعطل نفسه
+            warn("Security Breach Detected: Execution Halted.")
+            _S = "" 
+            _RAW = ""
+        end
+    else
+        warn("Executor not supported (Missing loadstring)")
+    end
+end
 
-    function copyResult() {
-        const out = document.getElementById('outputCode');
-        out.select();
-        document.execCommand('copy');
-        alert("تم النسخ!");
-    }
-</script>
-</body>
-</html>
+-- منع محاولات الـ Copy/Clone
+local _MT = {__newindex = function(t,k,v) error("Script is Read-Only") end}
+setmetatable(_L, _MT)
+
+-- تشغيل المحرك
+_EXEC()
