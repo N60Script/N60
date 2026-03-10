@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Delta Key Bypass Tool</title>
+    <title>Delta Key Extractor Pro</title>
     <style>
         body {
-            font-family: 'Courier New', Courier, monospace;
-            background-color: #0a0a0a;
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            background-color: #0f0f0f;
             color: #00ff00;
             display: flex;
             justify-content: center;
@@ -15,132 +15,124 @@
             height: 100vh;
             margin: 0;
         }
-        .main-card {
-            background: #161616;
-            border: 1px solid #333;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 0 20px rgba(0, 255, 0, 0.1);
+        .container {
+            background: #1a1a1a;
+            padding: 25px;
+            border-radius: 15px;
+            border: 1px solid #00ff00;
             width: 450px;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.2);
         }
-        h2 { text-align: center; color: #fff; text-transform: uppercase; letter-spacing: 2px; }
-        .label { display: block; margin-bottom: 10px; font-size: 13px; color: #888; }
+        h2 { text-align: center; color: white; margin-bottom: 20px; }
+        label { font-size: 14px; color: #aaa; margin-bottom: 8px; display: block; }
         
-        .input-area {
+        input {
             width: 100%;
-            background: #222;
-            border: 1px solid #444;
             padding: 12px;
+            background: #000;
+            border: 1px solid #333;
             color: #00ff00;
-            border-radius: 5px;
+            border-radius: 8px;
             margin-bottom: 20px;
-            outline: none;
             box-sizing: border-box;
+            outline: none;
         }
 
-        .result-container {
-            display: flex;
+        .output-box {
             background: #000;
             border: 1px solid #00ff00;
-            border-radius: 5px;
-            padding: 10px;
+            padding: 15px;
+            border-radius: 8px;
+            min-height: 50px;
+            display: flex;
             align-items: center;
-            min-height: 45px;
+            justify-content: space-between;
+            word-break: break-all;
         }
 
-        #keyOutput {
-            flex-grow: 1;
-            font-weight: bold;
-            word-break: break-all;
-            font-size: 14px;
-        }
+        #result { font-weight: bold; font-family: monospace; font-size: 15px; }
 
         .copy-btn {
             background: #00ff00;
-            color: #000;
+            color: black;
             border: none;
             padding: 8px 15px;
-            border-radius: 3px;
+            border-radius: 5px;
             cursor: pointer;
             font-weight: bold;
             margin-right: 10px;
         }
 
-        .status {
-            font-size: 11px;
-            margin-top: 5px;
-            color: #ffaa00;
-            display: none;
+        .loading-bar {
+            height: 3px;
+            width: 0%;
+            background: #00ff00;
+            margin-bottom: 10px;
+            transition: width 1s;
         }
     </style>
 </head>
 <body>
 
-<div class="main-card">
-    <h2>Delta Bypass UI</h2>
+<div class="container">
+    <h2>DELTA BYPASSER</h2>
 
-    <label class="label">ضع رابط التحقق (Auth URL) هنا:</label>
-    <input type="text" id="urlInput" class="input-area" placeholder="https://auth.platorelay.com/..." oninput="processBypass()">
-    <div id="statusLabel" class="status">جاري المحاكاة وتخطي الإعلانات...</div>
+    <label>ضع الرابط الطويل هنا:</label>
+    <input type="text" id="linkInput" placeholder="https://auth.platorelay.com/..." oninput="startBypass()">
 
-    <label class="label">المفتاح المستخرج:</label>
-    <div class="result-container">
-        <div id="keyOutput">في انتظار الرابط...</div>
-        <button class="copy-btn" onclick="copyResult()">نسخ</button>
+    <div class="loading-bar" id="loader"></div>
+
+    <label>المفتاح (Key):</label>
+    <div class="output-box">
+        <div id="result">في انتظار الرابط...</div>
+        <button class="copy-btn" onclick="copyKey()">نسخ</button>
     </div>
 </div>
 
 <script>
-    // محاكاة لتعطيل الإزعاج كما في الكود الأصلي
-    window.alert = () => {};
-    window.confirm = () => true;
+    function startBypass() {
+        const input = document.getElementById('linkInput').value;
+        const resultDiv = document.getElementById('result');
+        const loader = document.getElementById('loader');
 
-    function processBypass() {
-        const input = document.getElementById('urlInput').value;
-        const output = document.getElementById('keyOutput');
-        const status = document.getElementById('statusLabel');
+        if (!input.includes('?')) return;
 
-        if (!input.includes('?')) {
-            output.innerText = "رابط غير مكتمل...";
-            return;
-        }
+        resultDiv.innerText = "جاري التخطي...";
+        loader.style.width = "100%";
 
-        status.style.display = "block";
-        output.innerText = "جاري الاستخراج...";
-
-        // محاكاة وقت الانتظار (تخطي الإعلانات)
         setTimeout(() => {
             try {
-                // البحث عن r أو d وفك التشفير بـ Base64 (منطق الكود الأصلي)
-                const urlObj = new URL(input);
-                const params = new URLSearchParams(urlObj.search);
-                const encoded = params.get('r') || params.get('d');
+                const urlParams = new URLSearchParams(input.substring(input.indexOf('?')));
+                let rawData = urlParams.get('d') || urlParams.get('r');
 
-                if (encoded && /^[A-Za-z0-9+/=]+$/.test(encoded)) {
-                    const decoded = atob(encoded);
-                    output.innerText = decoded;
-                    status.innerText = "تم التخطي بنجاح!";
-                    status.style.color = "#00ff00";
-                } else {
-                    output.innerText = "تعذر العثور على تشفير صالح";
-                    status.innerText = "خطأ في الرابط";
-                    status.style.color = "#ff4444";
+                if (rawData) {
+                    // فك التشفير
+                    let decoded = atob(rawData);
+                    
+                    // البحث عن نمط المفتاح (FREE_...) داخل النص المخبص
+                    const keyMatch = decoded.match(/FREE_[a-zA-Z0-9]+/);
+                    
+                    if (keyMatch) {
+                        resultDiv.innerText = keyMatch[0];
+                        resultDiv.style.color = "#00ff00";
+                    } else {
+                        // إذا لم يجد النمط، يحاول تنظيف النص من الرموز الغريبة
+                        let cleaned = decoded.replace(/[^\x20-\x7E]/g, '').trim();
+                        resultDiv.innerText = cleaned || "تعذر استخراج المفتاح الصافي";
+                    }
                 }
             } catch (e) {
-                output.innerText = "خطأ في معالجة الرابط";
-                status.style.color = "#ff4444";
+                resultDiv.innerText = "خطأ في فك التشفير";
             }
-        }, 1500); // تأخير بسيط لمحاكاة عملية الـ Bypass
+            loader.style.width = "0%";
+        }, 1200);
     }
 
-    function copyResult() {
-        const text = document.getElementById('keyOutput').innerText;
-        if (text === "في انتظار الرابط..." || text === "جاري الاستخراج...") return;
-        
+    function copyKey() {
+        const text = document.getElementById('result').innerText;
+        if (text.includes("...")) return;
         navigator.clipboard.writeText(text);
-        const btn = document.querySelector('.copy-btn');
-        btn.innerText = "تم!";
-        setTimeout(() => btn.innerText = "نسخ", 2000);
+        alert("تم نسخ المفتاح!");
     }
 </script>
 
