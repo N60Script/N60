@@ -1,98 +1,124 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Delta Real-Time Bypasser</title>
-    <style>
-        body { font-family: sans-serif; background: #050505; color: #00ff00; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .box { background: #111; border: 2px solid #00ff00; padding: 25px; border-radius: 15px; width: 450px; text-align: center; box-shadow: 0 0 20px #00ff0044; }
-        input { width: 100%; padding: 12px; background: #000; border: 1px solid #333; color: #00ff00; border-radius: 8px; margin: 15px 0; box-sizing: border-box; outline: none; }
-        .btn-start { background: #00ff00; color: #000; border: none; padding: 12px 25px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; font-size: 16px; }
-        .result-area { margin-top: 20px; background: #000; border: 1px dashed #555; padding: 15px; border-radius: 8px; display: flex; align-items: center; justify-content: space-between; }
-        #status { font-size: 12px; color: #ffaa00; margin-top: 10px; }
-        .hidden-frame { display: none; }
-    </style>
+<meta charset="UTF-8">
+<title>N60 Hub | Direct Download & Obfuscation</title>
+<script src="https://cdn.jsdelivr.net/npm/fengari-web@0.1.4/dist/fengari-web.min.js"></script>
+<style>
+    * { box-sizing: border-box; font-family: "Segoe UI", Tahoma; }
+    body { margin: 0; background: #000; color: white; direction: rtl; overflow-x: hidden; }
+    .main-frame { width: 100vw; min-height: 100vh; display: flex; flex-direction: column; background: radial-gradient(circle at top, #051a05, #000); }
+    .nav-bar { height: 70px; display: flex; align-items: center; justify-content: center; gap: 20px; border-bottom: 2px solid #00ff6a; background: rgba(0,0,0,0.9); position: sticky; top: 0; z-index: 1000; }
+    .nav-link { background: none; border: 1px solid #00ff6a; color: #00ff6a; padding: 10px 25px; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.3s; }
+    .nav-link.active { background: #00ff6a; color: black; box-shadow: 0 0 15px #00ff6a; }
+    .container { flex: 1; padding: 30px; }
+    .section { display: none; max-width: 900px; margin: auto; }
+    .section.active { display: block; }
+    .exec-card { background: #111; padding: 25px; border-radius: 15px; border: 1px solid #333; margin-bottom: 20px; text-align: center; }
+    .btn-download { display: inline-block; margin-top: 15px; padding: 12px 40px; background: #00ff6a; color: black; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 18px; transition: 0.3s; }
+    .btn-download:hover { transform: scale(1.05); box-shadow: 0 0 20px #00ff6a; }
+    .obf-box { background: rgba(10,10,10,0.95); padding: 25px; border-radius: 20px; border: 1px solid #00ff6a; }
+    textarea { width: 100%; height: 180px; background: #000; border: 1px solid #1a1a1a; color: #00ff6a; padding: 15px; font-family: monospace; font-size: 11px; margin-top: 10px; border-radius: 10px; resize: none; }
+    .btn-action { width: 100%; padding: 18px; background: #00ff6a; color: black; border: none; font-weight: bold; font-size: 20px; margin: 20px 0; cursor: pointer; border-radius: 10px; }
+    .footer { text-align: center; padding: 20px; color: #444; font-size: 13px; }
+</style>
 </head>
 <body>
 
-<div class="box">
-    <h2>DELTA BYPASS SYSTEM</h2>
-    <p style="font-size: 13px; color: #ccc;">أدخل رابط auth.platorelay هنا</p>
-    
-    <input type="text" id="targetUrl" placeholder="https://auth.platorelay.com/a/8?id=...">
-    
-    <button class="btn-start" onclick="startBypass()">بدء عملية التخطي (Bypass)</button>
-    
-    <div id="status">جاهز للبدء...</div>
+<div class="main-frame">
+    <div class="nav-bar">
+        <button id="tab1" class="nav-link active" onclick="switchTab('executors', 'tab1')">تحميل مباشر للمشغلات</button>
+        <button id="tab2" class="nav-link" onclick="switchTab('obfuscator', 'tab2')">N60 Hub Obfuscation</button>
+    </div>
 
-    <div class="result-area">
-        <span id="finalKey">المفتاح سيظهر هنا...</span>
-        <button onclick="copyKey()" style="background:#333; color:#fff; border:none; padding:5px 10px; cursor:pointer; border-radius:4px;">نسخ</button>
+    <div class="container">
+        <div id="executors" class="section active">
+            <h2 style="text-align:center; color:#00ff6a;">تحميل مباشر لـ Roblox Executors</h2>
+            
+            <div class="exec-card">
+                <h3>Delta Android (Direct APK)</h3>
+                <p>اضغط للتحميل المباشر لجهاز الأندرويد</p>
+                <a href="https://delta-executor.com/download/android/latest.apk" class="btn-download">تحميل APK الآن 📥</a>
+            </div>
+
+            <div class="exec-card">
+                <h3>Delta iOS (Direct Install)</h3>
+                <p>تثبيت مباشر للايفون (عبر متصفح Safari)</p>
+                <a href="itms-services://?action=download-manifest&url=https://delta.bz/manifest.plist" class="btn-download">تثبيت iOS الآن 📲</a>
+            </div>
+
+            <div class="exec-card">
+                <h3>Arceus X Neo (Direct APK)</h3>
+                <p>تحميل مباشر لآخر إصدار من Arceus X</p>
+                <a href="https://spdmteam.com/api/v1/download/android/latest" class="btn-download">تحميل APK الآن 📥</a>
+            </div>
+        </div>
+
+        <div id="obfuscator" class="section">
+            <div class="obf-box">
+                <h2 style="text-align:center; color:#00ff6a; margin:0;">N60 HUB OBFUSCATOR</h2>
+                <textarea id="inputCode" placeholder="ضع سكربت الـ Lua هنا..."></textarea>
+                <button class="btn-action" onclick="generateObf()">تشفير وحماية 🔥</button>
+                <textarea id="outputCode" readonly placeholder="الكود المشفر سيظهر هنا..."></textarea>
+                <button onclick="copyCode()" style="width:100%; padding:10px; background:#222; color:#00ff6a; border:1px solid #00ff6a; cursor:pointer; margin-top:10px; border-radius:5px;">نسخ الكود 📋</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        -- https://n60script.github.io/N60/
     </div>
 </div>
 
-<iframe id="bypassFrame" class="hidden-frame"></iframe>
-
-<script>
-    function startBypass() {
-        const url = document.getElementById('targetUrl').value;
-        const status = document.getElementById('status');
-        const finalKey = document.getElementById('finalKey');
-
-        if (!url.includes('platorelay')) {
-            alert("الرجاء وضع رابط Delta الصحيح!");
-            return;
-        }
-
-        status.innerText = "جاري الاتصال بالموقع وتخطي الإعلانات...";
+<script type="application/lua" id="luaEngine">
+    function n60_hub_obfuscate(source)
+        local key = math.random(20, 90)
+        local ascii_table = {}
+        for i = 1, #source do table.insert(ascii_table, string.byte(source, i) + key) end
         
-        // محاكاة منطق السكربت الأصلي
-        // 1. استخراج الـ Base64 من الرابط مباشرة (لأن الموقع غالباً يضع النتيجة مشفرة في الـ URL)
-        try {
-            const urlParams = new URLSearchParams(url.substring(url.indexOf('?')));
-            let data = urlParams.get('id') || urlParams.get('r') || urlParams.get('d');
+        local junk = ""
+        for i=1, 200 do junk = junk .. "local _f"..i.."="..math.random(100,999).."; " end
 
-            if (data) {
-                // محاكاة انتظار "الإعلان"
-                setTimeout(() => {
-                    status.innerText = "تم اختراق نظام الإعلانات.. جاري استخراج المفتاح..";
-                    
-                    setTimeout(() => {
-                        // محاولة فك التشفير والتنظيف
-                        try {
-                            let decoded = atob(data);
-                            // البحث عن نمط المفتاح المعروف لـ Delta
-                            let match = decoded.match(/FREE_[a-zA-Z0-9]+/);
-                            
-                            if (match) {
-                                finalKey.innerText = match[0];
-                                status.innerText = "تم التخطي بنجاح!";
-                                status.style.color = "#00ff00";
-                            } else {
-                                // إذا لم يجد النمط، نعرض النص بعد التنظيف من الرموز الغريبة
-                                let clean = decoded.replace(/[^\x20-\x7E]/g, '');
-                                finalKey.innerText = clean.substring(0, 40) + "..."; 
-                                status.innerText = "تم الاستخراج (قد يحتاج تنظيف يدوي)";
-                            }
-                        } catch(e) {
-                            finalKey.innerText = "FREE_" + Math.random().toString(16).slice(2, 15); // محاكاة إذا فشل الكود تماماً
-                            status.innerText = "تم التوليد عبر المحاكاة الرقمية";
-                        }
-                    }, 2000);
-                }, 1500);
-            }
-        } catch (err) {
-            status.innerText = "خطأ في الوصول للرابط.";
-        }
-    }
-
-    function copyKey() {
-        const text = document.getElementById('finalKey').innerText;
-        navigator.clipboard.writeText(text);
-        alert("تم النسخ!");
-    }
+        local data_str = table.concat(ascii_table, ",")
+        local template = "--[[ N60 Hub Obfuscation ]]\n"
+        template = template .. "local _D = {" .. data_str .. "} local _K = " .. key .. "\n"
+        template = template .. junk .. "\n"
+        template = template .. [[
+local _ENV = (getgenv or getfenv)()
+local _L = _ENV.loadstring or loadstring
+local _R = {}
+for i=1, #_D do _R[i] = string.char(_D[i] - _K) end
+local success, func = pcall(_L, table.concat(_R))
+if success and func then func() end
+]]
+        template = template .. "\n-- https://n60script.github.io/N60/"
+        return template
+    end
 </script>
 
+<script>
+    function switchTab(tabId, btnId) {
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.nav-link').forEach(b => b.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+        document.getElementById(btnId).classList.add('active');
+    }
+
+    function generateObf() {
+        const input = document.getElementById('inputCode').value;
+        const L = fengari.L;
+        fengari.load(document.getElementById('luaEngine').innerText)();
+        fengari.lua.lua_getglobal(L, "n60_hub_obfuscate");
+        fengari.lua.lua_pushstring(L, input);
+        fengari.lua.lua_pcall(L, 1, 1, 0);
+        document.getElementById('outputCode').value = fengari.to_jsstring(fengari.lua.lua_tostring(L, -1));
+    }
+
+    function copyCode() {
+        const out = document.getElementById('outputCode');
+        out.select(); document.execCommand('copy');
+        alert("تم نسخ الكود!");
+    }
+</script>
 </body>
 </html>
