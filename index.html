@@ -3,141 +3,144 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مستخرج مفاتيح Delta</title>
+    <title>Delta Key Bypass Tool</title>
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Courier New', Courier, monospace;
+            background-color: #0a0a0a;
+            color: #00ff00;
             display: flex;
-            flex-direction: column;
-            align-items: center;
             justify-content: center;
+            align-items: center;
             height: 100vh;
-            background-color: #121212; /* لون داكن مريح */
-            color: white;
             margin: 0;
         }
-
-        .container {
-            background: #1e1e1e;
-            padding: 25px;
-            border-radius: 15px;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.5);
-            width: 90%;
-            max-width: 500px;
-            text-align: center;
+        .main-card {
+            background: #161616;
+            border: 1px solid #333;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.1);
+            width: 450px;
         }
-
-        .input-field {
+        h2 { text-align: center; color: #fff; text-transform: uppercase; letter-spacing: 2px; }
+        .label { display: block; margin-bottom: 10px; font-size: 13px; color: #888; }
+        
+        .input-area {
             width: 100%;
-            padding: 12px;
-            margin-top: 10px;
-            margin-bottom: 20px;
-            border: 2px solid #333;
-            border-radius: 8px;
-            background: #2b2b2b;
-            color: #00ff00; /* لون التكست أخضر مثل الهكر */
-            font-size: 14px;
-            box-sizing: border-box;
-            outline: none;
-        }
-
-        .input-field:focus {
-            border-color: #007bff;
-        }
-
-        .result-section {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            background: #2b2b2b;
-            padding: 15px;
-            border-radius: 8px;
+            background: #222;
             border: 1px solid #444;
-            min-height: 50px;
+            padding: 12px;
+            color: #00ff00;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            outline: none;
+            box-sizing: border-box;
         }
 
-        .result-text {
+        .result-container {
+            display: flex;
+            background: #000;
+            border: 1px solid #00ff00;
+            border-radius: 5px;
+            padding: 10px;
+            align-items: center;
+            min-height: 45px;
+        }
+
+        #keyOutput {
             flex-grow: 1;
-            text-align: left; /* الروابط والمفاتيح عادة يسار */
-            font-size: 14px;
-            color: #fff;
+            font-weight: bold;
             word-break: break-all;
-            font-family: monospace;
+            font-size: 14px;
         }
 
         .copy-btn {
-            padding: 10px 20px;
-            background-color: #007bff;
-            color: white;
+            background: #00ff00;
+            color: #000;
             border: none;
-            border-radius: 5px;
+            padding: 8px 15px;
+            border-radius: 3px;
             cursor: pointer;
             font-weight: bold;
-            transition: 0.3s;
+            margin-right: 10px;
         }
 
-        .copy-btn:hover {
-            background-color: #0056b3;
+        .status {
+            font-size: 11px;
+            margin-top: 5px;
+            color: #ffaa00;
+            display: none;
         }
-
-        .label {
-            display: block;
-            text-align: right;
-            margin-bottom: 5px;
-            font-size: 14px;
-            color: #bbb;
-        }
-
-        h2 { margin-bottom: 20px; color: #007bff; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h2>مستخرج المفاتيح</h2>
+<div class="main-card">
+    <h2>Delta Bypass UI</h2>
 
-    <label class="label">ضع الرابط هنا:</label>
-    <input type="text" id="urlInput" class="input-field" placeholder="إلصق الرابط الطويل هنا..." oninput="extractKey()">
+    <label class="label">ضع رابط التحقق (Auth URL) هنا:</label>
+    <input type="text" id="urlInput" class="input-area" placeholder="https://auth.platorelay.com/..." oninput="processBypass()">
+    <div id="statusLabel" class="status">جاري المحاكاة وتخطي الإعلانات...</div>
 
     <label class="label">المفتاح المستخرج:</label>
-    <div class="result-section">
-        <div class="result-text" id="keyDisplay">ينتظر الرابط...</div>
-        <button class="copy-btn" onclick="copyKey()">نسخ</button>
+    <div class="result-container">
+        <div id="keyOutput">في انتظار الرابط...</div>
+        <button class="copy-btn" onclick="copyResult()">نسخ</button>
     </div>
 </div>
 
 <script>
-    function extractKey() {
+    // محاكاة لتعطيل الإزعاج كما في الكود الأصلي
+    window.alert = () => {};
+    window.confirm = () => true;
+
+    function processBypass() {
         const input = document.getElementById('urlInput').value;
-        const display = document.getElementById('keyDisplay');
+        const output = document.getElementById('keyOutput');
+        const status = document.getElementById('statusLabel');
 
-        try {
-            // البحث عن البارامتر d أو r في الرابط
-            const urlParams = new URLSearchParams(input.substring(input.indexOf('?')));
-            let encodedData = urlParams.get('d') || urlParams.get('r');
-
-            if (encodedData) {
-                // فك تشفير Base64
-                const decodedKey = atob(encodedData);
-                display.innerText = decodedKey;
-                display.style.color = "#00ff00"; // تغيير اللون للأخضر عند النجاح
-            } else {
-                display.innerText = "لم يتم العثور على بيانات مشفرة";
-                display.style.color = "#ff4444";
-            }
-        } catch (e) {
-            display.innerText = "الرابط غير صحيح أو التشفير غير مدعوم";
-            display.style.color = "#ff4444";
+        if (!input.includes('?')) {
+            output.innerText = "رابط غير مكتمل...";
+            return;
         }
+
+        status.style.display = "block";
+        output.innerText = "جاري الاستخراج...";
+
+        // محاكاة وقت الانتظار (تخطي الإعلانات)
+        setTimeout(() => {
+            try {
+                // البحث عن r أو d وفك التشفير بـ Base64 (منطق الكود الأصلي)
+                const urlObj = new URL(input);
+                const params = new URLSearchParams(urlObj.search);
+                const encoded = params.get('r') || params.get('d');
+
+                if (encoded && /^[A-Za-z0-9+/=]+$/.test(encoded)) {
+                    const decoded = atob(encoded);
+                    output.innerText = decoded;
+                    status.innerText = "تم التخطي بنجاح!";
+                    status.style.color = "#00ff00";
+                } else {
+                    output.innerText = "تعذر العثور على تشفير صالح";
+                    status.innerText = "خطأ في الرابط";
+                    status.style.color = "#ff4444";
+                }
+            } catch (e) {
+                output.innerText = "خطأ في معالجة الرابط";
+                status.style.color = "#ff4444";
+            }
+        }, 1500); // تأخير بسيط لمحاكاة عملية الـ Bypass
     }
 
-    function copyKey() {
-        const text = document.getElementById('keyDisplay').innerText;
-        if (text === "ينتظر الرابط..." || text.includes("لم يتم")) return;
-
-        navigator.clipboard.writeText(text).then(() => {
-            alert("تم نسخ المفتاح بنجاح!");
-        });
+    function copyResult() {
+        const text = document.getElementById('keyOutput').innerText;
+        if (text === "في انتظار الرابط..." || text === "جاري الاستخراج...") return;
+        
+        navigator.clipboard.writeText(text);
+        const btn = document.querySelector('.copy-btn');
+        btn.innerText = "تم!";
+        setTimeout(() => btn.innerText = "نسخ", 2000);
     }
 </script>
 
