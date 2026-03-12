@@ -2,15 +2,13 @@
 <html lang="ar">
 <head>
 <meta charset="UTF-8">
-<title>N60 Hub | Event Horizon v8.2 (Ultimate Fix)</title>
+<title>N60 Hub | Event Horizon v8.3 (Final Fix)</title>
 <script src="https://cdn.jsdelivr.net/npm/fengari-web@0.1.4/dist/fengari-web.min.js"></script>
 <style>
     :root { --p: #00ff6a; --bg: #000; --card: #0a0a0a; }
     * { box-sizing: border-box; font-family: 'Consolas', monospace; }
     body { margin: 0; background: var(--bg); color: white; direction: rtl; }
     .wrapper { min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 20px; background: radial-gradient(circle at top, #001f0d, #000); }
-    
-    /* لوحة التشفير */
     .obf-panel { width: 100%; max-width: 900px; background: var(--card); border: 2px solid var(--p); padding: 30px; border-radius: 20px; box-shadow: 0 0 50px rgba(0,255,106,0.1); margin-top: 50px; }
     textarea { width: 100%; height: 200px; background: #000; border: 1px solid #1a1a1a; color: var(--p); padding: 15px; border-radius: 8px; margin: 15px 0; font-size: 12px; resize: none; }
     .btn-main { width: 100%; padding: 20px; background: var(--p); color: #000; border: none; font-weight: 900; cursor: pointer; border-radius: 8px; font-size: 1.2rem; transition: 0.3s; }
@@ -23,12 +21,12 @@
 
 <div class="wrapper">
     <h1 style="color:var(--p); margin-bottom:5px;">N60 HUB 🛡️</h1>
-    <p style="font-size:12px; opacity:0.5;">Event Horizon v8.2 (Ultimate Fix - Guaranteed Execution)</p>
+    <p style="font-size:12px; opacity:0.5;">Event Horizon v8.3 (Final Fix - Guaranteed Output)</p>
 
     <div class="obf-panel">
-        <h2 style="color:var(--p); margin:0;">GHOST ENGINE v8.2 (ULTIMATE)</h2>
+        <h2 style="color:var(--p); margin:0;">GHOST ENGINE v8.3 (FINAL)</h2>
         <textarea id="srcIn" placeholder="-- ضع سكربت Lua هنا (مثال: print('Hello World'))"></textarea>
-        <button class="btn-main" onclick="processObf()">تشفير وحماية السكربت 🛡️</button>
+        <button class="btn-main" onclick="processObf()">تشفير  السكربت 🛡️</button>
         <textarea id="resOut" readonly placeholder="الكود المشفّر النهائي سيظهر هنا..."></textarea>
         <button class="btn-copy" onclick="copyCode()">نسخ الكود المشفّر 📋</button>
     </div>
@@ -58,7 +56,7 @@
         local func_name = source:match("([%w_%.]+)%s*%(") or "print"
         local target = source:match("%((['\"])(.-)%1%)") or source:match("'(.-)'") or source:match('"(.-)"') or "N60_HUB"
         
-        local data = "--[[ N60 EVENT HORIZON v8.2 ULTIMATE ]]\n"
+        local data = "--[[ N60 EVENT HORIZON v8.3 FINAL ]]\n"
         data = data .. "local _D = {{ " .. (G ~ k1) .. ", '" .. enc(func_name, k2) .. "' }, { " .. (L ~ k1) .. ", '" .. enc(target, k2) .. "' }, { " .. (C ~ k1) .. " }}\n"
         data = data .. "local _K = {" .. k1 .. "," .. k2 .. "," .. k3 .. "}\n"
         data = data .. [[
@@ -84,7 +82,6 @@ local function _I(_instr, _keys)
         if _c == ]] .. G .. [[ then
             local _name = _u(_i[2], _k2)
             local _f = _E[_name]
-            -- دعم الوظائف المتداخلة مثل game.Players.LocalPlayer
             if not _f and _name:find("%.") then
                 local _parts = {}
                 for _part in _name:gmatch("[^%.]+") do table.insert(_parts, _part) end
@@ -105,8 +102,7 @@ local function _I(_instr, _keys)
             local _v = _u(table.remove(_S), _k3)
             local _f = table.remove(_S)
             if _f then 
-                local _ok, _err = pcall(function() _f(_v) end)
-                if not _ok then warn("N60 VM Error: " .. tostring(_err)) end
+                pcall(function() _f(_v) end)
             end
         end
         _p = _p + 1
@@ -121,14 +117,29 @@ _D = nil; _K = nil; _I = nil;
 
 <script>
     function processObf() {
-        const input = document.getElementById('srcIn').value;
-        if(!input) return alert("ضع سكربت أولاً!");
-        const L = fengari.L;
-        fengari.load(document.getElementById('luaLogic').innerText)();
-        fengari.lua.lua_getglobal(L, "run_shield");
-        fengari.lua.lua_pushstring(L, input);
-        fengari.lua.lua_pcall(L, 1, 1, 0);
-        document.getElementById('resOut').value = fengari.to_jsstring(fengari.lua.lua_tostring(L, -1));
+        try {
+            const input = document.getElementById('srcIn').value;
+            if(!input) return alert("ضع سكربت أولاً!");
+            
+            const L = fengari.L;
+            // إعادة تحميل كود اللوا لضمان عدم وجود أخطاء سابقة
+            fengari.load(document.getElementById('luaLogic').innerText)();
+            
+            fengari.lua.lua_getglobal(L, "run_shield");
+            fengari.lua.lua_pushstring(L, input);
+            
+            const status = fengari.lua.lua_pcall(L, 1, 1, 0);
+            if (status !== 0) {
+                const err = fengari.lua.lua_tostring(L, -1);
+                alert("خطأ في التشفير: " + fengari.to_jsstring(err));
+                return;
+            }
+            
+            const result = fengari.lua.lua_tostring(L, -1);
+            document.getElementById('resOut').value = fengari.to_jsstring(result);
+        } catch (e) {
+            alert("حدث خطأ تقني: " + e.message);
+        }
     }
 
     function copyCode() {
