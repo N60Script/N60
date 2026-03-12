@@ -1,116 +1,131 @@
 <!DOCTYPE html>
 <html lang="ar">
 <head>
-<meta charset="UTF-8">
-<title>N60 Hub | Nova VM v17.0 Professional</title>
-<script src="https://cdn.jsdelivr.net/npm/fengari-web@0.1.4/dist/fengari-web.min.js"></script>
-<style>
-    :root { --p: #00ff6a; --bg: #000; }
-    body { background: var(--bg); color: white; direction: rtl; font-family: 'Consolas', monospace; text-align: center; padding: 20px; margin: 0; }
-    .wrapper { max-width: 1000px; margin: auto; background: #050505; border: 1px solid var(--p); padding: 40px; border-radius: 20px; box-shadow: 0 0 60px rgba(0,255,106,0.1); }
-    textarea { width: 100%; height: 220px; background: #000; border: 1px solid #1a1a1a; color: var(--p); padding: 15px; border-radius: 12px; font-size: 11px; margin: 15px 0; outline: none; transition: 0.3s; }
-    textarea:focus { border-color: var(--p); box-shadow: 0 0 15px rgba(0,255,106,0.2); }
-    .btn-vm { width: 100%; padding: 22px; background: var(--p); color: #000; border: none; font-weight: 900; cursor: pointer; border-radius: 12px; font-size: 1.4rem; transition: 0.3s; text-transform: uppercase; letter-spacing: 2px; }
-    .btn-vm:hover { background: #fff; box-shadow: 0 0 40px #fff; transform: translateY(-3px); }
-    .footer { margin-top: 30px; font-size: 10px; color: #333; letter-spacing: 5px; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>N60 HUB | Ultimate Edition</title>
+    <script src="https://cdn.jsdelivr.net/npm/fengari-web@0.1.4/dist/fengari-web.min.js"></script>
+    <style>
+        :root { --p: #00ff6a; --bg: #050505; --card: #0f0f0f; }
+        * { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background: var(--bg); color: white; direction: rtl; margin: 0; padding: 0; }
+        
+        .nav { background: var(--card); padding: 15px; display: flex; justify-content: center; gap: 20px; border-bottom: 2px solid var(--p); position: sticky; top: 0; z-index: 100; }
+        .nav button { background: transparent; border: 1px solid var(--p); color: var(--p); padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .nav button:hover { background: var(--p); color: black; }
+
+        .container { padding: 20px; max-width: 1000px; margin: auto; }
+        .section { display: none; animation: fadeIn 0.5s; }
+        .section.active { display: block; }
+
+        .card { background: var(--card); border: 1px solid #222; border-radius: 15px; padding: 20px; margin-bottom: 20px; text-align: center; }
+        h1 { color: var(--p); text-shadow: 0 0 10px var(--p); }
+
+        textarea { width: 100%; height: 150px; background: #000; color: var(--p); border: 1px solid #333; padding: 15px; border-radius: 10px; font-family: monospace; margin: 10px 0; outline: none; }
+        .btn-main { width: 100%; padding: 15px; background: var(--p); color: black; border: none; font-weight: 900; border-radius: 10px; cursor: pointer; font-size: 1.1rem; }
+        
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 15px; margin-top: 15px; }
+        .download-btn { background: #1a1a1a; border: 1px solid var(--p); color: white; padding: 15px; border-radius: 10px; text-decoration: none; font-size: 14px; transition: 0.3s; }
+        .download-btn:hover { background: var(--p); color: black; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
 </head>
 <body>
 
-<div class="wrapper">
-    <h1 style="color:var(--p); margin-top:0;">N60 NOVA VM v17.0 🌌</h1>
-    <p style="opacity:0.6; font-size:12px;">Virtualization Engine | Control Flow Flattening | Anti-Tamper</p>
-    
-    <textarea id="inputCode" placeholder="-- ضع كود الـ Lua هنا للتحويل إلى Virtual Machine..."></textarea>
-    <button class="btn-vm" onclick="buildVM()">بناء الآلة الافتراضية 🛠️</button>
-    <textarea id="outputCode" readonly placeholder="Bytecode الافتراضي سيظهر هنا..."></textarea>
-    <button class="btn-vm" style="background:#111; color:#fff; border:1px solid #333; margin-top:10px;" onclick="copy()">نسخ السكربت المشفّر 📋</button>
-    
-    <div class="footer">-- SECURE VIRTUALIZATION PROTOCOL 2026 --</div>
+<div class="nav">
+    <button onclick="showSection('obf')">المُشفر 🛡️</button>
+    <button onclick="showSection('android')">أندرويد 🤖</button>
+    <button onclick="showSection('ios')">iOS 🍎</button>
 </div>
 
-<script type="application/lua" id="vmLogic">
-function nova_vm_protect(source)
-    local seed = math.random(1000, 9999)
+<div class="container">
     
-    -- محاكاة تحويل الكود إلى Opcodes (Virtualization)
-    local function serialize(s)
-        local t = {}
-        for i=1, #s do
-            -- تشفير معقد باستخدام موقع الحرف والـ Seed وعمليات حسابية (Anti-Deobfuscation)
-            local op = (string.byte(s, i) + seed + (i * 7)) % 256
-            table.insert(t, string.format("0x%02X", op))
-        end
-        return table.concat(t, ", ")
-    end
+    <div id="obf" class="section active">
+        <div class="card">
+            <h1>N60 NOVA VM v18.0</h1>
+            <p>تشفير VM مستقر لجميع المشغلات (Stable)</p>
+            <textarea id="srcIn" placeholder="ضع كود الـ Lua هنا..."></textarea>
+            <button class="btn-main" onclick="processVM()">تشفير وحماية 🚀</button>
+            <textarea id="resOut" readonly placeholder="الكود المشفّر النهائي..."></textarea>
+            <button class="btn-main" style="background:#222; color:#fff;" onclick="copyCode()">نسخ الكود 📋</button>
+        </div>
+    </div>
 
-    local bytecode = serialize(source)
-    
-    local out = "--[[ N60 NOVA VM v17.0 ]]\n"
-    out = out .. "local _OPS = {" .. bytecode .. "}\n"
-    out = out .. "local _S = " .. seed .. "\n"
-    out = out .. [[
-local _VM = function(ops, s)
-    -- Anti-Debug: التحقق من البيئة
-    if (debug and (debug.getupvalue or debug.setupvalue)) then return end
-    
-    local _P = 1
-    local _R = ""
-    local _ST = 0 -- Control Flow State
-    
-    -- حلقة التنفيذ الضخمة (Control Flow Flattening)
-    while _ST ~= -1 do
-        if _ST == 0 then
-            for i=1, #ops do
-                local char = (ops[i] - s - (i * 7)) % 256
-                _R = _R .. string.char(char)
-            end
-            _ST = 1
-        elseif _ST == 1 then
-            local f, e = loadstring(_R)
-            if f then 
-                _R = nil
-                local ok, res = pcall(f)
-                if not ok then warn(res) end
-            end
-            _ST = -1
+    <div id="android" class="section">
+        <div class="card">
+            <h1>تحميل هاكات الأندرويد 🤖</h1>
+            <p>روابط مباشرة ومحدثة لجميع المشغلات</p>
+            <div class="grid">
+                <a href="https://delta-executor.com/download" class="download-btn">تحميل Delta APK</a>
+                <a href="https://spdmteam.com/download" class="download-btn">تحميل Arceus X</a>
+                <a href="https://fluxteam.net/android" class="download-btn">تحميل Fluxus</a>
+                <a href="https://codex.lol/download" class="download-btn">تحميل Codex</a>
+            </div>
+        </div>
+    </div>
+
+    <div id="ios" class="section">
+        <div class="card">
+            <h1>تحميل هاكات الـ iOS 🍎</h1>
+            <p>أفضل المشغلات للايفون والايباد</p>
+            <div class="grid">
+                <a href="https://skibx.org" class="download-btn">تحميل Skibx</a>
+                <a href="https://ronix.com" class="download-btn">تحميل Ronix</a>
+                <a href="https://delta-executor.com/ios" class="download-btn">تحميل Delta iOS</a>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script type="application/lua" id="luaEngine">
+function protect(source)
+    local seed = math.random(50, 150)
+    local function enc(s, k)
+        local r = ""
+        for i=1, #s do
+            local byte = string.byte(s, i)
+            r = r .. (byte + k + i) .. ","
         end
+        return r
     end
+    local bytecode = enc(source, seed)
+    return "--[[ N60 VM STABLE ]]\nlocal _O={" .. bytecode .. "}\nlocal _S=" .. seed .. [[
+local function _L(d, s)
+    local r = ""
+    for i=1, #d do
+        r = r .. string.char(d[i] - s - i)
+    end
+    local f = loadstring(r)
+    if f then pcall(f) end
 end
-_VM(_OPS, _S)
-]]
-    return out
+_L(_O, _S)]]
 end
 </script>
 
 <script>
-    function buildVM() {
-        try {
-            const input = document.getElementById('inputCode').value;
-            if(!input) return alert("ضع كوداً أولاً!");
-            
-            const L = fengari.L;
-            fengari.load(document.getElementById('vmLogic').innerText)();
-            fengari.lua.lua_getglobal(L, "nova_vm_protect");
-            fengari.lua.lua_pushstring(L, input);
-            
-            if (fengari.lua.lua_pcall(L, 1, 1, 0) !== 0) {
-                alert("Error: " + fengari.lua.lua_tostring(L, -1));
-                return;
-            }
-            
-            document.getElementById('outputCode').value = fengari.to_jsstring(fengari.lua.lua_tostring(L, -1));
-        } catch(e) {
-            alert("حدث خطأ تقني: " + e.message);
-        }
+    function showSection(id) {
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
     }
 
-    function copy() {
-        const out = document.getElementById('outputCode');
-        if(!out.value) return;
+    function processVM() {
+        const input = document.getElementById('srcIn').value;
+        if(!input) return alert("ضع كوداً أولاً!");
+        const L = fengari.L;
+        fengari.load(document.getElementById('luaEngine').innerText)();
+        fengari.lua.lua_getglobal(L, "protect");
+        fengari.lua.lua_pushstring(L, input);
+        fengari.lua.lua_pcall(L, 1, 1, 0);
+        document.getElementById('resOut').value = fengari.to_jsstring(fengari.lua.lua_tostring(L, -1));
+    }
+
+    function copyCode() {
+        const out = document.getElementById('resOut');
         out.select();
         document.execCommand('copy');
-        alert("تم نسخ الـ VM بنجاح! جاهز للتشغيل. ✅");
+        alert("تم نسخ الكود بنجاح! ✅");
     }
 </script>
 </body>
