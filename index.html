@@ -1,0 +1,155 @@
+local LMG2L = {}
+local CoreGui = game:GetService("CoreGui")
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
+local LocalPlayer = Players.LocalPlayer
+local Mouse = LocalPlayer:GetMouse()
+
+local OWNER_NAME = "Eoodeamk"
+local SIGN_KEY = "awdasdasczxvxbcjthgdfgtyyjawefuyidghfyuiygjtyuthrthgfhrawdawdasdawdawdawdwadasczxccvcbfrgdawdwadasdweyytiuuilkhjgbvlgfxweefdsgdfgswefdsvsefwdvdsgse"
+
+-- تنظيف النسخ السابقة
+if CoreGui:FindFirstChild("N60_CheatChat_Final_V2") then CoreGui["N60_CheatChat_Final_V2"]:Destroy() end
+if CoreGui:FindFirstChild("N60_Discord_Promo") then CoreGui["N60_Discord_Promo"]:Destroy() end
+
+-- [ نظام نبض الديسكورد ]
+local function CreateDiscordPromo()
+    if CoreGui:FindFirstChild("N60_Discord_Promo") then return end
+    local promoGui = Instance.new("ScreenGui", CoreGui)
+    promoGui.Name = "N60_Discord_Promo"
+    local label = Instance.new("TextLabel", promoGui)
+    label.Text = "https://discord.gg/UBvKV2ejQ سيرفري ديسكورد"
+    label.Size = UDim2.new(0, 200, 0, 50); label.Position = UDim2.new(0, 312, 0, 5)
+    label.BackgroundTransparency = 1; label.TextColor3 = Color3.fromRGB(255, 0, 0); label.Font = Enum.Font.SourceSansBold
+    task.spawn(function()
+        while promoGui.Parent do
+            for i = 15, 22, 0.5 do label.TextSize = i task.wait(0.05) end
+            for i = 22, 15, -0.5 do label.TextSize = i task.wait(0.05) end
+        end
+    end)
+end
+task.spawn(function() while true do CreateDiscordPromo() task.wait(1) end end)
+
+-- [ تعريف الريموتات ]
+local PublishAd = ReplicatedStorage:WaitForChild("PublishAd", 5)
+local JoinPlayer = ReplicatedStorage:WaitForChild("JoinPlayer", 5)
+local NotifyServer = ReplicatedStorage:WaitForChild("NotifyServer", 5)
+
+-- [ متغيرات التحكم ]
+local isToggled, isSingleMode, isLocked = false, false, false
+local selectedPlayer, lockTask = nil, nil
+
+-- === الواجهة الرئيسية ===
+LMG2L["Main"] = Instance.new("ScreenGui", CoreGui); LMG2L["Main"].Name = "N60_CheatChat_Final_V2"
+LMG2L["Base"] = Instance.new("Frame", LMG2L["Main"])
+LMG2L["Base"].Size = UDim2.new(0, 190, 0, 185); LMG2L["Base"].Position = UDim2.new(0.85, 0, 0.5, -92)
+LMG2L["Base"].BackgroundColor3 = Color3.fromRGB(67, 3, 255); LMG2L["Base"].BackgroundTransparency = 0.4
+Instance.new("UICorner", LMG2L["Base"]).CornerRadius = UDim.new(0, 12)
+Instance.new("UIDragDetector", LMG2L["Base"])
+
+LMG2L["Inner"] = Instance.new("Frame", LMG2L["Base"])
+LMG2L["Inner"].Size = UDim2.new(0, 182, 0, 177); LMG2L["Inner"].Position = UDim2.new(0, 4, 0, 4)
+LMG2L["Inner"].BackgroundColor3 = Color3.fromRGB(0, 0, 0); LMG2L["Inner"].BackgroundTransparency = 0.3
+Instance.new("UICorner", LMG2L["Inner"]).CornerRadius = UDim.new(0, 10)
+
+local title = Instance.new("TextLabel", LMG2L["Inner"])
+title.Size = UDim2.new(1, 0, 0, 25); title.Text = "N60 Hub / Sign65"; title.TextColor3 = Color3.new(1,1,1); title.BackgroundTransparency = 1; title.Font = Enum.Font.SourceSansBold
+
+local box = Instance.new("TextBox", LMG2L["Inner"])
+box.Size = UDim2.new(0, 174, 0, 30); box.Position = UDim2.new(0, 4, 0, 30); box.PlaceholderText = "اكتب هنا.."; box.BackgroundColor3 = Color3.fromRGB(80, 80, 80); box.TextColor3 = Color3.new(1,1,1); Instance.new("UICorner", box)
+
+local sendBtn = Instance.new("TextButton", LMG2L["Inner"])
+sendBtn.Size = UDim2.new(0, 174, 0, 45); sendBtn.Position = UDim2.new(0, 4, 0, 65); sendBtn.Text = "إرسال"; sendBtn.BackgroundColor3 = Color3.fromRGB(255, 30, 30); sendBtn.TextColor3 = Color3.new(1,1,1); sendBtn.Font = Enum.Font.SourceSansBold; sendBtn.TextSize = 22; Instance.new("UICorner", sendBtn)
+
+local lockBtn = Instance.new("TextButton", LMG2L["Inner"])
+lockBtn.Size = UDim2.new(0, 85, 0, 25); lockBtn.Position = UDim2.new(0, 4, 0, 115); lockBtn.Text = "Lock"; lockBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 50); lockBtn.TextColor3 = Color3.new(1,1,1); Instance.new("UICorner", lockBtn)
+
+local singleBtn = Instance.new("TextButton", LMG2L["Inner"])
+singleBtn.Size = UDim2.new(0, 85, 0, 25); singleBtn.Position = UDim2.new(0, 93, 0, 115); singleBtn.Text = "تحديد"; singleBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 50); singleBtn.TextColor3 = Color3.new(1,1,1); Instance.new("UICorner", singleBtn)
+
+local pullBtn = Instance.new("TextButton", LMG2L["Inner"])
+pullBtn.Size = UDim2.new(0, 174, 0, 30); pullBtn.Position = UDim2.new(0, 4, 0, 145); pullBtn.Text = "OFF | سحب نشط"; pullBtn.BackgroundColor3 = Color3.fromRGB(150, 0, 0); pullBtn.TextColor3 = Color3.new(1,1,1); Instance.new("UICorner", pullBtn)
+
+-- [ وظيفة الإرسال الثلاثي بفاصل 0.3 ثانية ]
+local function writeToTools(target, text)
+    if not target or target.Name == OWNER_NAME then return end
+    
+    -- إضافة مسافة وحرف n في نهاية الكلمة
+    local msg = text .. " n"
+    
+    local items = {}
+    for _, v in pairs(target.Backpack:GetChildren()) do table.insert(items, v) end
+    if target.Character then for _, v in pairs(target.Character:GetChildren()) do table.insert(items, v) end end
+    
+    for _, tool in pairs(items) do
+        if tool:IsA("Tool") then
+            local tName = tool.Name:lower()
+            if tName == "sign65" or tName == "sign" or tName == "group" then
+                local rf = tool:FindFirstChild("RemoteFunction")
+                if rf then
+                    task.spawn(function()
+                        for i = 1, 3 do -- تكرار 3 مرات
+                            pcall(function() rf:InvokeServer(msg, SIGN_KEY) end)
+                            if i < 3 then task.wait(0.3) end -- فاصل 0.3 ثانية بين الإرسالات
+                        end
+                    end)
+                end
+            end
+        end
+    end
+end
+
+-- [ وظيفة السحب ]
+local function executePull(target)
+    if not target or target == LocalPlayer or target.Name == OWNER_NAME then return end
+    pcall(function()
+        if PublishAd then PublishAd:FireServer(box.Text ~= "" and box.Text or "N60 Hub") end
+        if JoinPlayer then JoinPlayer:FireServer(game.JobId, game.PlaceId, LocalPlayer.UserId) end
+        if NotifyServer then
+            NotifyServer:FireServer(target.UserId, "entered")
+            NotifyServer:FireServer(target.UserId, "teleported")
+        end
+    end)
+end
+
+-- [ الأحداث ]
+sendBtn.MouseButton1Click:Connect(function()
+    if isSingleMode and selectedPlayer then writeToTools(selectedPlayer, box.Text)
+    else for _, p in pairs(Players:GetPlayers()) do if p ~= LocalPlayer then writeToTools(p, box.Text) end end end
+end)
+
+pullBtn.MouseButton1Click:Connect(function()
+    isToggled = not isToggled; pullBtn.Text = isToggled and "ON | سحب نشط" or "OFF | سحب نشط"
+    pullBtn.BackgroundColor3 = isToggled and Color3.fromRGB(0, 150, 0) or Color3.fromRGB(150, 0, 0)
+    if isToggled then
+        task.spawn(function()
+            while isToggled do
+                if isSingleMode and selectedPlayer then executePull(selectedPlayer)
+                else for _, p in pairs(Players:GetPlayers()) do if p ~= LocalPlayer then executePull(p) end end end
+                task.wait(3.5)
+            end
+        end)
+    end
+end)
+
+singleBtn.MouseButton1Click:Connect(function()
+    isSingleMode = not isSingleMode; singleBtn.BackgroundColor3 = isSingleMode and Color3.fromRGB(0, 170, 0) or Color3.fromRGB(50, 50, 50)
+end)
+
+lockBtn.MouseButton1Click:Connect(function()
+    if not selectedPlayer then return end
+    isLocked = not isLocked; lockBtn.BackgroundColor3 = isLocked and Color3.fromRGB(255, 170, 0) or Color3.fromRGB(50, 50, 50)
+    if isLocked then lockTask = task.spawn(function() while isLocked do executePull(selectedPlayer) task.wait(2) end end)
+    elseif lockTask then task.cancel(lockTask) end
+end)
+
+Mouse.Button1Down:Connect(function()
+    if isSingleMode then
+        local t = Mouse.Target
+        if t and t.Parent and t.Parent:FindFirstChild("Humanoid") then
+            local p = Players:GetPlayerFromCharacter(t.Parent)
+            if p and p.Name ~= OWNER_NAME then selectedPlayer = p; singleBtn.Text = p.DisplayName end
+        end
+    end
+end)
