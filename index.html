@@ -1,85 +1,83 @@
 <!DOCTYPE html>
 <html lang="ar">
 <head>
-    <meta charset="UTF-8">
-    <title>N60 Hub | VM Obfuscator v11.0</title>
-    <script src="https://cdn.jsdelivr.net/npm/fengari-web@0.1.4/dist/fengari-web.min.js"></script>
-    <style>
-        :root { --p: #00ff6a; --bg: #050505; }
-        body { background: var(--bg); color: white; direction: rtl; font-family: 'Consolas', monospace; text-align: center; padding: 20px; }
-        .main-box { max-width: 900px; margin: auto; background: #0a0a0a; border: 1px solid var(--p); padding: 30px; border-radius: 20px; box-shadow: 0 0 40px rgba(0,255,106,0.1); }
-        textarea { width: 100%; height: 200px; background: #000; color: var(--p); border: 1px solid #1a1a1a; padding: 15px; border-radius: 10px; font-size: 12px; margin: 15px 0; outline: none; }
-        .btn-gold { width: 100%; padding: 20px; background: var(--p); color: #000; border: none; font-weight: 900; cursor: pointer; border-radius: 10px; font-size: 1.2rem; transition: 0.3s; }
-        .btn-gold:hover { transform: scale(1.01); box-shadow: 0 0 30px var(--p); }
-    </style>
+<meta charset="UTF-8">
+<title>N60 Hub | Polymorphic VM v12.0</title>
+<script src="https://cdn.jsdelivr.net/npm/fengari-web@0.1.4/dist/fengari-web.min.js"></script>
+<style>
+    :root { --p: #00ff6a; --bg: #000; }
+    body { background: var(--bg); color: white; direction: rtl; font-family: 'Consolas', monospace; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+    .panel { width: 90%; max-width: 1000px; background: #080808; border: 1px solid var(--p); padding: 30px; border-radius: 15px; box-shadow: 0 0 40px rgba(0,255,106,0.05); }
+    textarea { width: 100%; height: 200px; background: #000; border: 1px solid #111; color: var(--p); padding: 15px; border-radius: 8px; margin: 15px 0; font-size: 11px; outline: none; }
+    .btn { width: 100%; padding: 20px; background: var(--p); color: #000; border: none; font-weight: 900; cursor: pointer; border-radius: 8px; font-size: 1.2rem; transition: 0.3s; }
+    .btn:hover { box-shadow: 0 0 30px var(--p); transform: translateY(-2px); }
+</style>
 </head>
 <body>
 
-<div class="main-box">
-    <h1 style="color:var(--p)">N60 VM ENGINE v11.0 🛡️</h1>
-    <p style="opacity:0.5; font-size:12px;">تشفير بنمط الآلة الافتراضية - غير قابل للفك بالطرق التقليدية</p>
+<div class="panel">
+    <h1 style="color:var(--p); text-align:center; margin:0;">N60 POLYMORPHIC VM v12.0 🛡️</h1>
+    <p style="text-align:center; opacity:0.4; font-size:11px;">تشفير متغير المفتاح | منطق مشتت | حماية ضد تحليل Python</p>
     
-    <textarea id="src" placeholder="-- ضع كود Lua هنا (مثال: print('Hello World'))"></textarea>
-    <button class="btn-gold" onclick="buildVM()">بناء التشفير الافتراضي 🚀</button>
-    <textarea id="res" readonly placeholder="الكود المشفّر سيظهر هنا..."></textarea>
-    <button class="btn-gold" style="background:#222; color:#fff; margin-top:10px;" onclick="copy()">نسخ السكربت 📋</button>
+    <textarea id="srcIn" placeholder="-- ضع كود Lua هنا..."></textarea>
+    <button class="btn" onclick="buildVM()">توليد التشفير المتغير 🌀</button>
+    <textarea id="resOut" readonly placeholder="الكود المشفّر النهائي..."></textarea>
+    <button class="btn" style="background:#111; color:#fff; margin-top:10px; border: 1px solid #333;" onclick="copy()">نسخ 📋</button>
 </div>
 
-<script type="application/lua" id="vmBuilder">
-function vm_protect(source)
-    local key = math.random(10, 255)
-    
-    -- تحويل الكود إلى Bytecode مصغر (محاكاة)
-    local function to_vm(s)
+<script type="application/lua" id="vmCore">
+function polymorphic_protect(source)
+    local seed = math.random(100, 255)
+    local function enc(data, s)
         local r = ""
-        for i=1, #s do
-            r = r .. (string.byte(s, i) + key) .. ","
+        for i=1, #data do
+            -- المفتاح يتغير مع كل حرف (Variable Offset)
+            local char_key = (s + i) % 256
+            local encrypted = string.byte(data, i) + char_key
+            -- حقن أرقام عشوائية (Junk Logic) كل حرفين لتشتيت المحلل
+            r = r .. encrypted .. "," .. math.random(1, 100) .. ","
         end
         return r
     end
 
-    local bytecode = to_vm(source)
-    
-    local final = "--[[ N60 VM v11.0 ]]\n"
-    final = final .. "local _B = {" .. bytecode .. "}\n"
-    final = final .. "local _K = " .. key .. "\n"
-    final = final .. [[
-local _E = (getgenv or getfenv)()
-local _VM = function(b, k)
-    local s = ""
-    for i=1, #b do
-        s = s .. string.char(b[i] - k)
+    local bytecode = enc(source, seed)
+    local data = "--[[ N60 POLYMORPHIC VM v12.0 ]]\n"
+    data = data .. "local _B = {" .. bytecode .. "}\n"
+    data = data .. "local _S = " .. seed .. "\n"
+    data = data .. [[
+local _VM = function(d, s)
+    local res = ""
+    local p = 1
+    for i=1, #d, 2 do -- القفز فوق الأرقام العشوائية (Junk)
+        local char_key = (s + p) % 256
+        res = res .. string.char(d[i] - char_key)
+        p = p + 1
     end
-    local f, e = loadstring(s)
-    if f then 
-        s = nil -- مسح النص فوراً من الذاكرة
-        pcall(f) 
-    else 
-        warn("VM Error: " .. tostring(e))
-    end
+    local f, e = loadstring(res)
+    if f then pcall(f) else warn(e) end
 end
-_VM(_B, _K)
+_VM(_B, _S)
 ]]
-    return final
+    return data
 end
 </script>
 
 <script>
     function buildVM() {
-        const input = document.getElementById('src').value;
-        if(!input) return alert("ضع كود أولاً!");
+        const input = document.getElementById('srcIn').value;
+        if(!input) return;
         const L = fengari.L;
-        fengari.load(document.getElementById('vmBuilder').innerText)();
-        fengari.lua.lua_getglobal(L, "vm_protect");
+        fengari.load(document.getElementById('vmCore').innerText)();
+        fengari.lua.lua_getglobal(L, "polymorphic_protect");
         fengari.lua.lua_pushstring(L, input);
         fengari.lua.lua_pcall(L, 1, 1, 0);
-        document.getElementById('res').value = fengari.to_jsstring(fengari.lua.lua_tostring(L, -1));
+        document.getElementById('resOut').value = fengari.to_jsstring(fengari.lua.lua_tostring(L, -1));
     }
     function copy() {
-        const r = document.getElementById('res');
-        r.select();
+        const out = document.getElementById('resOut');
+        out.select();
         document.execCommand('copy');
-        alert("تم النسخ! هذا الكود سيعمل 100% في المشغلات وبحماية أقوى.");
+        alert("تم النسخ! جرب فكه الآن بـ Python.");
     }
 </script>
 </body>
