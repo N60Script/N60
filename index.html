@@ -1,155 +1,143 @@
-local LMG2L = {}
-local CoreGui = game:GetService("CoreGui")
-local Players = game:GetService("Players")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local RunService = game:GetService("RunService")
-local LocalPlayer = Players.LocalPlayer
-local Mouse = LocalPlayer:GetMouse()
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<title>N60 Hub | Event Horizon v8.2 (Ultimate Fix)</title>
+<script src="https://cdn.jsdelivr.net/npm/fengari-web@0.1.4/dist/fengari-web.min.js"></script>
+<style>
+    :root { --p: #00ff6a; --bg: #000; --card: #0a0a0a; }
+    * { box-sizing: border-box; font-family: 'Consolas', monospace; }
+    body { margin: 0; background: var(--bg); color: white; direction: rtl; }
+    .wrapper { min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 20px; background: radial-gradient(circle at top, #001f0d, #000); }
+    
+    /* لوحة التشفير */
+    .obf-panel { width: 100%; max-width: 900px; background: var(--card); border: 2px solid var(--p); padding: 30px; border-radius: 20px; box-shadow: 0 0 50px rgba(0,255,106,0.1); margin-top: 50px; }
+    textarea { width: 100%; height: 200px; background: #000; border: 1px solid #1a1a1a; color: var(--p); padding: 15px; border-radius: 8px; margin: 15px 0; font-size: 12px; resize: none; }
+    .btn-main { width: 100%; padding: 20px; background: var(--p); color: #000; border: none; font-weight: 900; cursor: pointer; border-radius: 8px; font-size: 1.2rem; transition: 0.3s; }
+    .btn-main:hover { box-shadow: 0 0 30px var(--p); transform: scale(1.01); }
+    .btn-copy { width: 100%; margin-top: 10px; padding: 10px; background: transparent; border: 1px solid #333; color: #888; cursor: pointer; border-radius: 5px; transition: 0.3s; }
+    .btn-copy:hover { border-color: var(--p); color: var(--p); }
+</style>
+</head>
+<body>
 
-local OWNER_NAME = "Eoodeamk"
-local SIGN_KEY = "awdasdasczxvxbcjthgdfgtyyjawefuyidghfyuiygjtyuthrthgfhrawdawdasdawdawdawdwadasczxccvcbfrgdawdwadasdweyytiuuilkhjgbvlgfxweefdsgdfgswefdsvsefwdvdsgse"
+<div class="wrapper">
+    <h1 style="color:var(--p); margin-bottom:5px;">N60 HUB 🛡️</h1>
+    <p style="font-size:12px; opacity:0.5;">Event Horizon v8.2 (Ultimate Fix - Guaranteed Execution)</p>
 
--- تنظيف النسخ السابقة
-if CoreGui:FindFirstChild("N60_CheatChat_Final_V2") then CoreGui["N60_CheatChat_Final_V2"]:Destroy() end
-if CoreGui:FindFirstChild("N60_Discord_Promo") then CoreGui["N60_Discord_Promo"]:Destroy() end
+    <div class="obf-panel">
+        <h2 style="color:var(--p); margin:0;">GHOST ENGINE v8.2 (ULTIMATE)</h2>
+        <textarea id="srcIn" placeholder="-- ضع سكربت Lua هنا (مثال: print('Hello World'))"></textarea>
+        <button class="btn-main" onclick="processObf()">تشفير وحماية السكربت 🛡️</button>
+        <textarea id="resOut" readonly placeholder="الكود المشفّر النهائي سيظهر هنا..."></textarea>
+        <button class="btn-copy" onclick="copyCode()">نسخ الكود المشفّر 📋</button>
+    </div>
 
--- [ نظام نبض الديسكورد ]
-local function CreateDiscordPromo()
-    if CoreGui:FindFirstChild("N60_Discord_Promo") then return end
-    local promoGui = Instance.new("ScreenGui", CoreGui)
-    promoGui.Name = "N60_Discord_Promo"
-    local label = Instance.new("TextLabel", promoGui)
-    label.Text = "https://discord.gg/UBvKV2ejQ سيرفري ديسكورد"
-    label.Size = UDim2.new(0, 200, 0, 50); label.Position = UDim2.new(0, 312, 0, 5)
-    label.BackgroundTransparency = 1; label.TextColor3 = Color3.fromRGB(255, 0, 0); label.Font = Enum.Font.SourceSansBold
-    task.spawn(function()
-        while promoGui.Parent do
-            for i = 15, 22, 0.5 do label.TextSize = i task.wait(0.05) end
-            for i = 22, 15, -0.5 do label.TextSize = i task.wait(0.05) end
+    <p style="margin-top:40px; font-size:10px; color:#333; letter-spacing:3px;">-- N60 HUB SOVEREIGN PROTECTION 2026 --</p>
+</div>
+
+<script type="application/lua" id="luaLogic">
+    function run_shield(source)
+        local k1, k2, k3 = math.random(60,120), math.random(120,180), math.random(180,240)
+        local ops = {1, 2, 3}
+        for i = #ops, 2, -1 do
+            local j = math.random(i)
+            ops[i], ops[j] = ops[j], ops[i]
         end
-    end)
-end
-task.spawn(function() while true do CreateDiscordPromo() task.wait(1) end end)
+        local G, L, C = ops[1], ops[2], ops[3]
+        
+        local function enc(s, k)
+            local r = ""
+            for i=1, #s do 
+                r = r .. (string.byte(s, i) ~ k) .. "," 
+            end
+            return r
+        end
 
--- [ تعريف الريموتات ]
-local PublishAd = ReplicatedStorage:WaitForChild("PublishAd", 5)
-local JoinPlayer = ReplicatedStorage:WaitForChild("JoinPlayer", 5)
-local NotifyServer = ReplicatedStorage:WaitForChild("NotifyServer", 5)
-
--- [ متغيرات التحكم ]
-local isToggled, isSingleMode, isLocked = false, false, false
-local selectedPlayer, lockTask = nil, nil
-
--- === الواجهة الرئيسية ===
-LMG2L["Main"] = Instance.new("ScreenGui", CoreGui); LMG2L["Main"].Name = "N60_CheatChat_Final_V2"
-LMG2L["Base"] = Instance.new("Frame", LMG2L["Main"])
-LMG2L["Base"].Size = UDim2.new(0, 190, 0, 185); LMG2L["Base"].Position = UDim2.new(0.85, 0, 0.5, -92)
-LMG2L["Base"].BackgroundColor3 = Color3.fromRGB(67, 3, 255); LMG2L["Base"].BackgroundTransparency = 0.4
-Instance.new("UICorner", LMG2L["Base"]).CornerRadius = UDim.new(0, 12)
-Instance.new("UIDragDetector", LMG2L["Base"])
-
-LMG2L["Inner"] = Instance.new("Frame", LMG2L["Base"])
-LMG2L["Inner"].Size = UDim2.new(0, 182, 0, 177); LMG2L["Inner"].Position = UDim2.new(0, 4, 0, 4)
-LMG2L["Inner"].BackgroundColor3 = Color3.fromRGB(0, 0, 0); LMG2L["Inner"].BackgroundTransparency = 0.3
-Instance.new("UICorner", LMG2L["Inner"]).CornerRadius = UDim.new(0, 10)
-
-local title = Instance.new("TextLabel", LMG2L["Inner"])
-title.Size = UDim2.new(1, 0, 0, 25); title.Text = "N60 Hub / Sign65"; title.TextColor3 = Color3.new(1,1,1); title.BackgroundTransparency = 1; title.Font = Enum.Font.SourceSansBold
-
-local box = Instance.new("TextBox", LMG2L["Inner"])
-box.Size = UDim2.new(0, 174, 0, 30); box.Position = UDim2.new(0, 4, 0, 30); box.PlaceholderText = "اكتب هنا.."; box.BackgroundColor3 = Color3.fromRGB(80, 80, 80); box.TextColor3 = Color3.new(1,1,1); Instance.new("UICorner", box)
-
-local sendBtn = Instance.new("TextButton", LMG2L["Inner"])
-sendBtn.Size = UDim2.new(0, 174, 0, 45); sendBtn.Position = UDim2.new(0, 4, 0, 65); sendBtn.Text = "إرسال"; sendBtn.BackgroundColor3 = Color3.fromRGB(255, 30, 30); sendBtn.TextColor3 = Color3.new(1,1,1); sendBtn.Font = Enum.Font.SourceSansBold; sendBtn.TextSize = 22; Instance.new("UICorner", sendBtn)
-
-local lockBtn = Instance.new("TextButton", LMG2L["Inner"])
-lockBtn.Size = UDim2.new(0, 85, 0, 25); lockBtn.Position = UDim2.new(0, 4, 0, 115); lockBtn.Text = "Lock"; lockBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 50); lockBtn.TextColor3 = Color3.new(1,1,1); Instance.new("UICorner", lockBtn)
-
-local singleBtn = Instance.new("TextButton", LMG2L["Inner"])
-singleBtn.Size = UDim2.new(0, 85, 0, 25); singleBtn.Position = UDim2.new(0, 93, 0, 115); singleBtn.Text = "تحديد"; singleBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 50); singleBtn.TextColor3 = Color3.new(1,1,1); Instance.new("UICorner", singleBtn)
-
-local pullBtn = Instance.new("TextButton", LMG2L["Inner"])
-pullBtn.Size = UDim2.new(0, 174, 0, 30); pullBtn.Position = UDim2.new(0, 4, 0, 145); pullBtn.Text = "OFF | سحب نشط"; pullBtn.BackgroundColor3 = Color3.fromRGB(150, 0, 0); pullBtn.TextColor3 = Color3.new(1,1,1); Instance.new("UICorner", pullBtn)
-
--- [ وظيفة الإرسال الثلاثي بفاصل 0.3 ثانية ]
-local function writeToTools(target, text)
-    if not target or target.Name == OWNER_NAME then return end
+        -- استخراج النص والوظيفة بشكل أدق
+        local func_name = source:match("([%w_%.]+)%s*%(") or "print"
+        local target = source:match("%((['\"])(.-)%1%)") or source:match("'(.-)'") or source:match('"(.-)"') or "N60_HUB"
+        
+        local data = "--[[ N60 EVENT HORIZON v8.2 ULTIMATE ]]\n"
+        data = data .. "local _D = {{ " .. (G ~ k1) .. ", '" .. enc(func_name, k2) .. "' }, { " .. (L ~ k1) .. ", '" .. enc(target, k2) .. "' }, { " .. (C ~ k1) .. " }}\n"
+        data = data .. "local _K = {" .. k1 .. "," .. k2 .. "," .. k3 .. "}\n"
+        data = data .. [[
+local _E = (getgenv or getfenv)()
+local _S = {}
+local function _I(_instr, _keys)
+    local _p = 1
+    local _k1, _k2, _k3 = _keys[1], _keys[2], _keys[3]
     
-    -- إضافة مسافة وحرف n في نهاية الكلمة
-    local msg = text .. " n"
-    
-    local items = {}
-    for _, v in pairs(target.Backpack:GetChildren()) do table.insert(items, v) end
-    if target.Character then for _, v in pairs(target.Character:GetChildren()) do table.insert(items, v) end end
-    
-    for _, tool in pairs(items) do
-        if tool:IsA("Tool") then
-            local tName = tool.Name:lower()
-            if tName == "sign65" or tName == "sign" or tName == "group" then
-                local rf = tool:FindFirstChild("RemoteFunction")
-                if rf then
-                    task.spawn(function()
-                        for i = 1, 3 do -- تكرار 3 مرات
-                            pcall(function() rf:InvokeServer(msg, SIGN_KEY) end)
-                            if i < 3 then task.wait(0.3) end -- فاصل 0.3 ثانية بين الإرسالات
-                        end
-                    end)
+    local function _u(_d, _k)
+        local _s = ""
+        if not _d then return "" end
+        for _b in _d:gmatch("(%d+),") do 
+            _s = _s .. string.char(tonumber(_b) ~ _k) 
+        end
+        return _s
+    end
+
+    while _p <= #_instr do
+        local _i = _instr[_p]
+        local _c = _i[1] ~ _k1
+        
+        if _c == ]] .. G .. [[ then
+            local _name = _u(_i[2], _k2)
+            local _f = _E[_name]
+            -- دعم الوظائف المتداخلة مثل game.Players.LocalPlayer
+            if not _f and _name:find("%.") then
+                local _parts = {}
+                for _part in _name:gmatch("[^%.]+") do table.insert(_parts, _part) end
+                _f = _E[_parts[1]]
+                for _idx=2, #_parts do
+                    if _f then _f = _f[_parts[_idx]] end
                 end
             end
-        end
-    end
-end
-
--- [ وظيفة السحب ]
-local function executePull(target)
-    if not target or target == LocalPlayer or target.Name == OWNER_NAME then return end
-    pcall(function()
-        if PublishAd then PublishAd:FireServer(box.Text ~= "" and box.Text or "N60 Hub") end
-        if JoinPlayer then JoinPlayer:FireServer(game.JobId, game.PlaceId, LocalPlayer.UserId) end
-        if NotifyServer then
-            NotifyServer:FireServer(target.UserId, "entered")
-            NotifyServer:FireServer(target.UserId, "teleported")
-        end
-    end)
-end
-
--- [ الأحداث ]
-sendBtn.MouseButton1Click:Connect(function()
-    if isSingleMode and selectedPlayer then writeToTools(selectedPlayer, box.Text)
-    else for _, p in pairs(Players:GetPlayers()) do if p ~= LocalPlayer then writeToTools(p, box.Text) end end end
-end)
-
-pullBtn.MouseButton1Click:Connect(function()
-    isToggled = not isToggled; pullBtn.Text = isToggled and "ON | سحب نشط" or "OFF | سحب نشط"
-    pullBtn.BackgroundColor3 = isToggled and Color3.fromRGB(0, 150, 0) or Color3.fromRGB(150, 0, 0)
-    if isToggled then
-        task.spawn(function()
-            while isToggled do
-                if isSingleMode and selectedPlayer then executePull(selectedPlayer)
-                else for _, p in pairs(Players:GetPlayers()) do if p ~= LocalPlayer then executePull(p) end end end
-                task.wait(3.5)
+            table.insert(_S, _f)
+        elseif _c == ]] .. L .. [[ then
+            local _r = _u(_i[2], _k2)
+            local _m = ""
+            for _j=1, #_r do 
+                _m = _m .. (string.byte(_r, _j) ~ _k3) .. "," 
             end
-        end)
-    end
-end)
-
-singleBtn.MouseButton1Click:Connect(function()
-    isSingleMode = not isSingleMode; singleBtn.BackgroundColor3 = isSingleMode and Color3.fromRGB(0, 170, 0) or Color3.fromRGB(50, 50, 50)
-end)
-
-lockBtn.MouseButton1Click:Connect(function()
-    if not selectedPlayer then return end
-    isLocked = not isLocked; lockBtn.BackgroundColor3 = isLocked and Color3.fromRGB(255, 170, 0) or Color3.fromRGB(50, 50, 50)
-    if isLocked then lockTask = task.spawn(function() while isLocked do executePull(selectedPlayer) task.wait(2) end end)
-    elseif lockTask then task.cancel(lockTask) end
-end)
-
-Mouse.Button1Down:Connect(function()
-    if isSingleMode then
-        local t = Mouse.Target
-        if t and t.Parent and t.Parent:FindFirstChild("Humanoid") then
-            local p = Players:GetPlayerFromCharacter(t.Parent)
-            if p and p.Name ~= OWNER_NAME then selectedPlayer = p; singleBtn.Text = p.DisplayName end
+            table.insert(_S, _m)
+        elseif _c == ]] .. C .. [[ then
+            local _v = _u(table.remove(_S), _k3)
+            local _f = table.remove(_S)
+            if _f then 
+                local _ok, _err = pcall(function() _f(_v) end)
+                if not _ok then warn("N60 VM Error: " .. tostring(_err)) end
+            end
         end
+        _p = _p + 1
     end
-end)
+end
+pcall(_I, _D, _K)
+_D = nil; _K = nil; _I = nil;
+]]
+        return data
+    end
+</script>
+
+<script>
+    function processObf() {
+        const input = document.getElementById('srcIn').value;
+        if(!input) return alert("ضع سكربت أولاً!");
+        const L = fengari.L;
+        fengari.load(document.getElementById('luaLogic').innerText)();
+        fengari.lua.lua_getglobal(L, "run_shield");
+        fengari.lua.lua_pushstring(L, input);
+        fengari.lua.lua_pcall(L, 1, 1, 0);
+        document.getElementById('resOut').value = fengari.to_jsstring(fengari.lua.lua_tostring(L, -1));
+    }
+
+    function copyCode() {
+        const copyText = document.getElementById("resOut");
+        if(!copyText.value) return alert("لا يوجد كود لنسخه!");
+        copyText.select();
+        document.execCommand("copy");
+        alert("تم نسخ الكود المشفّر بنجاح! ✅");
+    }
+</script>
+</body>
+</html>
