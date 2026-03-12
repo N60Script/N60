@@ -2,87 +2,88 @@
 <html lang="ar">
 <head>
     <meta charset="UTF-8">
-    <title>N60 Hub | Ghost VM v15.0</title>
+    <title>N60 Hub | Universal Stable v16.0</title>
     <script src="https://cdn.jsdelivr.net/npm/fengari-web@0.1.4/dist/fengari-web.min.js"></script>
     <style>
         :root { --p: #00ff6a; --bg: #000; }
-        body { background: var(--bg); color: white; direction: rtl; font-family: 'Consolas', monospace; text-align: center; padding: 20px; }
-        .main { max-width: 900px; margin: auto; background: #0a0a0a; border: 1px solid var(--p); padding: 30px; border-radius: 15px; box-shadow: 0 0 50px rgba(0,255,106,0.1); }
-        textarea { width: 100%; height: 200px; background: #000; border: 1px solid #1a1a1a; color: var(--p); padding: 15px; border-radius: 10px; margin: 15px 0; font-size: 11px; outline: none; }
-        .btn { width: 100%; padding: 20px; background: var(--p); color: #000; border: none; font-weight: 900; cursor: pointer; border-radius: 10px; font-size: 1.3rem; transition: 0.3s; }
-        .btn:hover { box-shadow: 0 0 40px var(--p); transform: translateY(-2px); }
-        .copy-btn { width: 100%; margin-top: 10px; padding: 15px; background: transparent; border: 1px solid #333; color: #888; cursor: pointer; border-radius: 10px; font-weight: bold; transition: 0.3s; }
-        .copy-btn:hover { border-color: #fff; color: #fff; }
+        body { background: var(--bg); color: white; direction: rtl; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center; padding: 20px; }
+        .container { max-width: 800px; margin: auto; background: #0a0a0a; border: 2px solid var(--p); padding: 30px; border-radius: 20px; box-shadow: 0 0 40px rgba(0,255,106,0.1); }
+        textarea { width: 100%; height: 180px; background: #000; color: var(--p); border: 1px solid #222; padding: 15px; border-radius: 10px; margin: 15px 0; font-family: monospace; font-size: 13px; outline: none; }
+        .btn-main { width: 100%; padding: 18px; background: var(--p); color: #000; border: none; font-weight: 900; cursor: pointer; border-radius: 10px; font-size: 1.2rem; transition: 0.3s; }
+        .btn-main:hover { box-shadow: 0 0 30px var(--p); transform: scale(1.01); }
+        .btn-copy { width: 100%; margin-top: 10px; padding: 12px; background: transparent; border: 1px solid #333; color: #777; cursor: pointer; border-radius: 8px; font-weight: bold; }
+        .btn-copy:hover { border-color: var(--p); color: var(--p); }
     </style>
 </head>
 <body>
 
-<div class="main">
-    <h1 style="color:var(--p)">N60 GHOST VM v15.0 🛡️</h1>
-    <p style="opacity:0.5; font-size:12px;">XOR Dynamic Key | Variable Renaming | Anti-Dump Logic</p>
+<div class="container">
+    <h1 style="color:var(--p); margin-bottom:5px;">N60 UNIVERSAL v16.0 🛡️</h1>
+    <p style="opacity:0.5; font-size:12px; margin-bottom:20px;">الإصدار الأكثر استقراراً لجميع المشغلات</p>
     
-    <textarea id="src" placeholder="-- ضع كود الـ Lua هنا..."></textarea>
-    <button class="btn" onclick="obfuscate()">بناء الحماية الشاملة 🚀</button>
-    <textarea id="res" readonly placeholder="الكود المشفّر النهائي..."></textarea>
-    <button class="copy-btn" onclick="copy()">نسخ السكربت 📋</button>
+    <textarea id="srcCode" placeholder="-- ضع كود الـ Lua هنا..."></textarea>
+    <button class="btn-main" onclick="process()">تشفير الكود 🚀</button>
+    <textarea id="resCode" readonly placeholder="الكود المشفّر سيظهر هنا..."></textarea>
+    <button class="btn-copy" onclick="copy()">نسخ السكربت النهائي 📋</button>
 </div>
 
-<script type="application/lua" id="engine">
-function protect_v15(source)
-    local key = "N60_" .. math.random(1000, 9999)
+<script type="application/lua" id="luaLogic">
+function stable_obfuscate(source)
+    local seed = math.random(50, 150)
+    local encoded = ""
     
-    local function xor_rolling(data, k)
-        local r = {}
-        for i=1, #data do
-            local k_char = k:byte((i - 1) % #k + 1)
-            -- XOR متداخل مع الموقع الحالي لإفساد التحليل الإحصائي
-            table.insert(r, string.byte(data, i) ~ k_char ~ (i % 256))
-        end
-        return table.concat(r, ",")
+    for i=1, #source do
+        -- تشفير يعتمد على الموقع + Seed ثابت لضمان الاستقرار
+        local char_code = string.byte(source, i)
+        local shift = (seed + i) % 255
+        encoded = encoded .. (char_code + shift) .. ","
     end
-
-    local bytecode = xor_rolling(source, key)
-    local output = "--[[ N60 GHOST VM v15.0 ]]\n"
-    output = output .. "local _l1l1 = {" .. bytecode .. "}\n"
-    output = output .. "local _k1k1 = '" .. key .. "'\n"
-    output = output .. [[
-local _0x1a = function(d, k)
-    local r = ""
+    
+    local template = "--[[ N60 UNIVERSAL v16.0 ]]\n"
+    template = template .. "local _V = {" .. encoded .. "}\n"
+    template = template .. "local _S = " .. seed .. "\n"
+    template = template .. [[
+local _L = function(d, s)
+    local res = ""
     for i=1, #d do
-        local kc = k:byte((i - 1) % #k + 1)
-        r = r .. string.char(d[i] ~ kc ~ (i % 256))
+        local shift = (s + i) % 255
+        res = res .. string.char(d[i] - shift)
     end
-    local f, e = loadstring(r)
+    local f, e = loadstring(res)
     if f then 
-        r = nil -- تدمير الدليل فوراً
-        local s, err = pcall(f)
-        if not s then warn("Runtime Error: " .. tostring(err)) end
+        local ok, err = pcall(f)
+        if not ok then warn("N60 Runtime Error: "..tostring(err)) end
     else 
-        warn("Critical Error: " .. tostring(e))
+        warn("N60 Syntax Error: "..tostring(e))
     end
 end
-_0x1a(_l1l1, _k1k1)
+_L(_V, _S)
 ]]
-    return output
+    return template
 end
 </script>
 
 <script>
-    function obfuscate() {
-        const input = document.getElementById('src').value;
-        if(!input) return;
+    function process() {
+        const input = document.getElementById('srcCode').value;
+        if(!input) return alert("من فضلك أدخل كود أولاً!");
+        
         const L = fengari.L;
-        fengari.load(document.getElementById('engine').innerText)();
-        fengari.lua.lua_getglobal(L, "protect_v15");
+        fengari.load(document.getElementById('luaLogic').innerText)();
+        fengari.lua.lua_getglobal(L, "stable_obfuscate");
         fengari.lua.lua_pushstring(L, input);
         fengari.lua.lua_pcall(L, 1, 1, 0);
-        document.getElementById('res').value = fengari.to_jsstring(fengari.lua.lua_tostring(L, -1));
+        
+        const result = fengari.lua.lua_tostring(L, -1);
+        document.getElementById('resCode').value = fengari.to_jsstring(result);
     }
+
     function copy() {
-        const r = document.getElementById('res');
-        r.select();
+        const res = document.getElementById('resCode');
+        if(!res.value) return;
+        res.select();
         document.execCommand('copy');
-        alert("تم النسخ بنجاح! جربه في المشغل الآن.");
+        alert("تم النسخ! جربه الآن في المشغل.");
     }
 </script>
 </body>
