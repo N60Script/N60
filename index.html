@@ -3,129 +3,156 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>N60 HUB | Ultimate Edition</title>
+    <title>N60 HUB | Direct Access v20.0</title>
     <script src="https://cdn.jsdelivr.net/npm/fengari-web@0.1.4/dist/fengari-web.min.js"></script>
     <style>
-        :root { --p: #00ff6a; --bg: #050505; --card: #0f0f0f; }
-        * { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-        body { background: var(--bg); color: white; direction: rtl; margin: 0; padding: 0; }
+        :root { --p: #00ff6a; --bg: #050505; --card: #0d0d0d; --btn: #1a1a1a; }
+        * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background: var(--bg); color: white; direction: rtl; margin: 0; padding: 0; overflow-x: hidden; }
         
-        .nav { background: var(--card); padding: 15px; display: flex; justify-content: center; gap: 20px; border-bottom: 2px solid var(--p); position: sticky; top: 0; z-index: 100; }
-        .nav button { background: transparent; border: 1px solid var(--p); color: var(--p); padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; }
-        .nav button:hover { background: var(--p); color: black; }
+        /* Navigation */
+        .nav { background: var(--card); padding: 15px; display: flex; justify-content: center; gap: 15px; border-bottom: 2px solid var(--p); position: sticky; top: 0; z-index: 1000; box-shadow: 0 5px 20px rgba(0,0,0,0.5); }
+        .nav button { background: var(--btn); border: 1px solid var(--p); color: var(--p); padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.3s; }
+        .nav button.active { background: var(--p); color: black; box-shadow: 0 0 15px var(--p); }
 
-        .container { padding: 20px; max-width: 1000px; margin: auto; }
-        .section { display: none; animation: fadeIn 0.5s; }
+        .main-content { padding: 20px; max-width: 1100px; margin: auto; }
+        .section { display: none; animation: slideUp 0.4s ease-out; }
         .section.active { display: block; }
 
-        .card { background: var(--card); border: 1px solid #222; border-radius: 15px; padding: 20px; margin-bottom: 20px; text-align: center; }
-        h1 { color: var(--p); text-shadow: 0 0 10px var(--p); }
-
-        textarea { width: 100%; height: 150px; background: #000; color: var(--p); border: 1px solid #333; padding: 15px; border-radius: 10px; font-family: monospace; margin: 10px 0; outline: none; }
-        .btn-main { width: 100%; padding: 15px; background: var(--p); color: black; border: none; font-weight: 900; border-radius: 10px; cursor: pointer; font-size: 1.1rem; }
+        /* Card Styling */
+        .card { background: var(--card); border: 1px solid #1a1a1a; border-radius: 20px; padding: 30px; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        h1 { color: var(--p); text-align: center; margin-bottom: 10px; font-size: 2rem; }
         
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 15px; margin-top: 15px; }
-        .download-btn { background: #1a1a1a; border: 1px solid var(--p); color: white; padding: 15px; border-radius: 10px; text-decoration: none; font-size: 14px; transition: 0.3s; }
-        .download-btn:hover { background: var(--p); color: black; }
+        /* Obfuscator UI */
+        textarea { width: 100%; height: 180px; background: #000; color: var(--p); border: 1px solid #222; padding: 15px; border-radius: 12px; font-family: 'Consolas', monospace; font-size: 12px; margin: 15px 0; outline: none; transition: 0.3s; }
+        textarea:focus { border-color: var(--p); }
+        .btn-action { width: 100%; padding: 18px; background: var(--p); color: black; border: none; font-weight: 900; border-radius: 12px; cursor: pointer; font-size: 1.2rem; transition: 0.3s; }
+        .btn-action:hover { transform: scale(1.02); box-shadow: 0 0 30px var(--p); }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        /* Direct Download Grid */
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 20px; }
+        .dl-item { background: #111; border: 1px solid #222; padding: 20px; border-radius: 15px; text-align: center; text-decoration: none; color: white; transition: 0.3s; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+        .dl-item:hover { border-color: var(--p); background: #161616; transform: translateY(-5px); }
+        .dl-item i { font-size: 2rem; color: var(--p); }
+        .dl-item span { font-weight: bold; font-size: 1.1rem; }
+        .dl-item small { opacity: 0.5; font-size: 0.8rem; }
+
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
 <div class="nav">
-    <button onclick="showSection('obf')">المُشفر 🛡️</button>
-    <button onclick="showSection('android')">أندرويد 🤖</button>
-    <button onclick="showSection('ios')">iOS 🍎</button>
+    <button id="btn-obf" class="active" onclick="tab('obf')">المُشفر الآمن 🛡️</button>
+    <button id="btn-and" onclick="tab('android')">أندرويد 🤖</button>
+    <button id="btn-ios" onclick="tab('ios')">آيفون/آيباد 🍎</button>
 </div>
 
-<div class="container">
+<div class="main-content">
     
     <div id="obf" class="section active">
         <div class="card">
-            <h1>N60 NOVA VM v18.0</h1>
-            <p>تشفير مستقر لجميع المشغلات (Stable)</p>
-            <textarea id="srcIn" placeholder="ضع كود الـ Lua هنا..."></textarea>
-            <button class="btn-main" onclick="processVM()">تشفير </button>
-            <textarea id="resOut" readonly placeholder="الكود المشفّر ..."></textarea>
-            <button class="btn-main" style="background:#222; color:#fff;" onclick="copyCode()">نسخ الكود 📋</button>
+            <h1>N60 FORTRESS VM v20.0</h1>
+            <p style="text-align:center; opacity:0.6;">نظام تشفير  </p>
+            <textarea id="srcCode" placeholder="-- الصق كود الـ Lua هنا للبدء بالتشفير..."></textarea>
+            <button class="btn-action" onclick="runObf()">تشفير الكود بحماية قصوى 🚀</button>
+            <textarea id="resCode" readonly placeholder="الكود المحصّن سيظهر هنا..."></textarea>
+            <button class="btn-action" style="background:#222; color:#fff; margin-top:10px;" onclick="copyRes()">نسخ السكربت النهائي 📋</button>
         </div>
     </div>
 
     <div id="android" class="section">
         <div class="card">
-            <h1>تحميل هاكات الأندرويد 🤖</h1>
-            <p>روابط مباشرة ومحدثة لجميع المشغلات</p>
+            <h1>Direct Android Downloads 🤖</h1>
             <div class="grid">
-                <a href="https://delta-executor.com/download" class="download-btn">تحميل Delta APK</a>
-                <a href="https://spdmteam.com/download" class="download-btn">تحميل Arceus X</a>
-                <a href="https://fluxteam.net/android" class="download-btn">تحميل Fluxus</a>
-                <a href="https://codex.lol/download" class="download-btn">تحميل Codex</a>
+                <a href="https://github.com/Delta-Executor/releases/raw/main/Delta.apk" class="dl-item">
+                    <span>Delta Executor</span>
+                    <small>الرابط المباشر (V2.6xx)</small>
+                </a>
+                <a href="https://spdmteam.com/api/v1/download/arceusx/latest" class="dl-item">
+                    <span>Arceus X Neo</span>
+                    <small>تنزيل مباشر APK</small>
+                </a>
+                <a href="https://fluxteam.net/download/android/latest" class="dl-item">
+                    <span>Fluxus Android</span>
+                    <small>سيرفر التحميل الرسمي</small>
+                </a>
             </div>
         </div>
     </div>
 
     <div id="ios" class="section">
         <div class="card">
-            <h1>تحميل هاكات الـ iOS 🍎</h1>
-            <p>أفضل المشغلات للايفون والايباد</p>
+            <h1>Direct iOS Downloads 🍎</h1>
             <div class="grid">
-                <a href="https://skibx.org" class="download-btn">تحميل Skibx</a>
-                <a href="https://ronix.com" class="download-btn">تحميل Ronix</a>
-                <a href="https://delta-executor.com/ios" class="download-btn">تحميل Delta iOS</a>
+                <a href="https://github.com/Skibx-Team/ios/releases/download/latest/Skibx.ipa" class="dl-item">
+                    <span>Skibx iOS</span>
+                    <small>IPA التحميل المباشر</small>
+                </a>
+                <a href="https://delta-executor.com/dl/ios/Delta.ipa" class="dl-item">
+                    <span>Delta iOS</span>
+                    <small>رابط IPA المباشر</small>
+                </a>
+                <a href="https://ronix.info/download/ios" class="dl-item">
+                    <span>Ronix iOS</span>
+                    <small>تحميل مباشر للايفون</small>
+                </a>
             </div>
         </div>
     </div>
 
 </div>
 
-<script type="application/lua" id="luaEngine">
-function protect(source)
-    local seed = math.random(50, 150)
-    local function enc(s, k)
-        local r = ""
-        for i=1, #s do
-            local byte = string.byte(s, i)
-            r = r .. (byte + k + i) .. ","
+<script type="application/lua" id="obfEngine">
+function build_secure(source)
+    local k = math.random(80, 200)
+    local function enc(d, key)
+        local out = {}
+        for i=1, #d do
+            local b = string.byte(d, i)
+            table.insert(out, (b ~ key) + (i % 30))
         end
-        return r
+        return table.concat(out, ",")
     end
-    local bytecode = enc(source, seed)
-    return "--[[ N60 VM STABLE ]]\nlocal _O={" .. bytecode .. "}\nlocal _S=" .. seed .. [[
-local function _L(d, s)
+    local bytecode = enc(source, k)
+    return "--[[ N60 FORTRESS v20.0 ]]\nlocal _D={" .. bytecode .. "}\nlocal _K=" .. k .. [[
+local _VM=function(d,k)
+    if (hookfunction or hookmetamethod) then return warn("SECURITY: EXECUTOR BLOCKED") end
     local r = ""
-    for i=1, #d do
-        r = r .. string.char(d[i] - s - i)
+    for i=1,#d do
+        r = r .. string.char((d[i] - (i % 30)) ~ k)
     end
     local f = loadstring(r)
     if f then pcall(f) end
 end
-_L(_O, _S)]]
+_VM(_D,_K)]]
 end
 </script>
 
 <script>
-    function showSection(id) {
+    function tab(id) {
         document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
         document.getElementById(id).classList.add('active');
+        document.getElementById('btn-' + id.substring(0,3)).classList.add('active');
     }
 
-    function processVM() {
-        const input = document.getElementById('srcIn').value;
-        if(!input) return alert("ضع كوداً أولاً!");
+    function runObf() {
+        const input = document.getElementById('srcCode').value;
+        if(!input) return;
         const L = fengari.L;
-        fengari.load(document.getElementById('luaEngine').innerText)();
-        fengari.lua.lua_getglobal(L, "protect");
+        fengari.load(document.getElementById('obfEngine').innerText)();
+        fengari.lua.lua_getglobal(L, "build_secure");
         fengari.lua.lua_pushstring(L, input);
         fengari.lua.lua_pcall(L, 1, 1, 0);
-        document.getElementById('resOut').value = fengari.to_jsstring(fengari.lua.lua_tostring(L, -1));
+        document.getElementById('resCode').value = fengari.to_jsstring(fengari.lua.lua_tostring(L, -1));
     }
 
-    function copyCode() {
-        const out = document.getElementById('resOut');
-        out.select();
+    function copyRes() {
+        const res = document.getElementById('resCode');
+        res.select();
         document.execCommand('copy');
-        alert("تم نسخ الكود بنجاح! ✅");
+        alert("تم النسخ! السكربت جاهز .");
     }
 </script>
 </body>
