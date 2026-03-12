@@ -3,147 +3,64 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>N60 Hub | Event Horizon v8.6 Absolute (Full Screen)</title>
+<title>N60 Hub | Universal Obfuscator v9.0 (Full Screen)</title>
 <script src="https://cdn.jsdelivr.net/npm/fengari-web@0.1.4/dist/fengari-web.min.js"></script>
 <style>
     :root { --p: #00ff6a; --bg: #000; --card: #0a0a0a; }
     * { box-sizing: border-box; font-family: 'Consolas', 'Courier New', monospace; }
     
     html, body { 
-        margin: 0; 
-        padding: 0; 
-        width: 100%; 
-        height: 100%; 
-        background: var(--bg); 
-        color: white; 
-        direction: rtl; 
-        overflow: hidden;
+        margin: 0; padding: 0; width: 100%; height: 100%; 
+        background: var(--bg); color: white; direction: rtl; overflow: hidden;
     }
 
     .wrapper { 
-        width: 100vw; 
-        height: 100vh; 
-        display: flex; 
-        flex-direction: column; 
-        align-items: center; 
-        justify-content: center; 
-        background: radial-gradient(circle at top, #001f0d, #000); 
-        padding: 20px;
+        width: 100vw; height: 100vh; display: flex; flex-direction: column; 
+        align-items: center; justify-content: center; 
+        background: radial-gradient(circle at top, #001f0d, #000); padding: 20px;
     }
 
     .obf-panel { 
-        width: 100%; 
-        height: 100%;
-        max-width: 1400px; 
-        background: var(--card); 
-        border: 2px solid var(--p); 
-        padding: 30px; 
-        border-radius: 20px; 
+        width: 100%; height: 100%; max-width: 1400px; 
+        background: var(--card); border: 2px solid var(--p); 
+        padding: 30px; border-radius: 20px; 
         box-shadow: 0 0 50px rgba(0,255,106,0.1); 
-        display: flex;
-        flex-direction: column;
+        display: flex; flex-direction: column;
     }
 
-    .header {
-        text-align: center;
-        margin-bottom: 20px;
-    }
-
+    .header { text-align: center; margin-bottom: 20px; }
     .header h1 { color: var(--p); margin: 0; font-size: 2.5rem; text-shadow: 0 0 20px var(--p); }
     .header p { font-size: 14px; opacity: 0.5; margin: 5px 0; }
 
-    .editors {
-        flex: 1;
-        display: flex;
-        gap: 20px;
-        margin-bottom: 20px;
-        min-height: 0;
-    }
-
-    .editor-container {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-    }
-
-    .editor-container label {
-        color: var(--p);
-        margin-bottom: 10px;
-        font-weight: bold;
-        font-size: 1.1rem;
-    }
+    .editors { flex: 1; display: flex; gap: 20px; margin-bottom: 20px; min-height: 0; }
+    .editor-container { flex: 1; display: flex; flex-direction: column; }
+    .editor-container label { color: var(--p); margin-bottom: 10px; font-weight: bold; font-size: 1.1rem; }
 
     textarea { 
-        flex: 1;
-        width: 100%; 
-        background: #000; 
-        border: 1px solid #1a1a1a; 
-        color: var(--p); 
-        padding: 20px; 
-        border-radius: 12px; 
-        font-size: 13px; 
-        resize: none; 
-        outline: none;
-        transition: 0.3s;
+        flex: 1; width: 100%; background: #000; border: 1px solid #1a1a1a; 
+        color: var(--p); padding: 20px; border-radius: 12px; 
+        font-size: 13px; resize: none; outline: none; transition: 0.3s;
     }
 
-    textarea:focus {
-        border-color: var(--p);
-        box-shadow: 0 0 15px rgba(0,255,106,0.2);
-    }
+    textarea:focus { border-color: var(--p); box-shadow: 0 0 15px rgba(0,255,106,0.2); }
 
-    .controls {
-        display: flex;
-        gap: 15px;
-    }
-
+    .controls { display: flex; gap: 15px; }
     .btn-main { 
-        flex: 2;
-        padding: 20px; 
-        background: var(--p); 
-        color: #000; 
-        border: none; 
-        font-weight: 900; 
-        cursor: pointer; 
-        border-radius: 12px; 
-        font-size: 1.4rem; 
-        transition: 0.3s; 
+        flex: 2; padding: 20px; background: var(--p); color: #000; 
+        border: none; font-weight: 900; cursor: pointer; border-radius: 12px; 
+        font-size: 1.4rem; transition: 0.3s; 
     }
-
-    .btn-main:hover { 
-        box-shadow: 0 0 40px var(--p); 
-        transform: translateY(-2px);
-    }
+    .btn-main:hover { box-shadow: 0 0 40px var(--p); transform: translateY(-2px); }
 
     .btn-copy { 
-        flex: 1;
-        padding: 20px; 
-        background: transparent; 
-        border: 2px solid #333; 
-        color: #888; 
-        cursor: pointer; 
-        border-radius: 12px; 
-        font-weight: bold;
-        transition: 0.3s; 
+        flex: 1; padding: 20px; background: transparent; border: 2px solid #333; 
+        color: #888; cursor: pointer; border-radius: 12px; font-weight: bold; transition: 0.3s; 
     }
+    .btn-copy:hover { border-color: var(--p); color: var(--p); }
 
-    .btn-copy:hover { 
-        border-color: var(--p); 
-        color: var(--p); 
-    }
+    .footer { margin-top: 20px; text-align: center; font-size: 12px; color: #333; letter-spacing: 5px; }
 
-    .footer {
-        margin-top: 20px;
-        text-align: center;
-        font-size: 12px;
-        color: #333;
-        letter-spacing: 5px;
-    }
-
-    @media (max-width: 768px) {
-        .editors { flex-direction: column; }
-        .header h1 { font-size: 1.8rem; }
-    }
+    @media (max-width: 768px) { .editors { flex-direction: column; } .header h1 { font-size: 1.8rem; } }
 </style>
 </head>
 <body>
@@ -152,13 +69,13 @@
     <div class="obf-panel">
         <div class="header">
             <h1>N60 HUB 🛡️</h1>
-            <p>Event Horizon v8.6 Absolute (Full Screen Edition - Guaranteed Stable)</p>
+            <p>Universal Obfuscator v9.0 (Full Screen - Supports All Scripts)</p>
         </div>
 
         <div class="editors">
             <div class="editor-container">
                 <label>الكود المصدري (Lua Source):</label>
-                <textarea id="srcIn" placeholder="-- ضع سكربت Lua هنا (مثال: print('Hello World'))"></textarea>
+                <textarea id="srcIn" placeholder="-- ضع أي سكربت Lua هنا (مهما كان طوله أو تعقيده)"></textarea>
             </div>
             <div class="editor-container">
                 <label>الكود المشفّر (Obfuscated Output):</label>
@@ -171,96 +88,50 @@
             <button class="btn-copy" onclick="copyCode()">نسخ الكود 📋</button>
         </div>
 
-        <div class="footer">
-            -- N60 HUB SOVEREIGN PROTECTION 2026 --
-        </div>
+        <div class="footer">-- N60 HUB SOVEREIGN PROTECTION 2026 --</div>
     </div>
 </div>
 
 <script type="application/lua" id="luaLogic">
     function run_shield(source)
-        local k1, k2, k3 = math.random(60,120), math.random(120,180), math.random(180,240)
-        local ops = {1, 2, 3}
-        for i = #ops, 2, -1 do
-            local j = math.random(i)
-            ops[i], ops[j] = ops[j], ops[i]
-        end
-        local G, L, C = ops[1], ops[2], ops[3]
+        local k1 = math.random(100, 255)
+        local k2 = math.random(100, 255)
         
-        local function enc(s, k)
+        -- تشفير النص بالكامل باستخدام XOR مزدوج
+        local function enc(s)
             local r = ""
             for i=1, #s do 
-                r = r .. (string.byte(s, i) ~ k) .. "," 
+                local b = string.byte(s, i)
+                r = r .. (b ~ k1 ~ k2) .. "," 
             end
             return r
         end
 
-        local func_name = source:match("([%w_%.]+)%s*%(") or "print"
-        local target = source:match("%((['\"])(.-)%1%)") or source:match("'(.-)'") or source:match('"(.-)"') or "N60_HUB"
+        local encrypted_source = enc(source)
         
-        local data = "--[[ N60 EVENT HORIZON v8.6 ABSOLUTE ]]\n"
-        data = data .. "local _D = {{ " .. (G ~ k1) .. ", '" .. enc(func_name, k2) .. "' }, { " .. (L ~ k1) .. ", '" .. enc(target, k2) .. "' }, { " .. (C ~ k1) .. " }}\n"
-        data = data .. "local _K = {" .. k1 .. "," .. k2 .. "," .. k3 .. "}\n"
+        local data = "--[[ N60 UNIVERSAL v9.0 ]]\n"
+        data = data .. "local _D = '" .. encrypted_source .. "'\n"
+        data = data .. "local _K = {" .. k1 .. "," .. k2 .. "}\n"
         
-        -- بناء كود الـ VM بشكل آمن تماماً باستخدام نظام الاستبدال
-        local vm_code = [=[
-local _E = (getgenv or getfenv)()
-local _S = {}
-local function _I(_instr, _keys)
-    local _p = 1
-    local _k1, _k2, _k3 = _keys[1], _keys[2], _keys[3]
-    
-    local function _u(_d, _k)
-        local _s = ""
-        if not _d then return "" end
-        for _b in _d:gmatch("(%d+),") do 
-            _s = _s .. string.char(tonumber(_b) ~ _k) 
-        end
-        return _s
+        -- محرك فك التشفير والتشغيل (Universal Loader)
+        local loader = [[
+local function _L(_d, _k)
+    local _s = ""
+    local _k1, _k2 = _k[1], _k[2]
+    for _b in _d:gmatch("(%d+),") do 
+        _s = _s .. string.char(tonumber(_b) ^ _k1 ^ _k2) 
     end
-
-    while _p <= #_instr do
-        local _i = _instr[_p]
-        local _c = _i[1] ~ _k1
-        
-        if _c == OP_G then
-            local _name = _u(_i[2], _k2)
-            local _f = _E[_name]
-            if not _f and _name:find("%.") then
-                local _parts = {}
-                for _part in _name:gmatch("[^%.]+") do table.insert(_parts, _part) end
-                _f = _E[_parts[1]]
-                for _idx=2, #_parts do
-                    if _f then _f = _f[_parts[_idx]] end
-                end
-            end
-            table.insert(_S, _f)
-        elseif _c == OP_L then
-            local _r = _u(_i[2], _k2)
-            local _m = ""
-            for _j=1, #_r do 
-                _m = _m .. (string.byte(_r, _j) ~ _k3) .. "," 
-            end
-            table.insert(_S, _m)
-        elseif _c == OP_C then
-            local _v = _u(table.remove(_S), _k3)
-            local _f = table.remove(_S)
-            if _f then 
-                pcall(function() _f(_v) end)
-            end
-        end
-        _p = _p + 1
+    local _f, _err = loadstring(_s)
+    if _f then 
+        pcall(_f) 
+    else 
+        warn("N60 Error: " .. tostring(_err)) 
     end
 end
-pcall(_I, _D, _K)
-_D = nil; _K = nil; _I = nil;
-]=]
-        -- استبدال العلامات بالقيم الفعلية لتجنب أخطاء الدمج
-        vm_code = vm_code:gsub("OP_G", tostring(G))
-        vm_code = vm_code:gsub("OP_L", tostring(L))
-        vm_code = vm_code:gsub("OP_C", tostring(C))
-
-        return data .. vm_code
+_L(_D, _K)
+_D = nil; _K = nil; _L = nil;
+]]
+        return data .. loader
     end
 </script>
 
@@ -273,7 +144,6 @@ _D = nil; _K = nil; _I = nil;
             const L = fengari.L;
             const luaCode = document.getElementById('luaLogic').innerText;
             
-            // تحميل كود اللوا
             fengari.load(luaCode)();
             
             fengari.lua.lua_getglobal(L, "run_shield");
