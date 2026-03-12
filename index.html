@@ -2,36 +2,180 @@
 <html lang="ar">
 <head>
 <meta charset="UTF-8">
-<title>N60 Hub | Event Horizon v8.4 (Syntax Fix)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>N60 Hub | Event Horizon v8.5 Ultra (Full Screen)</title>
 <script src="https://cdn.jsdelivr.net/npm/fengari-web@0.1.4/dist/fengari-web.min.js"></script>
 <style>
     :root { --p: #00ff6a; --bg: #000; --card: #0a0a0a; }
-    * { box-sizing: border-box; font-family: 'Consolas', monospace; }
-    body { margin: 0; background: var(--bg); color: white; direction: rtl; }
-    .wrapper { min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 20px; background: radial-gradient(circle at top, #001f0d, #000); }
-    .obf-panel { width: 100%; max-width: 900px; background: var(--card); border: 2px solid var(--p); padding: 30px; border-radius: 20px; box-shadow: 0 0 50px rgba(0,255,106,0.1); margin-top: 50px; }
-    textarea { width: 100%; height: 200px; background: #000; border: 1px solid #1a1a1a; color: var(--p); padding: 15px; border-radius: 8px; margin: 15px 0; font-size: 12px; resize: none; }
-    .btn-main { width: 100%; padding: 20px; background: var(--p); color: #000; border: none; font-weight: 900; cursor: pointer; border-radius: 8px; font-size: 1.2rem; transition: 0.3s; }
-    .btn-main:hover { box-shadow: 0 0 30px var(--p); transform: scale(1.01); }
-    .btn-copy { width: 100%; margin-top: 10px; padding: 10px; background: transparent; border: 1px solid #333; color: #888; cursor: pointer; border-radius: 5px; transition: 0.3s; }
-    .btn-copy:hover { border-color: var(--p); color: var(--p); }
+    * { box-sizing: border-box; font-family: 'Consolas', 'Courier New', monospace; }
+    
+    html, body { 
+        margin: 0; 
+        padding: 0; 
+        width: 100%; 
+        height: 100%; 
+        background: var(--bg); 
+        color: white; 
+        direction: rtl; 
+        overflow: hidden; /* منع التمرير الخارجي */
+    }
+
+    .wrapper { 
+        width: 100vw; 
+        height: 100vh; 
+        display: flex; 
+        flex-direction: column; 
+        align-items: center; 
+        justify-content: center; 
+        background: radial-gradient(circle at top, #001f0d, #000); 
+        padding: 20px;
+    }
+
+    .obf-panel { 
+        width: 100%; 
+        height: 100%; /* ملء الشاشة */
+        max-width: 1200px; 
+        background: var(--card); 
+        border: 2px solid var(--p); 
+        padding: 30px; 
+        border-radius: 20px; 
+        box-shadow: 0 0 50px rgba(0,255,106,0.1); 
+        display: flex;
+        flex-direction: column;
+    }
+
+    .header {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .header h1 { color: var(--p); margin: 0; font-size: 2.5rem; text-shadow: 0 0 20px var(--p); }
+    .header p { font-size: 14px; opacity: 0.5; margin: 5px 0; }
+
+    .editors {
+        flex: 1;
+        display: flex;
+        gap: 20px;
+        margin-bottom: 20px;
+        min-height: 0; /* لضمان عمل flex-grow بشكل صحيح */
+    }
+
+    .editor-container {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .editor-container label {
+        color: var(--p);
+        margin-bottom: 10px;
+        font-weight: bold;
+        font-size: 1.1rem;
+    }
+
+    textarea { 
+        flex: 1;
+        width: 100%; 
+        background: #000; 
+        border: 1px solid #1a1a1a; 
+        color: var(--p); 
+        padding: 20px; 
+        border-radius: 12px; 
+        font-size: 13px; 
+        resize: none; 
+        outline: none;
+        transition: 0.3s;
+    }
+
+    textarea:focus {
+        border-color: var(--p);
+        box-shadow: 0 0 15px rgba(0,255,106,0.2);
+    }
+
+    .controls {
+        display: flex;
+        gap: 15px;
+    }
+
+    .btn-main { 
+        flex: 2;
+        padding: 20px; 
+        background: var(--p); 
+        color: #000; 
+        border: none; 
+        font-weight: 900; 
+        cursor: pointer; 
+        border-radius: 12px; 
+        font-size: 1.4rem; 
+        transition: 0.3s; 
+    }
+
+    .btn-main:hover { 
+        box-shadow: 0 0 40px var(--p); 
+        transform: translateY(-2px);
+    }
+
+    .btn-copy { 
+        flex: 1;
+        padding: 20px; 
+        background: transparent; 
+        border: 2px solid #333; 
+        color: #888; 
+        cursor: pointer; 
+        border-radius: 12px; 
+        font-weight: bold;
+        transition: 0.3s; 
+    }
+
+    .btn-copy:hover { 
+        border-color: var(--p); 
+        color: var(--p); 
+    }
+
+    .footer {
+        margin-top: 20px;
+        text-align: center;
+        font-size: 12px;
+        color: #333;
+        letter-spacing: 5px;
+    }
+
+    /* Responsive for smaller screens */
+    @media (max-width: 768px) {
+        .editors { flex-direction: column; }
+        .header h1 { font-size: 1.8rem; }
+    }
 </style>
 </head>
 <body>
 
 <div class="wrapper">
-    <h1 style="color:var(--p); margin-bottom:5px;">N60 HUB 🛡️</h1>
-    <p style="font-size:12px; opacity:0.5;">Event Horizon v8.4 (Syntax Fix - Guaranteed Execution)</p>
-
     <div class="obf-panel">
-        <h2 style="color:var(--p); margin:0;">GHOST ENGINE v8.4 (STABLE)</h2>
-        <textarea id="srcIn" placeholder="-- ضع سكربت Lua هنا (مثال: print('Hello World'))"></textarea>
-        <button class="btn-main" onclick="processObf()">تشفير وحماية السكربت 🛡️</button>
-        <textarea id="resOut" readonly placeholder="الكود المشفّر النهائي سيظهر هنا..."></textarea>
-        <button class="btn-copy" onclick="copyCode()">نسخ الكود المشفّر 📋</button>
-    </div>
+        <div class="header">
+            <h1>N60 HUB 🛡️</h1>
+            <p>Event Horizon v8.5 Ultra (Full Screen Edition - Stable)</p>
+        </div>
 
-    <p style="margin-top:40px; font-size:10px; color:#333; letter-spacing:3px;">-- N60 HUB SOVEREIGN PROTECTION 2026 --</p>
+        <div class="editors">
+            <div class="editor-container">
+                <label>الكود المصدري (Lua Source):</label>
+                <textarea id="srcIn" placeholder="-- ضع سكربت Lua هنا (مثال: print('Hello World'))"></textarea>
+            </div>
+            <div class="editor-container">
+                <label>الكود المشفّر (Obfuscated Output):</label>
+                <textarea id="resOut" readonly placeholder="الكود المشفّر النهائي سيظهر هنا..."></textarea>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="btn-main" onclick="processObf()">تشفير وحماية السكربت 🛡️</button>
+            <button class="btn-copy" onclick="copyCode()">نسخ الكود 📋</button>
+        </div>
+
+        <div class="footer">
+            -- N60 HUB SOVEREIGN PROTECTION 2026 --
+        </div>
+    </div>
 </div>
 
 <script type="application/lua" id="luaLogic">
@@ -55,10 +199,12 @@
         local func_name = source:match("([%w_%.]+)%s*%(") or "print"
         local target = source:match("%((['\"])(.-)%1%)") or source:match("'(.-)'") or source:match('"(.-)"') or "N60_HUB"
         
-        local data = "--[[ N60 EVENT HORIZON v8.4 STABLE ]]\n"
+        local data = "--[[ N60 EVENT HORIZON v8.5 ULTRA ]]\n"
         data = data .. "local _D = {{ " .. (G ~ k1) .. ", '" .. enc(func_name, k2) .. "' }, { " .. (L ~ k1) .. ", '" .. enc(target, k2) .. "' }, { " .. (C ~ k1) .. " }}\n"
         data = data .. "local _K = {" .. k1 .. "," .. k2 .. "," .. k3 .. "}\n"
-        data = data .. [[
+        
+        -- بناء كود الـ VM بشكل آمن لتجنب أخطاء الـ Syntax
+        local vm_code = [[
 local _E = (getgenv or getfenv)()
 local _S = {}
 local function _I(_instr, _keys)
@@ -110,7 +256,7 @@ end
 pcall(_I, _D, _K)
 _D = nil; _K = nil; _I = nil;
 ]]
-        return data
+        return data .. vm_code
     end
 </script>
 
@@ -124,7 +270,7 @@ _D = nil; _K = nil; _I = nil;
             const luaCode = document.getElementById('luaLogic').innerText;
             
             // تحميل كود اللوا
-            const loadStatus = fengari.load(luaCode)();
+            fengari.load(luaCode)();
             
             fengari.lua.lua_getglobal(L, "run_shield");
             fengari.lua.lua_pushstring(L, input);
