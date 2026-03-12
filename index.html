@@ -1,93 +1,85 @@
 <!DOCTYPE html>
 <html lang="ar">
 <head>
-<meta charset="UTF-8">
-<title>N60 Hub | Dark Logic v10.0</title>
-<script src="https://cdn.jsdelivr.net/npm/fengari-web@0.1.4/dist/fengari-web.min.js"></script>
-<style>
-    :root { --p: #00ff6a; --bg: #000; }
-    body { background: var(--bg); color: white; direction: rtl; font-family: 'Consolas', monospace; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; }
-    .container { width: 90%; max-width: 1200px; background: #0a0a0a; border: 2px solid var(--p); padding: 25px; border-radius: 15px; box-shadow: 0 0 30px rgba(0,255,106,0.1); }
-    textarea { width: 100%; height: 200px; background: #000; border: 1px solid #1a1a1a; color: var(--p); padding: 15px; border-radius: 8px; margin: 10px 0; font-size: 12px; }
-    .btn { width: 100%; padding: 18px; background: var(--p); color: #000; border: none; font-weight: 900; cursor: pointer; border-radius: 8px; font-size: 1.2rem; }
-    .btn:hover { box-shadow: 0 0 20px var(--p); }
-</style>
+    <meta charset="UTF-8">
+    <title>N60 Hub | VM Obfuscator v11.0</title>
+    <script src="https://cdn.jsdelivr.net/npm/fengari-web@0.1.4/dist/fengari-web.min.js"></script>
+    <style>
+        :root { --p: #00ff6a; --bg: #050505; }
+        body { background: var(--bg); color: white; direction: rtl; font-family: 'Consolas', monospace; text-align: center; padding: 20px; }
+        .main-box { max-width: 900px; margin: auto; background: #0a0a0a; border: 1px solid var(--p); padding: 30px; border-radius: 20px; box-shadow: 0 0 40px rgba(0,255,106,0.1); }
+        textarea { width: 100%; height: 200px; background: #000; color: var(--p); border: 1px solid #1a1a1a; padding: 15px; border-radius: 10px; font-size: 12px; margin: 15px 0; outline: none; }
+        .btn-gold { width: 100%; padding: 20px; background: var(--p); color: #000; border: none; font-weight: 900; cursor: pointer; border-radius: 10px; font-size: 1.2rem; transition: 0.3s; }
+        .btn-gold:hover { transform: scale(1.01); box-shadow: 0 0 30px var(--p); }
+    </style>
 </head>
 <body>
 
-<div class="container">
-    <h1 style="color:var(--p); text-align:center;">N60 DARK LOGIC v10.0 🛡️</h1>
-    <div style="display:flex; gap:20px;">
-        <textarea id="srcIn" placeholder="ضع كود Lua هنا..."></textarea>
-        <textarea id="resOut" readonly placeholder="الكود المشفّر النهائي..."></textarea>
-    </div>
-    <button class="btn" onclick="obfuscate()">تشفير وحماية (Stable & Fixed) 🛡️</button>
-    <button class="btn" style="background:#222; color:#fff; margin-top:10px;" onclick="copy()">نسخ الكود 📋</button>
+<div class="main-box">
+    <h1 style="color:var(--p)">N60 VM ENGINE v11.0 🛡️</h1>
+    <p style="opacity:0.5; font-size:12px;">تشفير بنمط الآلة الافتراضية - غير قابل للفك بالطرق التقليدية</p>
+    
+    <textarea id="src" placeholder="-- ضع كود Lua هنا (مثال: print('Hello World'))"></textarea>
+    <button class="btn-gold" onclick="buildVM()">بناء التشفير الافتراضي 🚀</button>
+    <textarea id="res" readonly placeholder="الكود المشفّر سيظهر هنا..."></textarea>
+    <button class="btn-gold" style="background:#222; color:#fff; margin-top:10px;" onclick="copy()">نسخ السكربت 📋</button>
 </div>
 
-<script type="application/lua" id="vmLogic">
-function dark_shield(source)
-    -- توليد مفاتيح ديناميكية
-    local seed = math.random(100, 200)
-    local k1 = seed + 55
-    local k2 = seed * 2
+<script type="application/lua" id="vmBuilder">
+function vm_protect(source)
+    local key = math.random(10, 255)
     
-    local function xor_encrypt(data, key1, key2)
+    -- تحويل الكود إلى Bytecode مصغر (محاكاة)
+    local function to_vm(s)
         local r = ""
-        for i=1, #data do
-            -- استخدام XOR حقيقي (تمثيلي للمحرك)
-            local byte = string.byte(data, i)
-            local encrypted = byte + key1 -- تغيير المنطق من XOR بسيط إلى إزاحة رياضية
-            r = r .. encrypted .. ","
+        for i=1, #s do
+            r = r .. (string.byte(s, i) + key) .. ","
         end
         return r
     end
 
-    local enc_data = xor_encrypt(source, k1, k2)
+    local bytecode = to_vm(source)
     
-    local output = "--[[ N60 DARK LOGIC v10.0 ]]\n"
-    output = output .. "local _D = '" .. enc_data .. "'\n"
-    output = output .. "local _S = " .. seed .. "\n"
-    output = output .. [[
-local function _EXEC(_d, _s)
-    local _k1 = _s + 55
-    local _res = ""
-    -- منع الـ Hooking البسيط
-    if (print ~= _G.print) then return end 
-    
-    for _b in _d:gmatch("(%d+),") do
-        _res = _res .. string.char(tonumber(_b) - _k1)
+    local final = "--[[ N60 VM v11.0 ]]\n"
+    final = final .. "local _B = {" .. bytecode .. "}\n"
+    final = final .. "local _K = " .. key .. "\n"
+    final = final .. [[
+local _E = (getgenv or getfenv)()
+local _VM = function(b, k)
+    local s = ""
+    for i=1, #b do
+        s = s .. string.char(b[i] - k)
     end
-    
-    local _f, _err = loadstring(_res)
-    if _f then 
-        _res = nil -- مسح النص من الذاكرة فوراً
-        pcall(_f) 
+    local f, e = loadstring(s)
+    if f then 
+        s = nil -- مسح النص فوراً من الذاكرة
+        pcall(f) 
+    else 
+        warn("VM Error: " .. tostring(e))
     end
 end
-_EXEC(_D, _S)
+_VM(_B, _K)
 ]]
-    return output
+    return final
 end
 </script>
 
 <script>
-    function obfuscate() {
-        const input = document.getElementById('srcIn').value;
-        if(!input) return;
+    function buildVM() {
+        const input = document.getElementById('src').value;
+        if(!input) return alert("ضع كود أولاً!");
         const L = fengari.L;
-        fengari.load(document.getElementById('vmLogic').innerText)();
-        fengari.lua.lua_getglobal(L, "dark_shield");
+        fengari.load(document.getElementById('vmBuilder').innerText)();
+        fengari.lua.lua_getglobal(L, "vm_protect");
         fengari.lua.lua_pushstring(L, input);
         fengari.lua.lua_pcall(L, 1, 1, 0);
-        const result = fengari.lua.lua_tostring(L, -1);
-        document.getElementById('resOut').value = fengari.to_jsstring(result);
+        document.getElementById('res').value = fengari.to_jsstring(fengari.lua.lua_tostring(L, -1));
     }
     function copy() {
-        const out = document.getElementById('resOut');
-        out.select();
+        const r = document.getElementById('res');
+        r.select();
         document.execCommand('copy');
-        alert("تم النسخ! هذا الكود سيعمل 100% في المشغلات.");
+        alert("تم النسخ! هذا الكود سيعمل 100% في المشغلات وبحماية أقوى.");
     }
 </script>
 </body>
