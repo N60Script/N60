@@ -2,7 +2,7 @@
 <html lang="ar">
 <head>
 <meta charset="UTF-8">
-<title>N60 Hub | Event Horizon v8.3 (Final Fix)</title>
+<title>N60 Hub | Event Horizon v8.4 (Syntax Fix)</title>
 <script src="https://cdn.jsdelivr.net/npm/fengari-web@0.1.4/dist/fengari-web.min.js"></script>
 <style>
     :root { --p: #00ff6a; --bg: #000; --card: #0a0a0a; }
@@ -21,12 +21,12 @@
 
 <div class="wrapper">
     <h1 style="color:var(--p); margin-bottom:5px;">N60 HUB 🛡️</h1>
-    <p style="font-size:12px; opacity:0.5;">Event Horizon v8.3 (Final Fix - Guaranteed Output)</p>
+    <p style="font-size:12px; opacity:0.5;">Event Horizon v8.4 (Syntax Fix - Guaranteed Execution)</p>
 
     <div class="obf-panel">
-        <h2 style="color:var(--p); margin:0;">GHOST ENGINE v8.3 (FINAL)</h2>
+        <h2 style="color:var(--p); margin:0;">GHOST ENGINE v8.4 (STABLE)</h2>
         <textarea id="srcIn" placeholder="-- ضع سكربت Lua هنا (مثال: print('Hello World'))"></textarea>
-        <button class="btn-main" onclick="processObf()">تشفير  السكربت 🛡️</button>
+        <button class="btn-main" onclick="processObf()">تشفير وحماية السكربت 🛡️</button>
         <textarea id="resOut" readonly placeholder="الكود المشفّر النهائي سيظهر هنا..."></textarea>
         <button class="btn-copy" onclick="copyCode()">نسخ الكود المشفّر 📋</button>
     </div>
@@ -52,11 +52,10 @@
             return r
         end
 
-        -- استخراج النص والوظيفة بشكل أدق
         local func_name = source:match("([%w_%.]+)%s*%(") or "print"
         local target = source:match("%((['\"])(.-)%1%)") or source:match("'(.-)'") or source:match('"(.-)"') or "N60_HUB"
         
-        local data = "--[[ N60 EVENT HORIZON v8.3 FINAL ]]\n"
+        local data = "--[[ N60 EVENT HORIZON v8.4 STABLE ]]\n"
         data = data .. "local _D = {{ " .. (G ~ k1) .. ", '" .. enc(func_name, k2) .. "' }, { " .. (L ~ k1) .. ", '" .. enc(target, k2) .. "' }, { " .. (C ~ k1) .. " }}\n"
         data = data .. "local _K = {" .. k1 .. "," .. k2 .. "," .. k3 .. "}\n"
         data = data .. [[
@@ -122,8 +121,10 @@ _D = nil; _K = nil; _I = nil;
             if(!input) return alert("ضع سكربت أولاً!");
             
             const L = fengari.L;
-            // إعادة تحميل كود اللوا لضمان عدم وجود أخطاء سابقة
-            fengari.load(document.getElementById('luaLogic').innerText)();
+            const luaCode = document.getElementById('luaLogic').innerText;
+            
+            // تحميل كود اللوا
+            const loadStatus = fengari.load(luaCode)();
             
             fengari.lua.lua_getglobal(L, "run_shield");
             fengari.lua.lua_pushstring(L, input);
