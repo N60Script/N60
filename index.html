@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>N60 HUB | Direct Installer v21.0</title>
+    <title>N60 HUB | V22.0 Final</title>
     <script src="https://cdn.jsdelivr.net/npm/fengari-web@0.1.4/dist/fengari-web.min.js"></script>
     <style>
         :root { --p: #00ff6a; --bg: #050505; --card: #111; }
@@ -11,27 +11,27 @@
         body { background: var(--bg); color: white; direction: rtl; margin: 0; padding: 0; }
         
         /* Navigation */
-        .nav { background: #000; padding: 15px; display: flex; justify-content: center; gap: 10px; border-bottom: 2px solid var(--p); sticky: top; z-index: 100; }
-        .nav button { background: #1a1a1a; border: 1px solid var(--p); color: var(--p); padding: 10px 15px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 0.9rem; }
-        .nav button.active { background: var(--p); color: black; }
+        .nav { background: #000; padding: 15px; display: flex; justify-content: center; gap: 8px; border-bottom: 2px solid var(--p); position: sticky; top: 0; z-index: 1000; }
+        .nav button { background: #1a1a1a; border: 1px solid var(--p); color: var(--p); padding: 10px 12px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 0.85rem; transition: 0.3s; }
+        .nav button.active { background: var(--p); color: black; box-shadow: 0 0 10px var(--p); }
 
         .container { padding: 20px; max-width: 900px; margin: auto; }
-        .section { display: none; animation: fadeIn 0.4s; }
-        .section.active { display: block; }
+        .section { display: none; }
+        .section.active { display: block; animation: fadeIn 0.3s ease-in; }
 
-        .card { background: var(--card); border-radius: 20px; padding: 25px; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid #222; }
-        h1 { color: var(--p); text-align: center; margin: 0 0 15px; }
+        .card { background: var(--card); border-radius: 20px; padding: 25px; margin-bottom: 20px; border: 1px solid #222; }
+        h1 { color: var(--p); text-align: center; margin: 0 0 15px; font-size: 1.8rem; }
 
         /* Installer Buttons */
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 15px; }
-        .install-btn { background: #1a1a1a; border: 1px solid #333; color: white; padding: 20px 10px; border-radius: 15px; cursor: pointer; text-align: center; transition: 0.3s; display: flex; flex-direction: column; gap: 10px; align-items: center; }
-        .install-btn:hover { border-color: var(--p); background: #222; transform: translateY(-5px); }
-        .install-btn b { color: var(--p); font-size: 1.1rem; }
-        .install-btn small { opacity: 0.6; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; }
+        .install-btn { background: #1a1a1a; border: 1px solid #333; color: white; padding: 15px 5px; border-radius: 12px; cursor: pointer; text-align: center; transition: 0.3s; display: flex; flex-direction: column; gap: 5px; }
+        .install-btn:hover { border-color: var(--p); transform: translateY(-3px); background: #1e1e1e; }
+        .install-btn b { color: var(--p); font-size: 1rem; }
+        .install-btn small { opacity: 0.6; font-size: 0.75rem; }
 
         /* Obfuscator UI */
-        textarea { width: 100%; height: 150px; background: #000; color: var(--p); border: 1px solid #333; padding: 15px; border-radius: 10px; font-family: monospace; margin: 10px 0; outline: none; }
-        .btn-action { width: 100%; padding: 18px; background: var(--p); color: black; border: none; font-weight: bold; border-radius: 10px; cursor: pointer; font-size: 1.1rem; }
+        textarea { width: 100%; height: 160px; background: #000; color: var(--p); border: 1px solid #333; padding: 12px; border-radius: 10px; font-family: monospace; margin: 10px 0; outline: none; font-size: 12px; }
+        .btn-action { width: 100%; padding: 16px; background: var(--p); color: black; border: none; font-weight: bold; border-radius: 10px; cursor: pointer; font-size: 1.1rem; }
 
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
@@ -39,7 +39,7 @@
 <body>
 
 <div class="nav">
-    <button id="tab-obf" class="active" onclick="show('obf')">المُشفر 🛡️</button>
+    <button id="tab-obf" class="active" onclick="show('obf')">تشفير مستقر 🛡️</button>
     <button id="tab-and" onclick="show('android')">أندرويد 🤖</button>
     <button id="tab-ios" onclick="show('ios')">آيفون 🍎</button>
 </div>
@@ -48,27 +48,27 @@
     
     <div id="obf" class="section active">
         <div class="card">
-            <h1>N60 STABLE VM v21.0</h1>
-            <p style="text-align:center; opacity:0.6; font-size:12px;">تم تحسين الكود ليعمل على جميع المشغلات بدون كراش</p>
-            <textarea id="src" placeholder="الصق كود Lua هنا..."></textarea>
-            <button class="btn-action" onclick="runBuild()">تشفير الكود 🚀</button>
+            <h1>N60 STABLE v22.0 🛡️</h1>
+            <p style="text-align:center; opacity:0.6; font-size:11px;">Hex-Encrypted | Works on Delta, Arceus, Skibx</p>
+            <textarea id="src" placeholder="-- الصق كود Lua هنا..."></textarea>
+            <button class="btn-action" onclick="runBuild()">تشفير الكود  </button>
             <textarea id="res" readonly placeholder="الكود الناتج..."></textarea>
-            <button class="btn-action" style="background:#333; color:#fff; margin-top:10px;" onclick="copyCode()">نسخ 📋</button>
+            <button class="btn-action" style="background:#333; color:#fff; margin-top:10px;" onclick="copyCode()">نسخ الكود المشفّر 📋</button>
         </div>
     </div>
 
     <div id="android" class="section">
         <div class="card">
-            <h1>Android Direct Install 🤖</h1>
+            <h1>Android Install 🤖</h1>
             <div class="grid">
-                <div class="install-btn" onclick="installAPK('https://delta-executor.com/Delta.apk')">
-                    <b>Delta</b> <small>تحميل APK مباشر</small>
+                <div class="install-btn" onclick="dlAPK('https://delta-executor.com/Delta.apk')">
+                    <b>Delta</b> <small>تنزيل APK مباشر</small>
                 </div>
-                <div class="install-btn" onclick="installAPK('https://spdmteam.com/ArceusX.apk')">
+                <div class="install-btn" onclick="dlAPK('https://spdmteam.com/ArceusX.apk')">
                     <b>Arceus X</b> <small>تثبيت فوري</small>
                 </div>
-                <div class="install-btn" onclick="installAPK('https://fluxteam.net/Fluxus.apk')">
-                    <b>Fluxus</b> <small>نسخة الأندرويد</small>
+                <div class="install-btn" onclick="dlAPK('https://fluxteam.net/Fluxus.apk')">
+                    <b>Fluxus</b> <small>رابط مباشر</small>
                 </div>
             </div>
         </div>
@@ -76,16 +76,16 @@
 
     <div id="ios" class="section">
         <div class="card">
-            <h1>iOS Direct Install 🍎</h1>
+            <h1>iOS OTA Install 🍎</h1>
             <div class="grid">
-                <div class="install-btn" onclick="installIOS('https://delta.bz/manifest.plist')">
-                    <b>Delta iOS</b> <small>تثبيت خارجي (OTA)</small>
+                <div class="install-btn" onclick="dlIOS('https://delta.bz/manifest.plist')">
+                    <b>Delta iOS</b> <small>Install Direct</small>
                 </div>
-                <div class="install-btn" onclick="installIOS('https://skibx.com/ota.plist')">
-                    <b>SkibX iOS</b> <small>تثبيت مباشر</small>
+                <div class="install-btn" onclick="dlIOS('https://skibx.com/ota.plist')">
+                    <b>SkibX iOS</b> <small>OTA Install</small>
                 </div>
-                <div class="install-btn" onclick="installIOS('https://ronix.com/manifest.plist')">
-                    <b>Ronix iOS</b> <small>بدء التثبيت</small>
+                <div class="install-btn" onclick="dlIOS('https://ronix.com/ota.plist')">
+                    <b>Ronix iOS</b> <small>تثبيت مباشر</small>
                 </div>
             </div>
         </div>
@@ -93,23 +93,28 @@
 
 </div>
 
-<script type="application/lua" id="luaLogic">
-function build_script(source)
-    local k = math.random(10, 100)
-    local enc = ""
-    for i=1, #source do
-        enc = enc .. (string.byte(source, i) + k) .. ","
+<script type="application/lua" id="engineLogic">
+function build_v22(source)
+    -- تشفير Hex لضمان أن الـ Executor يقرأه كنص بسيط لا يستهلك الذاكرة
+    local encoded = ""
+    for i = 1, #source do
+        encoded = encoded .. string.format("%%%02X", string.byte(source, i))
     end
-    return "--[[ N60 STABLE v21 ]]\nlocal _D={"..enc.."}\nlocal _K="..k..[[
-local s=""
-for i=1,#_D do s=s..string.char(_D[i]-_K) end
-local f,e=loadstring(s)
-if f then pcall(f) else print(e) end]]
+    
+    local final = "--[[ N60 STABLE v22.0 ]]\n"
+    final = final .. "local _D = '" .. encoded .. "'\n"
+    final = final .. [[
+local function _R(s)
+    local r = s:gsub('%%(%x%x)', function(h) return string.char(tonumber(h, 16)) end)
+    local f, e = loadstring(r)
+    if f then pcall(f) else warn("Err: "..tostring(e)) end
+end
+_R(_D)]]
+    return final
 end
 </script>
 
 <script>
-    // نظام التنقل
     function show(id) {
         document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
         document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
@@ -117,33 +122,31 @@ end
         document.getElementById('tab-' + id.substring(0,3)).classList.add('active');
     }
 
-    // وظائف التثبيت المباشر
-    function installIOS(plistUrl) {
-        window.location.href = "itms-services://?action=download-manifest&url=" + plistUrl;
+    // التثبيت المباشر
+    function dlIOS(plist) {
+        window.location.href = "itms-services://?action=download-manifest&url=" + plist;
+    }
+    function dlAPK(url) {
+        window.location.href = url;
     }
 
-    function installAPK(apkUrl) {
-        // للأندرويد التحميل المباشر هو فتح الرابط
-        window.location.href = apkUrl;
-    }
-
-    // وظيفة التشفير
     function runBuild() {
         const input = document.getElementById('src').value;
-        if(!input) return;
+        if(!input) return alert("أدخل كود!");
         const L = fengari.L;
-        fengari.load(document.getElementById('luaLogic').innerText)();
-        fengari.lua.lua_getglobal(L, "build_script");
+        fengari.load(document.getElementById('engineLogic').innerText)();
+        fengari.lua.lua_getglobal(L, "build_v22");
         fengari.lua.lua_pushstring(L, input);
-        fengari.lua.lua_pcall(L, 1, 1, 0);
-        document.getElementById('res').value = fengari.to_jsstring(fengari.lua.lua_tostring(L, -1));
+        if(fengari.lua.lua_pcall(L, 1, 1, 0) == 0) {
+            document.getElementById('res').value = fengari.to_jsstring(fengari.lua.lua_tostring(L, -1));
+        }
     }
 
     function copyCode() {
         const res = document.getElementById('res');
         res.select();
         document.execCommand('copy');
-        alert("تم النسخ بنجاح!");
+        alert("تم النسخ! جربه الآن.");
     }
 </script>
 </body>
