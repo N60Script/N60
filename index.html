@@ -2,79 +2,109 @@
 <html lang="ar">
 <head>
 <meta charset="UTF-8">
-<title>N60 Hub | Absolute Zero v13.0</title>
+<title>N60 Hub | Absolute Zero v13.1</title>
 <script src="https://cdn.jsdelivr.net/npm/fengari-web@0.1.4/dist/fengari-web.min.js"></script>
 <style>
-    :root { --p: #00ff6a; --bg: #000; }
-    body { background: var(--bg); color: white; direction: rtl; font-family: 'Consolas', monospace; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; }
-    .box { width: 90%; max-width: 1100px; background: #050505; border: 1px solid var(--p); padding: 30px; border-radius: 20px; box-shadow: 0 0 50px rgba(0,255,106,0.1); }
-    textarea { width: 100%; height: 250px; background: #000; border: 1px solid #1a1a1a; color: var(--p); padding: 20px; border-radius: 12px; font-size: 11px; outline: none; }
-    .btn-fire { width: 100%; padding: 20px; background: var(--p); color: #000; border: none; font-weight: 900; cursor: pointer; border-radius: 12px; font-size: 1.4rem; transition: 0.4s; }
-    .btn-fire:hover { background: #fff; box-shadow: 0 0 60px #fff; transform: scale(1.02); }
+    :root { --p: #00ff6a; --bg: #000; --card: #080808; }
+    * { box-sizing: border-box; font-family: 'Consolas', monospace; }
+    body { background: var(--bg); color: white; direction: rtl; margin: 0; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+    
+    .box { width: 90%; max-width: 1000px; background: var(--card); border: 2px solid var(--p); padding: 30px; border-radius: 20px; box-shadow: 0 0 50px rgba(0,255,106,0.1); }
+    
+    h1 { color: var(--p); text-align: center; margin-top: 0; font-size: 2rem; }
+    textarea { width: 100%; height: 180px; background: #000; border: 1px solid #1a1a1a; color: var(--p); padding: 15px; border-radius: 10px; margin: 10px 0; font-size: 12px; resize: none; outline: none; }
+    
+    /* أزرار التحكم */
+    .controls { display: flex; flex-direction: column; gap: 10px; }
+    .btn-main { padding: 20px; background: var(--p); color: #000; border: none; font-weight: 900; cursor: pointer; border-radius: 10px; font-size: 1.2rem; transition: 0.3s; }
+    .btn-main:hover { box-shadow: 0 0 30px var(--p); transform: translateY(-2px); }
+    
+    .btn-copy { padding: 15px; background: transparent; border: 2px solid #333; color: #888; cursor: pointer; border-radius: 10px; font-weight: bold; transition: 0.3s; }
+    .btn-copy:hover { border-color: var(--p); color: var(--p); }
+    .btn-copy.success { border-color: #fff; color: #fff; background: rgba(255,255,255,0.1); }
 </style>
 </head>
 <body>
 
 <div class="box">
-    <h1 style="color:var(--p); text-align:center; margin-bottom:10px;">N60 ABSOLUTE ZERO v13.0 ❄️</h1>
-    <p style="text-align:center; opacity:0.4; font-size:12px; margin-bottom:20px;">Chained XOR Logic | Stack Obfuscation | Anti-Python Recovery</p>
+    <h1>N60 ABSOLUTE ZERO v13.1 ❄️</h1>
+    <p style="text-align:center; opacity:0.5; font-size:11px;">Chained XOR Protection + Copy Sync</p>
     
-    <textarea id="srcIn" placeholder="-- ضع كود الـ Lua المراد حمايته هنا..."></textarea>
-    <button class="btn-fire" onclick="buildAbsoluteZero()">توليد التشفير المطلق 🛡️</button>
-    <textarea id="resOut" readonly placeholder="الكود الناتج..."></textarea>
+    <textarea id="srcIn" placeholder="-- ضع سكربت Lua هنا..."></textarea>
+    
+    <div class="controls">
+        <button class="btn-main" onclick="build()">توليد التشفير المطلق 🛡️</button>
+        <textarea id="resOut" readonly placeholder="الكود المشفّر النهائي سيظهر هنا..."></textarea>
+        <button id="copyBtn" class="btn-copy" onclick="copyCode()">نسخ الكود المشفّر 📋</button>
+    </div>
 </div>
 
-<script type="application/lua" id="absoluteLogic">
+<script type="application/lua" id="luaLogic">
 function build_zero(source)
-    local keys = {math.random(10, 50), math.random(51, 100), math.random(101, 200)}
-    
+    local keys = {math.random(20, 60), math.random(61, 120)}
     local function chained_enc(data, ks)
         local r = {}
         local last = ks[1]
         for i=1, #data do
             local byte = string.byte(data, i)
-            -- Chained XOR: كل بايت يعتمد على البايت السابق + مفتاح متغير
             local dynamic_key = (last + ks[2] + i) % 256
             local encrypted = byte ~ dynamic_key
             table.insert(r, encrypted)
-            last = encrypted -- ربط السلسلة
+            last = encrypted
         end
         return table.concat(r, ",")
     end
-
     local bytecode = chained_enc(source, keys)
-    local output = "--[[ N60 ABSOLUTE ZERO v13.0 ]]\n"
-    output = output .. "local _Z = {" .. bytecode .. "}\n"
-    output = output .. "local _K = {" .. table.concat(keys, ",") .. "}\n"
-    output = output .. [[
-local _VM = function(d, k)
-    local res = {}
-    local last = k[1]
-    for i=1, #d do
-        local dynamic_key = (last + k[2] + i) % 256
-        local char_code = d[i] ~ dynamic_key
-        table.insert(res, string.char(char_code))
-        last = d[i]
+    return "--[[ N60 v13.1 ]]\nlocal _Z={" .. bytecode .. "}\nlocal _K={" .. table.concat(keys, ",") .. [[}
+local _VM=function(d,k)
+    local r,l={},k[1]
+    for i=1,#d do
+        local dk=(l+k[2]+i)%256
+        local c=d[i]~dk
+        table.insert(r,string.char(c))
+        l=d[i]
     end
-    local f, e = loadstring(table.concat(res))
-    if f then pcall(f) else warn(e) end
+    local f=loadstring(table.concat(r))
+    if f then pcall(f) end
 end
-_VM(_Z, _K)
-]]
-    return output
+_VM(_Z,_K)]]
 end
 </script>
 
 <script>
-    function buildAbsoluteZero() {
+    function build() {
         const input = document.getElementById('srcIn').value;
-        if(!input) return;
+        if(!input) return alert("الرجاء إدخال كود!");
         const L = fengari.L;
-        fengari.load(document.getElementById('absoluteLogic').innerText)();
+        fengari.load(document.getElementById('luaLogic').innerText)();
         fengari.lua.lua_getglobal(L, "build_zero");
         fengari.lua.lua_pushstring(L, input);
         fengari.lua.lua_pcall(L, 1, 1, 0);
         document.getElementById('resOut').value = fengari.to_jsstring(fengari.lua.lua_tostring(L, -1));
+        
+        // إعادة تعيين زر النسخ عند توليد كود جديد
+        const btn = document.getElementById('copyBtn');
+        btn.innerHTML = "نسخ الكود المشفّر 📋";
+        btn.className = "btn-copy";
+    }
+
+    function copyCode() {
+        const output = document.getElementById('resOut');
+        const btn = document.getElementById('copyBtn');
+        
+        if(!output.value) return alert("لا يوجد كود لنسخه!");
+        
+        output.select();
+        document.execCommand('copy');
+        
+        // تغيير شكل الزر للتأكيد
+        btn.innerHTML = "تم النسخ بنجاح! ✅";
+        btn.className = "btn-copy success";
+        
+        setTimeout(() => {
+            btn.innerHTML = "نسخ الكود المشفّر 📋";
+            btn.className = "btn-copy";
+        }, 2000);
     }
 </script>
 </body>
