@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<title>N60 Hub | Event Horizon v8.1 (Fixed)</title>
+<script src="https://cdn.jsdelivr.net/npm/fengari-web@0.1.4/dist/fengari-web.min.js"></script>
+<style>
+    :root { --p: #00ff6a; --bg: #000; --card: #0a0a0a; }
+    * { box-sizing: border-box; font-family: 'Consolas', monospace; }
+    body { margin: 0; background: var(--bg); color: white; direction: rtl; }
+    .wrapper { min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 20px; background: radial-gradient(circle at top, #001f0d, #000); }
+    
+    /* مركز التحميل */
+    .dl-section { width: 100%; max-width: 900px; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-bottom: 30px; }
+    .dl-card { background: var(--card); border: 1px solid #222; padding: 20px; border-radius: 12px; text-align: center; transition: 0.3s; }
+    .dl-card:hover { border-color: var(--p); transform: translateY(-5px); }
+    .dl-btn { display: inline-block; margin-top: 10px; padding: 10px 20px; background: var(--p); color: #000; text-decoration: none; border-radius: 5px; font-weight: bold; font-size: 13px; }
+
+    /* لوحة التشفير */
+    .obf-panel { width: 100%; max-width: 900px; background: var(--card); border: 2px solid var(--p); padding: 30px; border-radius: 20px; box-shadow: 0 0 50px rgba(0,255,106,0.1); }
+    textarea { width: 100%; height: 180px; background: #000; border: 1px solid #1a1a1a; color: var(--p); padding: 15px; border-radius: 8px; margin: 15px 0; font-size: 12px; resize: none; }
+    .btn-main { width: 100%; padding: 20px; background: var(--p); color: #000; border: none; font-weight: 900; cursor: pointer; border-radius: 8px; font-size: 1.2rem; transition: 0.3s; }
+    .btn-main:hover { box-shadow: 0 0 30px var(--p); }
+    .btn-copy { width: 100%; margin-top: 10px; padding: 10px; background: transparent; border: 1px solid #333; color: #888; cursor: pointer; border-radius: 5px; transition: 0.3s; }
+    .btn-copy:hover { border-color: var(--p); color: var(--p); }
+</style>
+</head>
+<body>
+
+<div class="wrapper">
+    <h1 style="color:var(--p); margin-bottom:5px;">N60 HUB 🛡️</h1>
+    <p style="font-size:12px; opacity:0.5; margin-bottom:30px;">مركز المشغلات وتشفير السكربتات (v8.1 Fixed)</p>
+
+    <div class="dl-section">
+        <div class="dl-card">
+            <h3>Delta Android</h3>
+            <a href="https://delta-executor.com/download/android/latest.apk" class="dl-btn">تحميل APK 📥</a>
+        </div>
+        <div class="dl-card">
+            <h3>Delta iOS</h3>
+            <a href="itms-services://?action=download-manifest&url=https://delta.bz/manifest.plist" class="dl-btn">تثبيت للايفون 📲</a>
+        </div>
+        <div class="dl-card">
+            <h3>Arceus X Neo</h3>
+            <a href="https://spdmteam.com/api/v1/download/android/latest" class="dl-btn">تحميل APK 🚀</a>
+        </div>
+    </div>
+
+    <div class="obf-panel">
+        <h2 style="color:var(--p); margin:0;">GHOST ENGINE v8.1 (FIXED)</h2>
+        <textarea id="srcIn" placeholder="-- ضع سكربت Lua هنا ليتم تشفيره فوراً..."></textarea>
+        <button class="btn-main" onclick="processObf()">تشفير وحماية السكربت 🛡️</button>
+        <textarea id="resOut" readonly placeholder="الكود المشفّر سيظهر هنا..."></textarea>
+        <button class="btn-copy" onclick="copyCode()">نسخ الكود المشفّر 📋</button>
+    </div>
+
+    <p style="margin-top:40px; font-size:10px; color:#333; letter-spacing:3px;">-- N60 HUB SOVEREIGN PROTECTION 2026 --</p>
+</div>
+
+<script type="application/lua" id="luaLogic">
+    function run_shield(source)
+        local k1, k2, k3 = math.random(60,120), math.random(120,180), math.random(180,240)
+        local ops = {1, 2, 3}
+        for i = #ops, 2, -1 do
+            local j = math.random(i)
+            ops[i], ops[j] = ops[j], ops[i]
+        end
+        local G, L, C = ops[1], ops[2], ops[3]
+        
+        -- وظيفة التشفير المصلحة (تستخدم الفاصلة بدلاً من الـ Backslash)
+        local function enc(s, k)
+            local r = ""
+            for i=1, #s do 
+                r = r .. (string.byte(s, i) ~ k) .. "," 
+            end
+            return r
+        end
+
+        local target = source:match("'(.-)'") or source:match('"(.-)"') or "N60_HUB"
+        local data = "--[[ N60 EVENT HORIZON v8.1 FIXED ]]\n"
+        data = data .. "local _D = {{ " .. (G ~ k1) .. ", '" .. enc("print", k2) .. "' }, { " .. (L ~ k1) .. ", '" .. enc(target, k2) .. "' }, { " .. (C ~ k1) .. " }}\n"
+        data = data .. "local _K = {" .. k1 .. "," .. k2 .. "," .. k3 .. "}\n"
+        data = data .. [[
+local _E = (getgenv or getfenv)()
+local _S = {}
+local function _I(_instr, _keys)
+    local _p = 1
+    local _k1, _k2, _k3 = _keys[1], _keys[2], _keys[3]
+    
+    -- وظيفة فك التشفير المصلحة (تستخدم الفاصلة)
+    local function _u(_d, _k)
+        local _s = ""
+        for _b in _d:gmatch("(%d+),") do 
+            _s = _s .. string.char(tonumber(_b) ~ _k) 
+        end
+        return _s
+    end
+
+    while _p <= #_instr do
+        local _i = _instr[_p]
+        local _c = _i[1] ~ _k1
+        if _c == ]] .. G .. [[ then
+            table.insert(_S, _E[_u(_i[2], _k2)])
+        elseif _c == ]] .. L .. [[ then
+            local _m = ""
+            local _r = _u(_i[2], _k2)
+            for _j=1, #_r do 
+                _m = _m .. (string.byte(_r, _j) ~ _k3) .. "," 
+            end
+            table.insert(_S, _m)
+        elseif _c == ]] .. C .. [[ then
+            local _v = _u(table.remove(_S), _k3)
+            local _f = table.remove(_S)
+            if _f then _f(_v) end
+        end
+        _p = _p + 1
+    end
+end
+pcall(_I, _D, _K)
+_D = nil; _K = nil; _I = nil;
+]]
+        return data
+    end
+</script>
+
+<script>
+    function processObf() {
+        const input = document.getElementById('srcIn').value;
+        if(!input) return alert("ضع سكربت أولاً!");
+        const L = fengari.L;
+        fengari.load(document.getElementById('luaLogic').innerText)();
+        fengari.lua.lua_getglobal(L, "run_shield");
+        fengari.lua.lua_pushstring(L, input);
+        fengari.lua.lua_pcall(L, 1, 1, 0);
+        document.getElementById('resOut').value = fengari.to_jsstring(fengari.lua.lua_tostring(L, -1));
+    }
+
+    function copyCode() {
+        const copyText = document.getElementById("resOut");
+        if(!copyText.value) return alert("لا يوجد كود لنسخه!");
+        copyText.select();
+        document.execCommand("copy");
+        alert("تم نسخ الكود المشفّر بنجاح! ✅");
+    }
+</script>
+</body>
+</html>
