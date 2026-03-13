@@ -1,11 +1,20 @@
 local Workspace = game:GetService("Workspace")
 
+-- البحث عن Folder الرئيسي
 local projectilesFolder = Workspace:FindFirstChild("__PROJECTILES")
-if not projectilesFolder then return end
+if not projectilesFolder then
+    warn("__PROJECTILES folder not found!")
+    return
+end
 
+-- البحث عن Folder الفرعي Plots
 local plotsFolder = projectilesFolder:FindFirstChild("Plots")
-if not plotsFolder then return end
+if not plotsFolder then
+    warn("Plots folder not found inside __PROJECTILES!")
+    return
+end
 
+-- أسماء البارتات التي يجب استثناؤها
 local exceptions = {
     ["StealHitbox"] = true,
     ["DeliveryHitbox"] = true,
@@ -15,33 +24,27 @@ local exceptions = {
     ["StructureBaseHome"] = true
 }
 
-local function process(obj)
+-- دالة لضبط الشفافية وحذف أي Folder باسم Laser
+local function processModel(model)
+    if not model:IsA("Model") then return end
 
-    if obj:IsA("BasePart") then
-        
-        if exceptions[obj.Name] then
-            obj.Transparency = 1
-        else
-            obj.Transparency = 0.5
+    -- ضبط الشفافية
+    for _, obj in pairs(model:GetDescendants()) do
+        if obj:IsA("BasePart") then
+            if exceptions[obj.Name] then
+                obj.Transparency = 1
+            else
+                obj.Transparency = 0.5
+            end
+        elseif obj:IsA("Folder") and obj.Name == "Laser" then
+            obj:Destroy() -- حذف أي Folder اسمه Laser
         end
-        
-    elseif obj:IsA("Folder") and obj.Name == "Laser" then
-        obj:Destroy()
-    end
-
-end
-
-local function scan(model)
-    for _,v in ipairs(model:GetDescendants()) do
-        process(v)
     end
 end
 
-for _,v in ipairs(plotsFolder:GetChildren()) do
-    scan(v)
+-- تطبيق على كل موديل داخل Plots
+for _, model in pairs(plotsFolder:GetChildren()) do
+    processModel(model)
 end
 
-plotsFolder.DescendantAdded:Connect(function(obj)
-    task.wait()
-    process(obj)
-end)
+print("تم ضبط الشفافية واستثناء البارتات وحذف جميع Folder باسم Laser في Plots!")
