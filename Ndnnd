@@ -1,0 +1,47 @@
+local Workspace = game:GetService("Workspace")
+
+local projectilesFolder = Workspace:FindFirstChild("__PROJECTILES")
+if not projectilesFolder then return end
+
+local plotsFolder = projectilesFolder:FindFirstChild("Plots")
+if not plotsFolder then return end
+
+local exceptions = {
+    ["StealHitbox"] = true,
+    ["DeliveryHitbox"] = true,
+    ["Hitbox"] = true,
+    ["Spawn"] = true,
+    ["Main"] = true,
+    ["StructureBaseHome"] = true
+}
+
+local function process(obj)
+
+    if obj:IsA("BasePart") then
+        
+        if exceptions[obj.Name] then
+            obj.Transparency = 1
+        else
+            obj.Transparency = 0.5
+        end
+        
+    elseif obj:IsA("Folder") and obj.Name == "Laser" then
+        obj:Destroy()
+    end
+
+end
+
+local function scan(model)
+    for _,v in ipairs(model:GetDescendants()) do
+        process(v)
+    end
+end
+
+for _,v in ipairs(plotsFolder:GetChildren()) do
+    scan(v)
+end
+
+plotsFolder.DescendantAdded:Connect(function(obj)
+    task.wait()
+    process(obj)
+end)
