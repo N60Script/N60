@@ -2,69 +2,117 @@
 <html lang="ar">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>N60 HUB | CORE v26.0</title>
+    <title>N60 HUB | SUPERNOVA VM v27.0</title>
     <script src="https://cdn.jsdelivr.net/npm/fengari-web@0.1.4/dist/fengari-web.min.js"></script>
     <style>
-        :root { --p: #00ff6a; --bg: #050505; }
-        body { background: var(--bg); color: white; direction: rtl; font-family: sans-serif; margin: 0; padding: 15px; }
-        .box { max-width: 800px; margin: auto; background: #0a0a0a; border: 1px solid #1a1a1a; padding: 20px; border-radius: 15px; }
-        h1 { color: var(--p); text-align: center; font-size: 1.2rem; }
-        textarea { width: 100%; height: 150px; background: #000; color: var(--p); border: 1px solid #222; padding: 12px; border-radius: 10px; font-family: monospace; margin-bottom: 10px; outline: none; }
-        .btn-main { width: 100%; padding: 15px; background: var(--p); color: #000; border: none; font-weight: bold; border-radius: 10px; cursor: pointer; margin-bottom: 10px; }
-        .btn-copy { width: 100%; padding: 12px; background: #1a1a1a; color: #fff; border: 1px solid #333; border-radius: 10px; cursor: pointer; }
-        .install-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 15px; }
-        .inst-btn { background: #111; border: 1px solid #222; color: #fff; padding: 10px; border-radius: 8px; text-align: center; text-decoration: none; font-size: 12px; }
+        :root { --p: #00ff6a; --bg: #010101; }
+        body { background: var(--bg); color: white; direction: rtl; font-family: 'Consolas', monospace; padding: 15px; }
+        .box { max-width: 900px; margin: auto; background: #080808; border: 1px solid #1a1a1a; padding: 25px; border-radius: 20px; box-shadow: 0 0 60px rgba(0,255,106,0.1); }
+        h1 { color: var(--p); text-align: center; letter-spacing: 3px; border-bottom: 2px solid #111; padding-bottom: 10px; }
+        .nav { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
+        .nav a { background: #111; border: 1px solid #222; color: #fff; padding: 10px; border-radius: 8px; text-align: center; text-decoration: none; font-size: 11px; transition: 0.3s; }
+        .nav a:hover { border-color: var(--p); background: #1a1a1a; }
+        textarea { width: 100%; height: 180px; background: #000; color: var(--p); border: 1px solid #1a1a1a; padding: 15px; border-radius: 12px; margin-bottom: 15px; outline: none; font-size: 11px; }
+        .btn-v { width: 100%; padding: 18px; background: var(--p); color: #000; border: none; font-weight: bold; border-radius: 12px; cursor: pointer; font-size: 1.1rem; margin-bottom: 10px; }
+        .btn-c { width: 100%; padding: 15px; background: #1a1a1a; color: white; border: 1px solid #333; border-radius: 12px; cursor: pointer; }
     </style>
 </head>
 <body>
 
 <div class="box">
-    <h1>N60 CORE EXECUTOR-READY v26 🛡️</h1>
+    <h1>N60 SUPERNOVA VM v27.0 🌌</h1>
     
-    <div class="install-grid">
-        <a href="itms-services://?action=download-manifest&url=https://delta.bz/manifest.plist" class="inst-btn">Delta iOS 🍎</a>
-        <a href="https://delta-executor.com/Delta.apk" class="inst-btn">Delta APK 🤖</a>
+    <div class="nav">
+        <a href="itms-services://?action=download-manifest&url=https://delta.bz/manifest.plist">DELTA IOS</a>
+        <a href="https://delta-executor.com/Delta.apk">DELTA APK</a>
+        <a href="itms-services://?action=download-manifest&url=https://skibx.com/ota.plist">SKIBX IOS</a>
+        <a href="https://spdmteam.com/Arceus.apk">ARCEUS APK</a>
     </div>
 
-    <textarea id="input" placeholder="أدخل كود Lua هنا..."></textarea>
-    <button class="btn-main" onclick="runCoreObf()">تشفير (نسخة التوافق القصوى) 🚀</button>
-    <textarea id="output" readonly placeholder="الكود المشفّر سيظهر هنا..."></textarea>
-    <button id="cp" class="btn-copy" onclick="copyCore()">نسخ الكود 📋</button>
+    <textarea id="src" placeholder="-- الصق كود Lua هنا للتحويل إلى Virtual Machine..."></textarea>
+    <button class="btn-v" onclick="buildVM()">بناء الآلة الافتراضية وتشغيل التشفير ⚡</button>
+    <textarea id="res" readonly placeholder="الـ Bytecode المشفّر..."></textarea>
+    <button id="copy" class="btn-c" onclick="copyVM()">نسخ السكربت المحصّن 📋</button>
 </div>
 
-<script type="application/lua" id="coreEngine">
-function core_obf(src)
-    local k = math.random(50, 150)
-    local encoded = ""
-    for i=1, #src do
-        encoded = encoded .. (string.byte(src, i) + k) .. ","
+<script type="application/lua" id="vmEngine">
+function build_vm(source)
+    -- تحويل المصدر إلى Bytecode وهمي (Custom Instruction Set)
+    local bytecode = {}
+    local key1 = math.random(100, 255)
+    local key2 = math.random(10, 50)
+    
+    for i=1, #source do
+        local b = string.byte(source, i)
+        -- تشفير الطبقة الأولى (XOR + Rotation)
+        local enc = ((b ~ key1) + key2) % 256
+        table.insert(bytecode, enc)
     end
     
-    return "--[[ N60 CORE v26 ]]\nlocal _K="..k.."\nlocal _D={"..encoded.."}\nlocal _S=''\nfor i=1,#_D do _S=_S..string.char(_D[i]-_K) end\nlocal _F, _E = loadstring(_S)\nif _F then _F() else print(_E) end"
+    local data = table.concat(bytecode, ",")
+    
+    -- بناء الـ VM Interpreter
+    local script = "--[[ N60 SUPERNOVA VM v27.0 ]]\n"
+    script = script .. "local _B = {" .. data .. "}\n"
+    script = script .. "local _K1, _K2 = " .. key1 .. ", " .. key2 .. "\n"
+    script = script .. [[
+local _VM = function(instr, k1, k2)
+    local stack = {}
+    -- حماية Metatable لمنع التفتيش
+    local proxy = newproxy and newproxy(true) or {}
+    if getmetatable then 
+        getmetatable(proxy).__call = function()
+            local out = ""
+            for i=1, #instr do
+                -- فك التشفير داخل الذاكرة فقط (On-the-fly)
+                local dec = ((instr[i] - k2) % 256) ~ k1
+                out = out .. string.char(dec)
+            end
+            local f, e = loadstring(out)
+            if f then 
+                setfenv(f, getfenv()) 
+                return pcall(f) 
+            else 
+                warn("VM ERROR: SYSTEM CORRUPT") 
+            end
+        end
+    end
+    return proxy
+end
+
+-- تشغيل الـ VM بطريقة ملتوية تمنع الـ Static Analysis
+local _RUN = _VM(_B, _K1, _K2)
+if type(_RUN) == "userdata" then 
+    _RUN() 
+else
+    -- Fallback للمشغلات التي لا تدعم newproxy
+    local s = ""
+    for i=1, #_B do s = s .. string.char(((_B[i] - _K2) % 256) ~ _K1) end
+    loadstring(s)()
+end]]
+    return script
 end
 </script>
 
 <script>
-    function runCoreObf() {
-        const input = document.getElementById('input').value;
-        if(!input) return;
+    function buildVM() {
+        const input = document.getElementById('src').value;
+        if(!input) return alert("أدخل كود!");
         const L = fengari.L;
-        fengari.load(document.getElementById('coreEngine').innerText)();
-        fengari.lua.lua_getglobal(L, "core_obf");
+        fengari.load(document.getElementById('vmEngine').innerText)();
+        fengari.lua.lua_getglobal(L, "build_vm");
         fengari.lua.lua_pushstring(L, input);
         if(fengari.lua.lua_pcall(L, 1, 1, 0) == 0) {
-            document.getElementById('output').value = fengari.to_jsstring(fengari.lua.lua_tostring(L, -1));
+            document.getElementById('res').value = fengari.to_jsstring(fengari.lua.lua_tostring(L, -1));
         }
     }
 
-    function copyCore() {
-        const out = document.getElementById('output');
-        const btn = document.getElementById('cp');
-        out.select();
-        document.execCommand('copy');
-        btn.innerHTML = "تم النسخ! ✅";
-        setTimeout(() => { btn.innerHTML = "نسخ الكود 📋"; }, 2000);
+    function copyVM() {
+        const r = document.getElementById('res');
+        const b = document.getElementById('copy');
+        r.select(); document.execCommand('copy');
+        b.innerHTML = "تم النسخ! جربه الآن ✅";
+        setTimeout(() => b.innerHTML = "نسخ السكربت المحصّن 📋", 2000);
     }
 </script>
 </body>
