@@ -3,168 +3,126 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>N60 HUB | Nova-LUR v23.0</title>
+    <title>N60 HUB | Black-Box v24.0</title>
     <script src="https://cdn.jsdelivr.net/npm/fengari-web@0.1.4/dist/fengari-web.min.js"></script>
     <style>
-        :root { --p: #00ff6a; --bg: #030303; --card: #0a0a0a; }
-        * { box-sizing: border-box; font-family: 'Consolas', monospace; }
-        body { background: var(--bg); color: white; direction: rtl; margin: 0; padding: 0; }
-        
-        .nav { background: #000; padding: 15px; display: flex; justify-content: center; gap: 10px; border-bottom: 2px solid var(--p); position: sticky; top: 0; z-index: 1000; }
-        .nav button { background: #111; border: 1px solid var(--p); color: var(--p); padding: 10px 15px; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.3s; }
-        .nav button.active { background: var(--p); color: black; box-shadow: 0 0 15px var(--p); }
-
-        .container { padding: 20px; max-width: 950px; margin: auto; }
-        .section { display: none; }
-        .section.active { display: block; animation: fadeIn 0.4s ease; }
-
-        .card { background: var(--card); border-radius: 20px; padding: 30px; margin-bottom: 20px; border: 1px solid #1a1a1a; box-shadow: 0 0 40px rgba(0,255,106,0.05); }
-        h1 { color: var(--p); text-align: center; font-size: 2rem; margin-top: 0; }
-
-        /* Installer Grid */
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
-        .btn-install { background: #000; border: 1px solid #222; padding: 20px 10px; border-radius: 15px; cursor: pointer; text-align: center; transition: 0.3s; }
-        .btn-install:hover { border-color: var(--p); transform: translateY(-5px); }
-        .btn-install b { color: var(--p); display: block; margin-bottom: 5px; }
-
-        /* Obfuscator UI */
-        textarea { width: 100%; height: 180px; background: #000; color: var(--p); border: 1px solid #1a1a1a; padding: 15px; border-radius: 12px; margin: 15px 0; outline: none; font-size: 11px; }
-        .btn-go { width: 100%; padding: 20px; background: var(--p); color: black; border: none; font-weight: bold; border-radius: 12px; cursor: pointer; font-size: 1.2rem; }
-
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        :root { --p: #00ff6a; --bg: #000; --c: #0d0d0d; }
+        body { background: var(--bg); color: white; direction: rtl; font-family: 'Courier New', Courier, monospace; margin: 0; }
+        .nav { background: #000; padding: 10px; display: flex; justify-content: center; gap: 5px; border-bottom: 1px solid #333; sticky: top; }
+        .nav button { background: #111; border: 1px solid #222; color: #555; padding: 8px 12px; border-radius: 5px; cursor: pointer; font-size: 12px; }
+        .nav button.active { border-color: var(--p); color: var(--p); }
+        .container { padding: 20px; max-width: 900px; margin: auto; }
+        .card { background: var(--c); border: 1px solid #1a1a1a; padding: 25px; border-radius: 15px; box-shadow: 0 0 50px rgba(0,255,106,0.02); }
+        h1 { color: var(--p); text-align: center; font-size: 1.5rem; text-transform: uppercase; letter-spacing: 5px; }
+        textarea { width: 100%; height: 200px; background: #050505; color: var(--p); border: 1px solid #1a1a1a; padding: 15px; border-radius: 10px; margin: 15px 0; outline: none; font-size: 11px; }
+        .btn-main { width: 100%; padding: 18px; background: var(--p); color: #000; border: none; font-weight: 900; border-radius: 8px; cursor: pointer; font-size: 1rem; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; }
+        .btn-install { background: #000; border: 1px solid #222; padding: 15px; border-radius: 10px; cursor: pointer; text-align: center; text-decoration: none; color: #fff; font-size: 12px; }
     </style>
 </head>
 <body>
 
 <div class="nav">
-    <button id="t-obf" class="active" onclick="tab('obf')">تشفير LUR 🛡️</button>
-    <button id="t-and" onclick="tab('android')">أندرويد 🤖</button>
-    <button id="t-ios" onclick="tab('ios')">آيفون 🍎</button>
+    <button id="b-obf" class="active" onclick="tab('obf')">BLACK-BOX v24</button>
+    <button id="b-and" onclick="tab('android')">ANDROID</button>
+    <button id="b-ios" onclick="tab('ios')">IOS OTA</button>
 </div>
 
 <div class="container">
-    
-    <div id="obf" class="section active">
+    <div id="obf" class="section" style="display:block;">
         <div class="card">
-            <h1>N60 NOVA-LUR v23.0 🌌</h1>
-            <p style="text-align:center; opacity:0.5; font-size:11px;">Metatable-Based Virtualization | Anti-Python / Anti-Sandbox</p>
-            <textarea id="src" placeholder="-- الصق كود Lua الأصلي هنا..."></textarea>
-            <button class="btn-go" onclick="buildLur()">تشفير الكود بنظام الطبقات 🚀</button>
-            <textarea id="res" readonly placeholder="الكود المشفّر النهائي سيظهر هنا..."></textarea>
-            <button class="btn-go" style="background:#222; color:#fff; margin-top:10px;" onclick="copyRes()">نسخ السكربت 📋</button>
+            <h1>N60 BLACK-BOX v24.0</h1>
+            <p style="text-align:center; font-size:10px; opacity:0.4;">HEURISTIC DECEPTION | ANTI-AI RECONSTRUCTION</p>
+            <textarea id="src" placeholder="-- ضع كود الـ Lua هنا للتعمية الشاملة..."></textarea>
+            <button class="btn-main" onclick="generate()">DEPLOY BLACK-BOX ENCRYPTION ⚡</button>
+            <textarea id="res" readonly placeholder="الكود المعمّى سيظهر هنا..."></textarea>
+            <button class="btn-main" style="background:#111; color:#fff; margin-top:10px;" onclick="copy()">نسخ 📋</button>
         </div>
     </div>
 
-    <div id="android" class="section">
+    <div id="android" class="section" style="display:none;">
         <div class="card">
-            <h1>Android Direct 🤖</h1>
+            <h1>ANDROID EXECUTORS</h1>
             <div class="grid">
-                <div class="btn-install" onclick="location.href='https://delta-executor.com/Delta.apk'">
-                    <b>Delta</b> <small>تثبيت APK</small>
-                </div>
-                <div class="btn-install" onclick="location.href='https://spdmteam.com/ArceusX.apk'">
-                    <b>Arceus X</b> <small>تثبيت APK</small>
-                </div>
+                <a class="btn-install" href="https://delta-executor.com/Delta.apk">DELTA APK</a>
+                <a class="btn-install" href="https://spdmteam.com/Arceus.apk">ARCEUS APK</a>
             </div>
         </div>
     </div>
 
-    <div id="ios" class="section">
+    <div id="ios" class="section" style="display:none;">
         <div class="card">
-            <h1>iOS OTA Install 🍎</h1>
+            <h1>IOS DIRECT INSTALL (OTA)</h1>
             <div class="grid">
-                <div class="btn-install" onclick="location.href='itms-services://?action=download-manifest&url=https://delta.bz/manifest.plist'">
-                    <b>Delta iOS</b> <small>Install Direct</small>
-                </div>
-                <div class="btn-install" onclick="location.href='itms-services://?action=download-manifest&url=https://skibx.com/ota.plist'">
-                    <b>SkibX iOS</b> <small>Install Direct</small>
-                </div>
+                <div class="btn-install" onclick="window.location.href='itms-services://?action=download-manifest&url=https://delta.bz/manifest.plist'">DELTA IOS</div>
+                <div class="btn-install" onclick="window.location.href='itms-services://?action=download-manifest&url=https://skibx.com/ota.plist'">SKIBX IOS</div>
             </div>
         </div>
     </div>
-
 </div>
 
 <script type="application/lua" id="engine">
-function build_lur(source)
-    local seed = math.random(100, 255)
+function encrypt(s)
+    local k1, k2 = math.random(10, 50), math.random(5, 20)
+    local data = ""
+    for i=1, #s do
+        local b = string.byte(s, i)
+        -- معادلة متغيرة بناءً على موقع الحرف (Polynomial Offset)
+        local enc = (b + k1) * k2 + i
+        data = data .. enc .. "."
+    end
+
+    local junk = "local _="..math.random(100,999)..";if _==0 then print('Junk') end;"
     
-    -- تحويل الكود إلى سلسلة Hex معقدة
-    local function to_hex(s)
-        local h = ""
-        for i=1, #s do
-            h = h .. string.format("\\%03d", string.byte(s, i) + seed)
-        end
-        return h
-    end
-
-    local payload = to_hex(source)
-    local out = "--[[ N60 NOVA-LUR v23.0 ]]\n"
-    out = out .. "local _O = '" .. payload .. "'\n"
-    out = out .. "local _S = " .. seed .. "\n"
+    local out = "--[[ N60 BLACK-BOX PROTECTION ]]\n"
+    out = out .. "local _D = '" .. data .. "'\n"
     out = out .. [[
-local _ENV = (getfenv and getfenv()) or _G
-local _P = newproxy and newproxy(true) or {}
-local _M = getmetatable and getmetatable(_P) or {}
-
-_M.__call = function()
-    local function _WRAP(...)
-        local _R = ""
-        _O:gsub("\\(%d%d%d)", function(d)
-            _R = _R .. string.char(tonumber(d) - _S)
-        end)
-        
-        local _EXE = function(_SRC)
-            local f, e = loadstring(_SRC)
-            if f then 
-                setfenv(f, _ENV)
-                return pcall(f) 
-            else 
-                return warn("VM_ERR: "..tostring(e))
-            end
-        end
-        return _EXE(_R)
+local _K1, _K2 = ]]..k1..[[, ]]..k2..[[;
+local _V = setmetatable({}, {__call = function(t,...)
+    local _R = ""
+    for v in _D:gmatch("(%d+)%.") do
+        local i = #_R + 1
+        local d = (tonumber(v) - i) / _K2 - _K1
+        _R = _R .. string.char(math.floor(d + 0.5))
     end
-    return _WRAP()
-end
-
--- تفعيل الآلة الافتراضية
-if setmetatable then
-    local _PROXY = setmetatable({}, _M)
-    _PROXY()
-else
-    _M.__call()
-end
+    local _B = newproxy and newproxy(true)
+    local _M = getmetatable(_B)
+    _M.__call = function()
+        local f, e = loadstring(_R)
+        if f then 
+            setfenv(f, getfenv())
+            local s, r = pcall(f)
+            if not s then warn(r) end
+        end
+    end
+    return _B()
+end})
+_V()
 ]]
-    return out
+    return junk .. out
 end
 </script>
 
 <script>
     function tab(id) {
-        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-        document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-        document.getElementById('t-' + id.substring(0,3)).classList.add('active');
+        document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
+        document.getElementById(id).style.display = 'block';
     }
-
-    function buildLur() {
+    function generate() {
         const input = document.getElementById('src').value;
-        if(!input) return alert("أدخل كود!");
+        if(!input) return;
         const L = fengari.L;
         fengari.load(document.getElementById('engine').innerText)();
-        fengari.lua.lua_getglobal(L, "build_lur");
+        fengari.lua.lua_getglobal(L, "encrypt");
         fengari.lua.lua_pushstring(L, input);
         if(fengari.lua.lua_pcall(L, 1, 1, 0) == 0) {
             document.getElementById('res').value = fengari.to_jsstring(fengari.lua.lua_tostring(L, -1));
         }
     }
-
-    function copyRes() {
+    function copy() {
         const r = document.getElementById('res');
-        r.select();
-        document.execCommand('copy');
-        alert("تم نسخ الكود بنظام LUR v23!");
+        r.select(); document.execCommand('copy');
+        alert("تأكد من تجربة الكود في Delta أو Skibx!");
     }
 </script>
 </body>
