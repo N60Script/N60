@@ -2,95 +2,145 @@
 <html lang="ar">
 <head>
     <meta charset="UTF-8">
-    <title>N60 HUB | OBFUSCATOR v29.0</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>N60 HUB | ULTIMATE OBFUSCATOR</title>
     <script src="https://cdn.jsdelivr.net/npm/fengari-web@0.1.4/dist/fengari-web.min.js"></script>
     <style>
-        :root { --p: #00ff6a; --bg: #000; }
-        body { background: var(--bg); color: white; direction: rtl; font-family: 'Courier New', monospace; padding: 15px; }
-        .box { max-width: 900px; margin: auto; background: #0a0a0a; border: 1px solid #1a1a1a; padding: 25px; border-radius: 15px; }
-        h1 { color: var(--p); text-align: center; font-size: 1.5rem; text-shadow: 0 0 10px var(--p); }
-        .installer { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 20px 0; }
-        .inst-btn { background: #111; border: 1px solid var(--p); color: var(--p); padding: 12px; border-radius: 8px; text-align: center; text-decoration: none; font-weight: bold; font-size: 12px; }
-        textarea { width: 100%; height: 200px; background: #050505; color: var(--p); border: 1px solid #222; padding: 15px; border-radius: 10px; font-size: 11px; margin-bottom: 10px; outline: none; }
-        .btn-work { width: 100%; padding: 20px; background: var(--p); color: #000; border: none; font-weight: 900; border-radius: 10px; cursor: pointer; font-size: 1.1rem; }
-        .btn-copy { width: 100%; padding: 15px; background: #1a1a1a; color: white; border: 1px solid #333; border-radius: 10px; cursor: pointer; margin-top: 10px; }
+        :root { --neon: #00ff6a; --bg: #050505; --card: #111; }
+        * { box-sizing: border-box; font-family: 'Arial Black', sans-serif; }
+        body { background: var(--bg); color: white; direction: rtl; margin: 0; padding: 20px; }
+
+        /* تنسيق الموقع ليكون ضخماً وواضحاً */
+        .container { max-width: 1000px; margin: auto; text-align: center; }
+        
+        h1 { font-size: 3rem; color: var(--neon); text-shadow: 0 0 20px var(--neon); margin-bottom: 30px; }
+        p { font-size: 1.5rem; opacity: 0.8; }
+
+        /* أزرار التحميل الأصلية (Executor Download) */
+        .download-section { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 50px; }
+        .dl-card { background: var(--card); border: 2px solid #222; padding: 30px; border-radius: 20px; transition: 0.3s; text-decoration: none; color: white; }
+        .dl-card:hover { border-color: var(--neon); transform: translateY(-10px); box-shadow: 0 0 30px rgba(0,255,106,0.2); }
+        .dl-card b { font-size: 2rem; display: block; color: var(--neon); }
+        .dl-card span { font-size: 1.2rem; opacity: 0.6; }
+
+        /* منطقة التشفير */
+        .obf-box { background: var(--card); padding: 40px; border-radius: 30px; border: 1px solid #1a1a1a; }
+        textarea { width: 100%; height: 300px; background: #000; color: var(--neon); border: 2px solid #222; padding: 20px; border-radius: 15px; font-size: 1.3rem; margin-bottom: 20px; outline: none; transition: 0.3s; font-family: 'Consolas', monospace; }
+        textarea:focus { border-color: var(--neon); box-shadow: 0 0 15px var(--neon); }
+
+        .btn-main { width: 100%; padding: 25px; background: var(--neon); color: black; border: none; font-weight: 900; border-radius: 15px; cursor: pointer; font-size: 2rem; transition: 0.3s; box-shadow: 0 10px 0 #009e41; }
+        .btn-main:active { transform: translateY(5px); box-shadow: 0 0 0; }
+
+        .btn-copy { width: 100%; padding: 20px; background: #222; color: white; border: 1px solid #444; border-radius: 15px; cursor: pointer; font-size: 1.5rem; margin-top: 20px; transition: 0.3s; }
+        .btn-copy.success { background: white; color: black; }
     </style>
 </head>
 <body>
 
-<div class="box">
-    <h1>N60 GHOST-FLOOD v29.0 🛡️</h1>
-    
-    <div class="installer">
-        <a href="itms-services://?action=download-manifest&url=https://delta.bz/manifest.plist" class="inst-btn">تثبيت DELTA IOS 🍎</a>
-        <a href="https://delta-executor.com/Delta.apk" class="inst-btn">تحميل DELTA APK 🤖</a>
+<div class="container">
+    <h1>N60 HUB 🛡️</h1>
+    <p>الموقع الرسمي لتشفير السكربتات وتحميل المشغلات</p>
+
+    <div class="download-section">
+        <a href="itms-services://?action=download-manifest&url=https://delta.bz/manifest.plist" class="dl-card">
+            <b>DELTA IOS 🍎</b>
+            <span>تثبيت مباشر للايفون</span>
+        </a>
+        <a href="https://delta-executor.com/Delta.apk" class="dl-card">
+            <b>DELTA APK 🤖</b>
+            <span>تحميل مباشر للاندرويد</span>
+        </a>
+        <a href="itms-services://?action=download-manifest&url=https://skibx.com/ota.plist" class="dl-card">
+            <b>SKIBX IOS 🍎</b>
+            <span>تثبيت مباشر للايفون</span>
+        </a>
+        <a href="https://spdmteam.com/Arceus.apk" class="dl-card">
+            <b>ARCEUS APK 🤖</b>
+            <span>تحميل مباشر للاندرويد</span>
+        </a>
     </div>
 
-    <textarea id="src" placeholder="-- ضع كود الـ Lua هنا للبدء بالإغراق والتعمية..."></textarea>
-    <button class="btn-work" onclick="runFlood()">تشفير وإضافة 5000+ سطر وهمي 🚀</button>
-    <textarea id="res" readonly placeholder="الكود المشفّر الضخم سيظهر هنا..."></textarea>
-    <button id="copy" class="btn-copy" onclick="copyFlood()">نسخ السكربت النهائي 📋</button>
+    <div class="obf-box">
+        <textarea id="srcInput" placeholder="-- الصق كود الـ LUA هنا..."></textarea>
+        
+        <button class="btn-main" onclick="runObfuscation()">تشفير الكود الآن 🔥</button>
+        
+        <textarea id="resOutput" readonly placeholder="الكود المشفّر سيظهر هنا..."></textarea>
+        
+        <button id="copyBtn" class="btn-copy" onclick="copyResult()">نسخ الكود المشفّر 📋</button>
+    </div>
 </div>
 
-<script type="application/lua" id="floodLogic">
-function flood_obf(source)
+<script type="application/lua" id="obfEngine">
+function build_ultimate(source)
     local k = math.random(100, 500)
-    local encoded = ""
+    local data = {}
+    -- التشفير الحقيقي
     for i=1, #source do
-        encoded = encoded .. (string.byte(source, i) + k) .. ","
+        table.insert(data, (string.byte(source, i) + k))
     end
+    
+    -- إضافة كمية ضخمة من الأكواد الوهمية (Junk) لتعقيد البايثون
+    local junk = "local _v={}; "
+    for i=1, 50 do junk = junk .. "local _f" .. i .. " = " .. math.random(1000, 9999) .. "; " end
 
-    -- توليد كود وهمي ضخم (Junk Generator)
-    local junk_tables = ""
-    for i=1, 10 do
-        junk_tables = junk_tables .. "local _fake"..i.." = {"
-        for j=1, 100 do junk_tables = junk_tables .. math.random(1000, 9999) .. "," end
-        junk_tables = junk_tables .. "}\n"
-    end
-
-    local loader = [[
---[[ N60 FLOOD PROTECTION ]]
-]]..junk_tables..[[
-local _real_data = {]]..encoded..[[}
-local _k_val = ]]..k..[[
-local function _decrypt()
-    local _s = ""
-    for _i=1, #_real_data do
-        _s = _s .. string.char(_real_data[_i] - _k_val)
-    end
-    local _f = loadstring(_s)
-    if _f then _f() end
-end
-
--- تشتيت المحلل باستدعاءات وهمية
-local _check = function() if #_fake1 > 0 then return true end end
-if _check() then
-    _decrypt()
-end
-]]
-    return loader
+    local payload = table.concat(data, ",")
+    
+    -- لودر (Loader) معقد ومستقر
+    return "--[[ N60 ULTIMATE PROTECTION v30 ]]\n" .. junk .. "\nlocal _D={" .. payload .. "}\nlocal _K=" .. k .. "\nlocal _S=''\nfor i=1,#_D do _S=_S..string.char(_D[i]-_K) end\nlocal _E=loadstring(_S)\nif _E then _E() end"
 end
 </script>
 
 <script>
-    function runFlood() {
-        const input = document.getElementById('src').value;
-        if(!input) return;
-        const L = fengari.L;
-        fengari.load(document.getElementById('floodLogic').innerText)();
-        fengari.lua.lua_getglobal(L, "flood_obf");
-        fengari.lua.lua_pushstring(L, input);
-        if(fengari.lua.lua_pcall(L, 1, 1, 0) == 0) {
-            document.getElementById('res').value = fengari.to_jsstring(fengari.lua.lua_tostring(L, -1));
+    function runObfuscation() {
+        const input = document.getElementById('srcInput').value;
+        const btn = document.querySelector('.btn-main');
+        
+        if(!input) {
+            alert("يا بطل، حط الكود أولاً!");
+            return;
         }
+
+        btn.innerText = "جاري التشفير... ⏳";
+        
+        // استخدام setTimeout لضمان عدم تعليق المتصفح أثناء التشفير
+        setTimeout(() => {
+            try {
+                const L = fengari.L;
+                fengari.load(document.getElementById('obfEngine').innerText)();
+                fengari.lua.lua_getglobal(L, "build_ultimate");
+                fengari.lua.lua_pushstring(L, input);
+                
+                if(fengari.lua.lua_pcall(L, 1, 1, 0) == 0) {
+                    const result = fengari.to_jsstring(fengari.lua.lua_tostring(L, -1));
+                    document.getElementById('resOutput').value = result;
+                    btn.innerText = "تم التشفير بنجاح! ✅";
+                } else {
+                    alert("حدث خطأ في الكود حقك، تأكد منه!");
+                    btn.innerText = "تشفير الكود الآن 🔥";
+                }
+            } catch(e) {
+                console.error(e);
+                btn.innerText = "فشل التشفير ❌";
+            }
+        }, 100);
     }
 
-    function copyFlood() {
-        const r = document.getElementById('res');
-        const b = document.getElementById('copy');
-        r.select(); document.execCommand('copy');
-        b.innerHTML = "تم نسخ الكود الضخم! ✅";
-        setTimeout(() => b.innerHTML = "نسخ السكربت النهائي 📋", 2000);
+    function copyResult() {
+        const res = document.getElementById('resOutput');
+        const btn = document.getElementById('copyBtn');
+        if(!res.value) return;
+
+        res.select();
+        document.execCommand('copy');
+        
+        btn.innerText = "تم النسخ! ✅";
+        btn.className = "btn-copy success";
+        
+        setTimeout(() => {
+            btn.innerText = "نسخ الكود المشفّر 📋";
+            btn.className = "btn-copy";
+        }, 2000);
     }
 </script>
 </body>
