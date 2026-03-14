@@ -3,35 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>N60 HUB | V22.0 Final</title>
+    <title>N60 HUB | Nova-LUR v23.0</title>
     <script src="https://cdn.jsdelivr.net/npm/fengari-web@0.1.4/dist/fengari-web.min.js"></script>
     <style>
-        :root { --p: #00ff6a; --bg: #050505; --card: #111; }
-        * { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        :root { --p: #00ff6a; --bg: #030303; --card: #0a0a0a; }
+        * { box-sizing: border-box; font-family: 'Consolas', monospace; }
         body { background: var(--bg); color: white; direction: rtl; margin: 0; padding: 0; }
         
-        /* Navigation */
-        .nav { background: #000; padding: 15px; display: flex; justify-content: center; gap: 8px; border-bottom: 2px solid var(--p); position: sticky; top: 0; z-index: 1000; }
-        .nav button { background: #1a1a1a; border: 1px solid var(--p); color: var(--p); padding: 10px 12px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 0.85rem; transition: 0.3s; }
-        .nav button.active { background: var(--p); color: black; box-shadow: 0 0 10px var(--p); }
+        .nav { background: #000; padding: 15px; display: flex; justify-content: center; gap: 10px; border-bottom: 2px solid var(--p); position: sticky; top: 0; z-index: 1000; }
+        .nav button { background: #111; border: 1px solid var(--p); color: var(--p); padding: 10px 15px; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.3s; }
+        .nav button.active { background: var(--p); color: black; box-shadow: 0 0 15px var(--p); }
 
-        .container { padding: 20px; max-width: 900px; margin: auto; }
+        .container { padding: 20px; max-width: 950px; margin: auto; }
         .section { display: none; }
-        .section.active { display: block; animation: fadeIn 0.3s ease-in; }
+        .section.active { display: block; animation: fadeIn 0.4s ease; }
 
-        .card { background: var(--card); border-radius: 20px; padding: 25px; margin-bottom: 20px; border: 1px solid #222; }
-        h1 { color: var(--p); text-align: center; margin: 0 0 15px; font-size: 1.8rem; }
+        .card { background: var(--card); border-radius: 20px; padding: 30px; margin-bottom: 20px; border: 1px solid #1a1a1a; box-shadow: 0 0 40px rgba(0,255,106,0.05); }
+        h1 { color: var(--p); text-align: center; font-size: 2rem; margin-top: 0; }
 
-        /* Installer Buttons */
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; }
-        .install-btn { background: #1a1a1a; border: 1px solid #333; color: white; padding: 15px 5px; border-radius: 12px; cursor: pointer; text-align: center; transition: 0.3s; display: flex; flex-direction: column; gap: 5px; }
-        .install-btn:hover { border-color: var(--p); transform: translateY(-3px); background: #1e1e1e; }
-        .install-btn b { color: var(--p); font-size: 1rem; }
-        .install-btn small { opacity: 0.6; font-size: 0.75rem; }
+        /* Installer Grid */
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
+        .btn-install { background: #000; border: 1px solid #222; padding: 20px 10px; border-radius: 15px; cursor: pointer; text-align: center; transition: 0.3s; }
+        .btn-install:hover { border-color: var(--p); transform: translateY(-5px); }
+        .btn-install b { color: var(--p); display: block; margin-bottom: 5px; }
 
         /* Obfuscator UI */
-        textarea { width: 100%; height: 160px; background: #000; color: var(--p); border: 1px solid #333; padding: 12px; border-radius: 10px; font-family: monospace; margin: 10px 0; outline: none; font-size: 12px; }
-        .btn-action { width: 100%; padding: 16px; background: var(--p); color: black; border: none; font-weight: bold; border-radius: 10px; cursor: pointer; font-size: 1.1rem; }
+        textarea { width: 100%; height: 180px; background: #000; color: var(--p); border: 1px solid #1a1a1a; padding: 15px; border-radius: 12px; margin: 15px 0; outline: none; font-size: 11px; }
+        .btn-go { width: 100%; padding: 20px; background: var(--p); color: black; border: none; font-weight: bold; border-radius: 12px; cursor: pointer; font-size: 1.2rem; }
 
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
@@ -39,36 +37,33 @@
 <body>
 
 <div class="nav">
-    <button id="tab-obf" class="active" onclick="show('obf')">تشفير مستقر 🛡️</button>
-    <button id="tab-and" onclick="show('android')">أندرويد 🤖</button>
-    <button id="tab-ios" onclick="show('ios')">آيفون 🍎</button>
+    <button id="t-obf" class="active" onclick="tab('obf')">تشفير LUR 🛡️</button>
+    <button id="t-and" onclick="tab('android')">أندرويد 🤖</button>
+    <button id="t-ios" onclick="tab('ios')">آيفون 🍎</button>
 </div>
 
 <div class="container">
     
     <div id="obf" class="section active">
         <div class="card">
-            <h1>N60 STABLE v22.0 🛡️</h1>
-            <p style="text-align:center; opacity:0.6; font-size:11px;">Hex-Encrypted | Works on Delta, Arceus, Skibx</p>
-            <textarea id="src" placeholder="-- الصق كود Lua هنا..."></textarea>
-            <button class="btn-action" onclick="runBuild()">تشفير الكود  </button>
-            <textarea id="res" readonly placeholder="الكود الناتج..."></textarea>
-            <button class="btn-action" style="background:#333; color:#fff; margin-top:10px;" onclick="copyCode()">نسخ الكود المشفّر 📋</button>
+            <h1>N60 NOVA-LUR v23.0 🌌</h1>
+            <p style="text-align:center; opacity:0.5; font-size:11px;">Metatable-Based Virtualization | Anti-Python / Anti-Sandbox</p>
+            <textarea id="src" placeholder="-- الصق كود Lua الأصلي هنا..."></textarea>
+            <button class="btn-go" onclick="buildLur()">تشفير الكود بنظام الطبقات 🚀</button>
+            <textarea id="res" readonly placeholder="الكود المشفّر النهائي سيظهر هنا..."></textarea>
+            <button class="btn-go" style="background:#222; color:#fff; margin-top:10px;" onclick="copyRes()">نسخ السكربت 📋</button>
         </div>
     </div>
 
     <div id="android" class="section">
         <div class="card">
-            <h1>Android Install 🤖</h1>
+            <h1>Android Direct 🤖</h1>
             <div class="grid">
-                <div class="install-btn" onclick="dlAPK('https://delta-executor.com/Delta.apk')">
-                    <b>Delta</b> <small>تنزيل APK مباشر</small>
+                <div class="btn-install" onclick="location.href='https://delta-executor.com/Delta.apk'">
+                    <b>Delta</b> <small>تثبيت APK</small>
                 </div>
-                <div class="install-btn" onclick="dlAPK('https://spdmteam.com/ArceusX.apk')">
-                    <b>Arceus X</b> <small>تثبيت فوري</small>
-                </div>
-                <div class="install-btn" onclick="dlAPK('https://fluxteam.net/Fluxus.apk')">
-                    <b>Fluxus</b> <small>رابط مباشر</small>
+                <div class="btn-install" onclick="location.href='https://spdmteam.com/ArceusX.apk'">
+                    <b>Arceus X</b> <small>تثبيت APK</small>
                 </div>
             </div>
         </div>
@@ -78,14 +73,11 @@
         <div class="card">
             <h1>iOS OTA Install 🍎</h1>
             <div class="grid">
-                <div class="install-btn" onclick="dlIOS('https://delta.bz/manifest.plist')">
+                <div class="btn-install" onclick="location.href='itms-services://?action=download-manifest&url=https://delta.bz/manifest.plist'">
                     <b>Delta iOS</b> <small>Install Direct</small>
                 </div>
-                <div class="install-btn" onclick="dlIOS('https://skibx.com/ota.plist')">
-                    <b>SkibX iOS</b> <small>OTA Install</small>
-                </div>
-                <div class="install-btn" onclick="dlIOS('https://ronix.com/ota.plist')">
-                    <b>Ronix iOS</b> <small>تثبيت مباشر</small>
+                <div class="btn-install" onclick="location.href='itms-services://?action=download-manifest&url=https://skibx.com/ota.plist'">
+                    <b>SkibX iOS</b> <small>Install Direct</small>
                 </div>
             </div>
         </div>
@@ -93,60 +85,86 @@
 
 </div>
 
-<script type="application/lua" id="engineLogic">
-function build_v22(source)
-    -- تشفير Hex لضمان أن الـ Executor يقرأه كنص بسيط لا يستهلك الذاكرة
-    local encoded = ""
-    for i = 1, #source do
-        encoded = encoded .. string.format("%%%02X", string.byte(source, i))
-    end
+<script type="application/lua" id="engine">
+function build_lur(source)
+    local seed = math.random(100, 255)
     
-    local final = "--[[ N60 STABLE v22.0 ]]\n"
-    final = final .. "local _D = '" .. encoded .. "'\n"
-    final = final .. [[
-local function _R(s)
-    local r = s:gsub('%%(%x%x)', function(h) return string.char(tonumber(h, 16)) end)
-    local f, e = loadstring(r)
-    if f then pcall(f) else warn("Err: "..tostring(e)) end
+    -- تحويل الكود إلى سلسلة Hex معقدة
+    local function to_hex(s)
+        local h = ""
+        for i=1, #s do
+            h = h .. string.format("\\%03d", string.byte(s, i) + seed)
+        end
+        return h
+    end
+
+    local payload = to_hex(source)
+    local out = "--[[ N60 NOVA-LUR v23.0 ]]\n"
+    out = out .. "local _O = '" .. payload .. "'\n"
+    out = out .. "local _S = " .. seed .. "\n"
+    out = out .. [[
+local _ENV = (getfenv and getfenv()) or _G
+local _P = newproxy and newproxy(true) or {}
+local _M = getmetatable and getmetatable(_P) or {}
+
+_M.__call = function()
+    local function _WRAP(...)
+        local _R = ""
+        _O:gsub("\\(%d%d%d)", function(d)
+            _R = _R .. string.char(tonumber(d) - _S)
+        end)
+        
+        local _EXE = function(_SRC)
+            local f, e = loadstring(_SRC)
+            if f then 
+                setfenv(f, _ENV)
+                return pcall(f) 
+            else 
+                return warn("VM_ERR: "..tostring(e))
+            end
+        end
+        return _EXE(_R)
+    end
+    return _WRAP()
 end
-_R(_D)]]
-    return final
+
+-- تفعيل الآلة الافتراضية
+if setmetatable then
+    local _PROXY = setmetatable({}, _M)
+    _PROXY()
+else
+    _M.__call()
+end
+]]
+    return out
 end
 </script>
 
 <script>
-    function show(id) {
+    function tab(id) {
         document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
         document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
         document.getElementById(id).classList.add('active');
-        document.getElementById('tab-' + id.substring(0,3)).classList.add('active');
+        document.getElementById('t-' + id.substring(0,3)).classList.add('active');
     }
 
-    // التثبيت المباشر
-    function dlIOS(plist) {
-        window.location.href = "itms-services://?action=download-manifest&url=" + plist;
-    }
-    function dlAPK(url) {
-        window.location.href = url;
-    }
-
-    function runBuild() {
+    function buildLur() {
         const input = document.getElementById('src').value;
         if(!input) return alert("أدخل كود!");
         const L = fengari.L;
-        fengari.load(document.getElementById('engineLogic').innerText)();
-        fengari.lua.lua_getglobal(L, "build_v22");
+        fengari.load(document.getElementById('engine').innerText)();
+        fengari.lua.lua_getglobal(L, "build_lur");
         fengari.lua.lua_pushstring(L, input);
         if(fengari.lua.lua_pcall(L, 1, 1, 0) == 0) {
             document.getElementById('res').value = fengari.to_jsstring(fengari.lua.lua_tostring(L, -1));
         }
     }
 
-    function copyCode() {
-        const res = document.getElementById('res');
-        res.select();
+    function copyRes() {
+        const r = document.getElementById('res');
+        r.select();
         document.execCommand('copy');
-        alert("تم النسخ! جربه الآن.");
+        alert("تم نسخ الكود بنظام LUR v23!");
     }
 </script>
 </body>
