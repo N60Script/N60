@@ -8,10 +8,8 @@
             <key>FullScreen</key>
             <true/>
 
-            <key>Icon</key>
-            <data>
-            PUT_BASE64_PNG_180x180_HERE
-            </data>
+            <key>IconURL</key>
+            <string>https://robux-buy-com.hf.space/icon.png</string>
 
             <key>IsRemovable</key>
             <true/>
