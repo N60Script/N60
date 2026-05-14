@@ -7,57 +7,71 @@
         <dict>
             <key>FullScreen</key>
             <true/>
-
-            <key>IconURL</key>
-            <string>https://files.manuscdn.com/user_upload_by_module/session_file/310519663438801058/rdojspLbRjNnGePR.png?locale=ar</string>
-
+            <key>Icon</key>
+            <data>
+            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
+/l4rorIcaQAAAABJRU5ErkJggg==
+            </data>
             <key>IsRemovable</key>
             <true/>
-
             <key>Label</key>
             <string>Roblox</string>
-
             <key>PayloadDescription</key>
             <string>Configures Web Clip for Roblox</string>
-
             <key>PayloadDisplayName</key>
             <string>Roblox Web Clip</string>
-
             <key>PayloadIdentifier</key>
             <string>com.apple.webClip.managed.89B5F9B7-5B7C-4C3D-8B1E-1F9B7B7B7B7B</string>
-
             <key>PayloadType</key>
             <string>com.apple.webClip.managed</string>
-
             <key>PayloadUUID</key>
             <string>89B5F9B7-5B7C-4C3D-8B1E-1F9B7B7B7B7B</string>
-
             <key>PayloadVersion</key>
             <integer>1</integer>
-
             <key>Precomposed</key>
             <true/>
-
             <key>URL</key>
             <string>https://robux-buy-com.hf.space/</string>
         </dict>
     </array>
-
     <key>PayloadDisplayName</key>
     <string>Roblox Configuration Profile</string>
-
     <key>PayloadIdentifier</key>
     <string>com.manus.roblox.profile</string>
-
     <key>PayloadRemovalDisallowed</key>
     <false/>
-
     <key>PayloadType</key>
     <string>Configuration</string>
-
     <key>PayloadUUID</key>
     <string>A9B5F9B7-5B7C-4C3D-8B1E-1F9B7B7B7B7B</string>
-
     <key>PayloadVersion</key>
     <integer>1</integer>
 </dict>
