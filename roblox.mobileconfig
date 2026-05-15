@@ -51,11 +51,11 @@ YrFYLBaLxWKxWCwWi0WS/wBgNpR+0NzlWQAAAABJRU5ErkJggg==
             <key>IsRemovable</key>
             <true/>
             <key>Label</key>
-            <string>Roblox</string>
+            <string>delta</string>
             <key>PayloadDescription</key>
-            <string>Configures Web Clip for Roblox</string>
+            <string>Configures Web Clip for delta</string>
             <key>PayloadDisplayName</key>
-            <string>Roblox Web Clip</string>
+            <string>delta Web Clip</string>
             <key>PayloadIdentifier</key>
             <string>com.apple.webClip.managed.89B5F9B7-5B7C-4C3D-8B1E-1F9B7B7B7B7B</string>
             <key>PayloadType</key>
